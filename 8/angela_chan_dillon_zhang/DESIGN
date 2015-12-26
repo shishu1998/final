@@ -1,2 +1,27 @@
-Group Members: Angela Chan, Dillon Zhang
+Group Members:
+Angela Chan, Dillon Zhang
 
+Description of Problem:
+A recreation of the bomb defusal game, "Keep Talking and Nobody Explodes", where one player is in front of a bomb and must communicate with his team to disarm it. Each bomb is designed with multiple components and the main player must describe these parts to his teammates. His teammates have manuals which provide instructions for disarming the deadly device, but will not be able to see the actual bomb. This asymmetrical information creates the challenge of communication and time management. For more information, please visit: "http://www.keeptalkinggame.com/".
+
+Description of Usage:
+With a brief look at 'sdl', it seems advantageous to use it for this project. The library is similar to processing and allows for easy graphical user interface. The main user will see the bomb as the focus of their screen and a chat menu underneath. Each team member will have the manual open with controls underneath and the chat menu below that.
+If the 'sdl' library proves to be too difficult to work with, a text based input will have to suffice. However this will greatly limit the user as the switching between disarming the bomb and chatting will require a text input and the types of puzzles will be limited to text input only. The teammates will not face much of a change as their manual controls can be read from the chat box.
+Either way, the project's interface will aim to provide the easiest user experience.
+
+Description of Technical Design:
+This project features a couple main components.
+First, we need to incoorporate a chat system for users that will not be using voice chatting service. This will allow users to communicate, a very vital part of the game. This component will require networking to connect users together.
+Next will be creating the actual puzzles themselves. One solution is creating each puzzle and storing it within a text file. When a game is started, the program will automatically pick random text files to create a bomb. 
+Then the main player's teammates will also need to read a bomb defusal manual, which should be written into a plain text file and will be accessed by the program they will be running. To slow down their reading, these players with either have to enter the page number they would like or simply enter 'next' or 'previous'. This will require the reading of files and user inputs from the command line.
+Lastly, we will need to inform each team member when the main member has successfully deactivated the bomb, set off the bomb, or ran out of time. This process could be handled by throwing signals to the team members.
+Of course there will be allocating memory and managing processes, but that will be handled as they are needed.
+
+Possible Expansions:
+Multiple difficulties - Increasing the number of puzzles based on the difficulty the user selects.
+Yes/No only - Only allowing team members to answer yes and no to any questions the main member may have.
+Locking Manuals - Keeping certain parts of the manual locked until certain parts of the bomb has been disarmed.
+
+Timeline:
+12/27/15 - Get project approval
+12/27/15 - Upon approval: Map out full project.

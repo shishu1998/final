@@ -1,0 +1,14 @@
+~~~ Group Members ~~~
+Caitlin Stanton (Period 4)
+Michaela Papallo (Period 4)
+Ariel Levy (Period 8)
+
+~~~ Project Description ~~~
+This project will be a chat service for the ARISTA tutoring program. Tutors with expertise in specific subjects and tutees looking for assistance in specific subjects would be paired up for a chat session. When the tutor and tutee end the session, a transcript would be saved as a separate file for the tutee's future reference. The tutee could also submit a feedback form rating how helpful the session was and commenting what the tutor did well and what the tutor could improve. 
+
+~~~ User Interface ~~~
+Each tutor and tutee would be able to make their own account with username and password. When creating a tutor account, the user would also rate their expertise in different subjects like Precalculus, US History, or Biology. When a tutor is available to help, he or she could log on and leave the server window open. When a tutee logs on and requests help in a subject that the tutor is knowledgable about, they would be paired up to chat. The chat window would display a running message transcript and give users the option to add a message. When the tutee exits the chat, he or she will be given the option to fill out a feedback form. If the tutee completes the feedback form, it will be sent to the tutor. After the tutee sends the form or decides not to complete the form, the tutor will automatically be exited. 
+
+~~~ Technical Design ~~~
+
+~~~ Timeline ~~~

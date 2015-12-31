@@ -1,5 +1,13 @@
-#Group Members#
+#Avalon#
 Derrick Lui, Young Kim, Aaron Wang
+
+## Group Members
+|     | **Member** | **Github** |
+|-----|:------------:|:------------:|
+||Derrick Lui||
+||Young Kim||
+||Aaron Wang||
+
 
 - Description of Problem:
   - A recreation of the board game, "Avalon", which is similar to Mafia.

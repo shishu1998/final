@@ -2,11 +2,11 @@
 Derrick Lui, Young Kim, Aaron Wang
 
 ## Group Members
-|     | **Member** | **Github** |
-|-----|:------------:|:------------:|
-||Derrick Lui|[`@dlui220`] (https://github.com/dlui220)|
-||Young Kim|[`@young_k`] (https://github.com/young_k)|
-||Aaron Wang|[`@az00000009`] (https://github.com/az00000009)|
+| **Member** | **Github** |
+|:------------:|:------------:|
+|Derrick Lui|[`@dlui220`] (https://github.com/dlui220)|
+|Young Kim|[`@young_k`] (https://github.com/young_k)|
+|Aaron Wang|[`@az0977776`] (https://github.com/az0977776)|
 
 
 - Description of Problem:

@@ -2,13 +2,14 @@ Name(s):
 	Ying-ke Chin-Lee
 
 Statement of project:
-	Auctioning
+	This project will be an auctioning interface
 
 Description of user interface:
 	Items will be viewed through a browser (can be exec-ed)
 	Users can view the stats of the item (particularly, current bid)
 	Users can bid (probably by entering bid and lot number)
 	The highest bidder will win the auction.
+	A file transcript of the bidding history will be saved to the user's computer.
 
 Description of techical design:
 	Topics covered in class:

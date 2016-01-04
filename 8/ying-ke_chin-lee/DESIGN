@@ -21,13 +21,16 @@ Description of techical design:
 		- Networking
 
 	Breakdown of project:
-		I do all the parts
+		I do all the parts...because there is no one else in my group!
 
 	Data structures used:
 		
 	Algorithms used:
-		
+		parts of fserver assignment (not sure if this counts)
+
 Timeline:
-	
-
-
+	DESIGN file -> Jan 8
+	Display stats of different lots by entering into shell (lots in file to read in)
+		-> Jan 
+	Join to parts of fserver code
+		-> Jan

@@ -5,14 +5,27 @@ Statement of project:
 	Auctioning
 
 Description of user interface:
-	
+	Items will be viewed through a browser (can be exec-ed)
+	Users can view the stats of the item (particularly, current bid)
+	Users can bid (probably by entering bid and lot number)
+	The highest bidder will win the auction.
 
 Description of techical design:
-	Tops covered in class:
-	Breakdown of project:
-	Data structures used:
-	Algorithms used:
+	Topics covered in class:
+		- Working with files
+		- Processes (forking, exec, etc)
+		- Signals
+		- Pipes (named and unnamed)
+		- Shared memory
+		- Networking
 
+	Breakdown of project:
+		I do all the parts
+
+	Data structures used:
+		
+	Algorithms used:
+		
 Timeline:
 	
 

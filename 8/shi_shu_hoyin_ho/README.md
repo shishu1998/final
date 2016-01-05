@@ -1,7 +1,7 @@
 # final#
 
 # Group Members
-|     | **Member** | **Github** |
+|     | **Member** |
 |-----|:------------:|:------------:|
 | <img src="pics/shi_shu.jpg" width="100" height="150" /> |Shi Shu |
 | <img src="pics/hoyin_ho.jpg" width="200" height="250" /> |Ho Yin Ho |

@@ -1,4 +1,7 @@
-Group Members: Shi Shu, Ho Yin Ho, Masahero Masuda
+DW NOTES: 
+This needs more information. Will this be a network multiplayer game or single computer game? What topics from this semester will you be using and how?
+
+Group Members: Shi Shu, Ho Yin Ho, Masahero Masuda(period 5)
 
 Description of Project:
 This is basically Wii Party word bomb. A category is chosen at random, and players must type in a word that matches the category into the terminal. Their response is then piped to other players and if ALL players decide that the word does not match the category, the bomb will be passed back and the timer continues from where it left off. If one of the players think that the word matches the category, the bomb is passed on to the next player and the timer resets. The bomb explodes when the time is up and the loser is the person who had the bomb. Timer starts off with 15 seconds but decreases by an increment.

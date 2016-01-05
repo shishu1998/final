@@ -1,0 +1,7 @@
+WIP**
+
+Kevin Mejia per. 4
+Max Kong per. 8
+
+Proposal...
+A service where people on different machines can play the 2-player table game "Battleship" against one another on the command shell.

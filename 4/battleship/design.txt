@@ -2,6 +2,24 @@ WIP**
 
 Kevin Mejia per. 4
 Max Kong per. 8
-
+Lian Wong per. 4
 Proposal...
-A service where people on different machines can play the 2-player table game "Battleship" against one another on the command shell.
+A service where people on different machines can play the 2-player table game "Battleship" 
+against one another on the command shell.
+
+design: users should be able to make an account, which gives them access to some file that saves
+the win-loss record. One user can only access his/her board, not that of the opponent.
+He/she cannot fire a shot until the opponent has fired theirs.
+
+should incorporate:
+piping and server
+shared memory and semaphores
+execution of inputs (using fgets to see what a user's shot is)
+parsing strings
+signals when closing /forfeiting game
+using random (when creating a board with ships)
+writing to a file
+streches: 
+cheat codes??
+timer that calls for a forfeit if turn time is up
+

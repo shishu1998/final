@@ -1,0 +1,36 @@
+Names:
+	Gregory Redozubov and Henry Filosa
+
+Statement of project:
+	  Our project is a terminal messaging program to send messages, files and commands to other users. 
+
+Description of user interface:
+	    Users will interface with our project through the terminal. When starting the program they will be asked to log into an account or to create a new account with username or password.  A central server will verify users and collect and store their messages, files and commands. When a user connects to the server it will check if they have any objects queued for them. Messages will be automatically received. The user will then be asked to approve files and commands being sent to them. 
+
+Technical Design:
+	  -This project will obviously take advantage of networking to allow users to connect to a central server.
+	  -Processes will be used to fork off children and execute commands
+	  -Files will be worked with in terms of reading and writing in order to upload them to the server and later send them to the user
+	  -Files will also be written to in order to save and later retrieve message logs
+	  -The reading and writing of files will also require the use of metadata commands to locate and retrieve files
+	  -Signals will also be used to prevent caching errors from users unexpectedly terminating their connections
+	  -Usernames will be limited to 20 characters in length
+	  -Messages/commands will be limited to 500 characters in length
+	  -Files will be limited to 10,000 bytes (subject to change)
+
+
+Data Types:
+     Messages, commands, and files will be stored as a struct with the following components:
+     	      Type (char): 1=message 2=command 3=file
+     	      Recipient(char[20])
+     	      Sender(char[20])
+	      Size(int): How long the content will be
+     	      Message/command/file(size#bytes)
+     Messages and commands will be read into char[] arrays, while files will be read directly into the file the destination specified by the user
+
+Server:
+	-Will generate a folder for each user 
+	-Inside the user’s folder will be separate folders for messages, commands, and files
+	-Data sent to the server by a user will be placed into a folder based on user and data type
+	-When a user connects the server will check those folders and pass on the objects it finds inside
+	-The server will automatically pass data to users who are connected without placing it in a folder 

@@ -1,0 +1,6 @@
+Music Library Project Proposal
+Julia Hou and Ariella Kahan
+
+We’d like to build a music library, similar to the one we made for a project in the first marking period, but with a few added features. First, it would actually be able to play the music in the library. We’d also take a few iTunes features and try to incorporate them into our code — a user would be able to make playlists and then play them, and after you listen to a song we would “suggest” other songs to listen to that are of the same genre (every song will have name, singer/band, and genre tags).
+
+We haven’t researched playing music on C yet, but we’d also like to look into pausing the songs for set amounts of time, fast-forwarding them to a specific spot, or rewinding them a certain number of seconds. 

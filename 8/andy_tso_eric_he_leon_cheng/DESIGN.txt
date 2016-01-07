@@ -1,0 +1,26 @@
+Uno Card Game
+
+Andy Tso, Eric He, and Leon Cheng
+Period 8
+
+
+Each student or group must create a file in their repository named DESIGN. The file should be a plain text file and it should contain the following.
+
+The names of the people in the group.
+
+A statement of the problem you are solving and or a high level description of the project.
+
+A description as to how the project will be used (describe the user interface).
+
+A description of your technical design. This should include:
+  How you will be using the topics covered in class in the project.
+
+  How you are breaking down the project and who is responsible for which parts.
+
+  What data structures you will be using and how.
+
+  What algorithms you will be using, and how.
+
+A timeline with expected completion dates of parts of the project.
+
+Remember -- this is a working document, it should be updated as your design changes.

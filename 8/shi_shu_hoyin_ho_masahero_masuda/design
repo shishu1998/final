@@ -4,18 +4,12 @@ This needs more information. Will this be a network multiplayer game or single c
 Group Members: Shi Shu, Ho Yin Ho, Masahero Masuda(period 5)
 
 Description of Project:
-This is basically Wii Party word bomb(4 player game). A category is chosen at random, and players must type in a word that matches the category into the terminal. Their response is then piped to other players and if ALL players decide that the word does not match the category, the bomb will be passed back and the timer continues from where it left off. If one of the players think that the word matches the category, the bomb is passed on to the next player and the timer resets. The bomb explodes when the time is up and the loser is the person who had the bomb. Timer starts off with 15 seconds but decreases by an increment.
-
-Possible Expansions:
-Multiple bombs?
-Two words
-Two Categories
-Apples to Apples style, players get certain words to use, if no wordss matches, they lose!
+Apples to Apples - the safe for work version of cards against humanity
+This project is the C version of the game apples to apples. The decks of green cards and red cards will be stored in plain text file and then stored in an array in the server. Each player has their own client, which performs a handshake with the server when they join the game and are assigned a number. When all players have joined, the game begins, and the game winning amount of cards will be set by the amount of times the handshake is performed. Each card is a struct with the content of card(string), type of card(string, red or green), and an integer(owner's number). The hand for each player is stored in an array in client, the player must type in a number for the card that they want to use. Their card of choice's content is then piped to the server and sent to the player with the green card. The green card player then picks a card and chooses who gets to keep the green card. The card content is sent back to the server and matched with the player number. The player gets the green card and if they reached the winning conditions, they are declared the winner.
 
 Incorporations of what we learned in class:
 Piping(forked) into a server for communcation between players
 Signal Handling - In case one player ragequits
-Shared Memory(possibly)
 File Control - Categories are stored in a plain text file and randomly selected
 
 

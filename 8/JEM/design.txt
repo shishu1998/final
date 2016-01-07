@@ -2,11 +2,16 @@ Name: Emma Bernstein, Jennifer Lee, Mary McGreal
 
 Statement: Mary is looking for a PROM date, so we're going to help her by creating a client-server program to find a compatible date.
 
-Description:
+Description: From the interface, users (who would like to escort Mary to prom), can message her, and from Mary's end, she can respond. Based on the conversation and compatibilty, she can rate them(?) and decide who she wants to go to prom with.
 
 Data Structure:
+     Topics:
 
-Data Algorithm:
+     Responsibilties:
+
+     data structures:
+
+     data algorithms:
 
 Timeline:
 

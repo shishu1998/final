@@ -1,0 +1,13 @@
+Name: Emma Bernstein, Jennifer Lee, Mary McGreal
+
+Statement: Mary is looking for a PROM date, so we're going to help her by creating a client-server program to find a compatible date.
+
+Description:
+
+Data Structure:
+
+Data Algorithm:
+
+Timeline:
+
+**Note: This working file should be regularly updated **

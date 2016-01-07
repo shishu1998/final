@@ -5,9 +5,12 @@ Statement: Mary is looking for a PROM date, so we're going to help her by creati
 Description: From the interface, users (who would like to escort Mary to prom), can message her, and from Mary's end, she can respond. Based on the conversation and compatibilty, she can rate them(?) and decide who she wants to go to prom with.
 
 Data Structure:
-     Topics: pipes (WKP), network (maybe), shared memory/semaphores,
+    Topics: pipes (WKP), network (maybe), shared memory/semaphores (?), Files
 
-     Responsibilties:
+     Responsibilties: 
+     Emma - 
+     Jen - 
+     Mary - 
 
      data structures:
 

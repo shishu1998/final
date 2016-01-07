@@ -1,0 +1,43 @@
+Rong Yu
+
+Project Idea: Central Dispatch Server
+Tentative Title: BashBook
+Title subject to change based on whether it will just be a standard chat between two clients, or something else with a CDS.
+
+
+Tentaive User Interface:
+*Some log in, can be just typing which User you are among a few already hard coded.
+<Server>: Who would you like to bother today?
+*User types in a client name* Note: Client name will probably be the NamedPipe that the Server connects to.
+*SubServer sends a request to MainServer, and MainServer searches through the NamedPipes it is connected to*
+<Server>: Error: User not found.  OR  <Server>: User found. What would you like to spam him with?
+*User types something*
+*SubServer shoots the message as a char[][], char[1] is id, char[2] is message.*
+<Server>: Message sent. 
+-Repeats/Checks to see if there are new messages. Will probably "refresh" when only a "\n" is entered.
+
+Receiving Message: 
+<Server>: <USER> just sent you a message. 
+*Note: The messages received will probably be split into three parts:
+	One txt file will record all the messages, with a Name and the message <-- a conversation
+	One txt file will record the only the received message <-- only incoming
+	One semaphore will record only the number of bytes added to the second txt, i.e. from when he last checked the mesage
+*Waits for enter to be pressed, then displays the message.*
+
+Parts:
+1. Basic CDS: clients will be added and will message their server and receive a response.
+2. SubServer will send the message plus everything stated above. The MainServer will respond based on the message and who the user is.
+3. Start formating how requests will look like, i.e. how the SubServer will ask MainServer if "String" is a user.
+4. Make code and test out receiving messages by having a "Control.c" that has the MainServer message clients.
+5. Make code and test out sending messages by having client message MainServer.
+6. Add and alter (5) so that the Users can message each other.
+7. Make good hashtable for fto.
+8. Add semaphores for writing, so between two users, the compilation of conversation is fine.
+
+Algorthms and Data Structures: Whatever that will be needed.
+
+Timeline: .....IDK
+1/7/16 - Wrote initial design outlining the entire project from scratch. ~40 minutes.
+
+Applications:
+2 or more people ssh into one account and message each other.

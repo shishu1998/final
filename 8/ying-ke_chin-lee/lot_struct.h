@@ -6,4 +6,9 @@ typedef struct Lot {
 	int hi_bid;
 } Lot;
 
-Lot bleh[4];
+void print(Lot l) {
+	printf("\nLot #%d: %s\n", l.number, l.name);
+	printf("currently at $%d\n", l.hi_bid);
+	printf("\nDescription:\n%s\n", l.description);
+	printf("\n");
+}

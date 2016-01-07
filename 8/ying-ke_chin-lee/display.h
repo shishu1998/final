@@ -1,6 +1,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+//#include "lot_struct.h"
+
 #define browser "chromium-browser"
 
 void display(Lot l) {
@@ -13,10 +15,16 @@ void display(Lot l) {
 		//int fd1 = creat(cmds[0], 0644);
 	        //dup2(fd1, 1);
         	//close(fd1);
+		print(l);
+
+		printf("View the work? Y/N\n");
+		// get input, if Y, then load browser. else, don't.
 		int num = execvp(browser, cmds);
-		printf("error %d happened: %s\n", errno, strerror(errno));
-		printf("num = %d\n", num);
-		exit(0);
+		if (num < 0) {
+			printf("error %d happened: %s\n", errno, strerror(errno));
+		}
+		// print stats
+//		exit(0);
 	} else {
 		int status;
 		wait(&status);
@@ -28,16 +36,16 @@ void display(char *link) {
 	char *cmds[2] = {browser, link};
 
 	int f = fork();
-		if (f == 0) {	
-			int fd1 = creat(cmds[0], 0644);
-		        dup2(fd1, 1);
-        		close(fd1);
-			execvp(browser, cmds);
-			exit(0);
-		} else {
-			int status;
-			wait(&status);
-		}
+	if (f == 0) {	
+//		int fd1 = creat(cmds[0], 0644);
+//	        dup2(fd1, 1);
+//     		close(fd1);
+		execvp(browser, cmds);
+		exit(0);
+	} else {
+		int status;
+		wait(&status);
+	}
 }
 
 */

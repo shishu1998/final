@@ -2,23 +2,25 @@ Names: Emma Bernstein, Jennifer Lee, Mary McGreal
 
 Statement: Mary is looking for a PROM date, so we're going to help her by creating a client-server program to find a compatible date.
 
-Description: Mary's computer will connect to one suitor's computer at a time, but will have the ability to disconnect From the interface, users (who would like to escort Mary to prom), can message her, and from Mary's end, she can respond. Based on the conversation and compatibilty, she can rate them and decide who she wants to go to prom with.  The ratings will be stored in shared memory, which will be controlled by a semaphore.  The shared memory will be shared between the writing process and the analysis process.  The writing process will pull rating data that Mary enters and store it in shared memory.  The analysis process will proceed to analyze the ratings data in shared memory and determine Mary's ideal prom date!
+Description of user interface: Mary's computer will connect to one suitor's computer at a time, but will have the ability to disconnect and proceed to connect to a new suitor. Upon starting the program, the user will be prompted for a login and password.  Mary (the server) will validate the client logins.  From the interface, users (who would like to escort Mary to prom), can message her, and from Mary's end, she can respond. Based on the conversation and compatibilty, she can rate them and decide who she wants to go to prom with.  The ratings will be stored in shared memory, which will be controlled by a semaphore.  The shared memory will be shared between the writing process and the analysis process.  The writing process will pull rating data that Mary enters and store it in shared memory.  The analysis process will proceed to analyze the ratings data in shared memory and determine Mary's ideal prom date!
 
-Technical Design
-Data Structure:
-    Topics: pipes (server and clients), network , shared memory/semaphores, Files
+
+    Topics: 
+	pipes (server and clients), network , shared memory/semaphores, processes (forking, exec)
 
      Responsibilties: 
      Emma - 
      Jen - 
      Mary - 
 
-     data structures:
-
-     data algorithms:
-
 Timeline:
+	*Design
+	*Server and client
+	*Store ratings in shared memory
+	*Analysis process
+	*Implement network, finalize chat
+	*Test
 
-Future work: group chat
+Future work: group chat (Mary (server) will be able to receive messages from more than one client at a time)
 
-**Note: This working file should be regularly updated **
+** Note: This working file should be regularly updated **

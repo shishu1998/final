@@ -1,4 +1,4 @@
-#Wii bomb#
+#Apples to Apples#
 Shi Shu, Hoyin Ho, Masahero Masuda
 
 ## Group Members
@@ -9,5 +9,3 @@ Shi Shu, Hoyin Ho, Masahero Masuda
 |Masahero Masuda|5|
 
 
-- Idea for project:
-  - Wii bomb stuff? maybe idkk

@@ -1,5 +1,5 @@
 #Odds Are#
-Andrew Kratsios, Filipe Mansilla
+Andrew Kratsios, Felipe Mansilla
 
 ## Group Members
 | **Member** | **Github** |
@@ -16,7 +16,6 @@ Andrew Kratsios, Filipe Mansilla
 
 - Description of Usage:
 	
-
 - Description of Technical Design:
 	
 	- Players will have the option to create or join an Odds Are game. If they create a game the dare will be posted onto a list of pending dares, which players who choose to join a game can pick from.

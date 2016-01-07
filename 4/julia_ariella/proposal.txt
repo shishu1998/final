@@ -1,3 +1,7 @@
+DW NOTE:
+Please provide some more information, like how you will be using concepts from the class in your project.
+Also please follow the naming conventions and create a design document called design.txt
+
 Music Library Project Proposal
 Julia Hou and Ariella Kahan
 

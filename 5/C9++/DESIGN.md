@@ -1,4 +1,5 @@
-# C9++ -- The Improved Terminal Based Co-Coding Engine
+# C9++
+The Improved Terminal Based Co-Coding Engine
 
 ## Members
 - Ethan Cheng (pd. 4)

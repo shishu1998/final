@@ -18,4 +18,4 @@ String/File Parsing - Will take raw data output from a text file and create a ta
 
 1/15/16 - Complete file parsing and information formatting. All data will be in tables, but organization of said tables is unclear (terminal tabs?).
 
-1/17/16 - Everything else. Signals, log file, tabs, realtime updating, and any other features added. 
+1/18/16 - Everything else. Signals, log file, tabs, realtime updating, and any other features added. 

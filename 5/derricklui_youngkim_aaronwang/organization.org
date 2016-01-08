@@ -1,0 +1,6 @@
+* Division of Work
+
+| Name of Function      | Server | Client |
+|-----------------------+--------+--------|
+| Splitting Up of Roles | X      |        |
+|                       |        |        |

@@ -1,0 +1,22 @@
+Names: Jion Fairchild, Ishraq Bhuiyan, Sarah Chen
+
+Description: Ping pong is a project that uses systemsy stuff to create a pong game that can be played by two players across different machines.
+
+Interface: The program executes from terminal that can scan your local network for uers looking for players. (also potentially a server where you can log in and see a list of available players. From there you will be able to challenge other players. All of this runs in Terminal and is ASCII based. The game itself is also ASCII based.
+
+Class stuff:
+  -Networking
+  -Server stuff
+  -Memory stuff
+  -Terminal input and output stuff
+  -Forking
+
+Roles:
+  -Ishy: Networking backend
+  -Jion: Physics engine(accounts for time dilation)
+  -Sarah: Interface
+
+Timeline:
+  -Week 1: Start networking functions and have interface framework
+  -Week 2: Finish actual game and networking functions
+  -Week 3: Put everything together

@@ -49,7 +49,13 @@ What algorithms you will be using, and how.
 
 ADDITIONAL IDEAS (TIME-ALLOWING):
 Add chat server
+Use GTK or SDL to add graphical interface
 
 TIMELINE:
 A timeline with expected completion dates of parts of the project.
 1/8/16 - Approval for DESIGN
+
+Server
+Action Cards
+Basic Game Rules
+First to say "uno" feature

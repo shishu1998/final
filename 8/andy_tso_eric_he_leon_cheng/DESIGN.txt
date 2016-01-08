@@ -5,7 +5,7 @@ Period 8
 
 
 PROJECT DESCRIPTION:
-We aim to recreate the card game Uno, mainly working in the terminal. There can be as many players as desired (multiplayer). The objective of the game is to discard all your cards by playing them. We plan to have the server on one computer and the players on computers of their own. The server will deal the hands to the players while whatever card a player plays will be sent to the server which in turn will be sent to all the other players. 
+We aim to recreate the card game Uno, mainly working in the terminal. There can be as many players as desired (multiplayer). The objective \n of the game is to discard all your cards by playing them. We plan to have the server on one computer and the players on computers of their own. The server will deal the hands to the players while whatever card a player plays will be sent to the server which in turn will be sent to all the other players. 
 Some simple rules:
    1. If the previous card is a number card, your card may either be the same color or value. You may also choose to draw a card.
    2. If the previous card is an action card (ie Draw 2, Wild Card)

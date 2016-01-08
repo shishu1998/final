@@ -41,11 +41,13 @@ Techincal Design:
 		  	 Files will be created and opened by the program.
 
 		  Processes
-			 We will be using exec to use the cd and ls commands
+			 We will be using exec to use the ls command and to open
+			 email messages in a text editor
 
 	   Project Breakdown:
 	   	   1) Accounts
-		      a) Create a piece of shared memory that can be accessed by			 multiple computers
+		      a) Create a piece of shared memory that can be accessed by
+			 multiple computers
 		      b) Allow the user to create an account by inputting an
 		      	 email address and password. Save this information to
 			 the piece of shared memory.
@@ -66,7 +68,8 @@ Techincal Design:
 
 		   5) Networking
 		      Actually sending and recieving these files
-		      a) Send: user networking to send the email to the computer			 specified by the correct address.
+		      a) Send: user networking to send the email to the computer
+			 specified by the correct address.
 		      b) Recieve: enable recieved emails to show up in Inbox.
 		      	 Print a notification message
 
@@ -77,8 +80,10 @@ Techincal Design:
 		   7) Fun Optional Things
 		      a) Flags: Allow the user to flag emails, moving them to
 		      	 the Flagged folder.
-		      b) Searches: Allow the user to search for the location of				 an email by address or subject.
-		      c) Hashtags: Allow the user to attach hashtags to emails f			 or use in searches.
+		      b) Searches: Allow the user to search for the location of
+			 an email by address or subject.
+		      c) Hashtags: Allow the user to attach hashtags to emails
+		         for use in searches.
 		      d) Filters: Allow the user to set up a filter that
 		      	 automatically redirects recieved emails from specific
 			 addresses into other folders.

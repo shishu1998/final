@@ -1,0 +1,27 @@
+Comments on Design Document by aidan fitz
+
+ - Why use shared memory? Sure, it'll persist after the program closes, but it
+   will be gone when the computer shuts down.
+
+ - cd cannot be opened by exec. Also, cd won't work the same way it does in
+   the shell.
+
+   Suppose your folders are:
+    - inbox
+    - starred
+    - drafts
+    - sent
+    - archive
+    - spam
+    - trash
+
+   When you start the program, you are in inbox. Then, to go from inbox to starred,
+   you type "cd starred". The shell's cd would attempt to take you to the
+   sub-directory inbox/starred. Our version of cd takes you instead to starred.
+
+ - Why not use SMTP?
+
+   - May be too complicated
+
+   - SMTP requires \r\n for line breaks, Linux uses \n. We can't be f***ed to convert
+     back and forth between \n and \r\n every time we send and receive email.

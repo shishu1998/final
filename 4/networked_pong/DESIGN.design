@@ -1,0 +1,30 @@
+--Group Members--
+Rodda John
+Sean (Last name unknown)
+
+--Description of Project--
+Our goal is to create multiplayer pong.  We would start with 2 player pong, but then create a 2-8 player version essentially where instead of having the two sides, we would do a triangle, square, pentagon, etc..
+We were also thinking of incorporating a highscores feature that keeps track of highscores (this is a pretty minor feature)
+
+--Description of User Interface--
+It will be run in the terminal, we will use ANSI/VT100 codes to complete this.  Pong essentially requires the up down command (we will probably use the w and a keys)
+
+--Technical Design--
+Topics Covered In Class:
+We will evidently use C!
+It is networked, so all discussions of networks and server protocols will be applied.
+Signal Handling to nicely shut down the server or send client shutdown signals when the client shutdowns.
+Our server will have to fork for multiple clients.
+
+Responsibilities:
+Sean: Implementation of Basic Pong Functionality
+Rodda: Implementation of Networked Features
+To Be Decided: Implementation of multiplayered pong with more than 2 players (the triange, square, pentagon, etc...)
+
+Data Structures and Algorithms:
+Since this is a game and less of a practical application, data structures and algorithms will not be used that much.  We will update this document once we work out how the multi-sided pong will work out.
+
+--Timeline--
+1/13/15 -- Pong Working (Same computer)
+1/17/15 -- Networked Pong Working (2 Player max)
+1/26/15 -- Multi-sided pong and highscores feature

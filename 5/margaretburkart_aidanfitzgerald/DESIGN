@@ -1,54 +1,65 @@
 Group Members: Margaret Burkart and Aidan Fitzgerald
 
-Project: A terminal-based email client using networking.
+Project: A terminal-based email client and server using networking.
 
 User Interface:
+
      Terminal.
 
-     The user must first set up an account, if he/she does not have one already.
+     The user must first set up an account with an "email address" (which herein
+     can be any string that is unique on the server) and password.
 
-     Then the user must log on to his/her account.
+     The client needs to know the IP address and TCP port number of the server.
+
+     The client connects to the server to create the account, and the server responds
+     if the username is OK. Then the client writes these settings to a config file.
+
+     Commands:
+	cd
+	ls
+	compose
+	send
+	refresh
+	exit
 
      The various folders (Inbox, Sent, Drafts, Archive, Flagged, etc.)
      can be seen using ls and accessed using cd.
 
      A "compose" command will open up a text editor in which to write the email.
 
-     The user hits ENTER to send.
+     To send an email, type "send" followed by the filename of the draft.
 
-     The program will take the first line of the file as the address and the
+     The client will take the first line of the file as the address and the
      second line of the file as the subject. (If we have time, we may include
      cc'ing).
 
-     The program will send the text file to the computer that matches
-     the account specified in the address.
+     The client will upload the text file to the server.
 
-     When a user recieves an email, it will appear as a text file in his/her
-     inbox and a notification message will be printed on the terminal screen
-     regardless of the folder the user is in.
+     When a user types the "refresh" command, the client connects to the server,
+     downloads all emails addressed to the user, and writes them to files in 
+     the inbox folder.
+
+     The user can type "exit" or press Ctrl+C to exit.
 
 Techincal Design:
-	  Related Topics:
-	  	  Networking
-			This is how emails (text files) will be sent from one
-			computer to another
 
-		  Shared Memory
-		  	 This is where account information (email addresses
-			 and passwords) will be stored.
+	  Related Topics:
+
+	  	  Networking
+			Emails will be sent and received through a plain TCP/IP
+			connection (no SMTP)
 
 		  Working with Files
+			 Emails are stored in files
 		  	 Files will be created and opened by the program.
 
 		  Processes
-			 We will be using exec to use the ls command and to open
-			 email messages in a text editor
+			 We will be using exec to open email messages in less
+			 and drafts in a text editor of the user's choice
 
 	   Project Breakdown:
 	   	   1) Accounts
-		      a) Create a piece of shared memory that can be accessed by
-			 multiple computers
-		      b) Allow the user to create an account by inputting an
+		      a) Allow the user to create an account by inputting an
 		      	 email address and password. Save this information to
 			 the piece of shared memory.
 
@@ -67,7 +78,7 @@ Techincal Design:
 		      a) Moves the file to the Sent folder
 
 		   5) Networking
-		      Actually sending and recieving these files
+		      Actually sending and receiving these files
 		      a) Send: user networking to send the email to the computer
 			 specified by the correct address.
 		      b) Recieve: enable recieved emails to show up in Inbox.
@@ -75,7 +86,7 @@ Techincal Design:
 
 	   	   6) Opening emails
 		      Allow the user to open email files
-		      a) Have the program open specified file in a text editor
+		      a) Have the program open specified file in less
 		   
 		   7) Fun Optional Things
 		      a) Flags: Allow the user to flag emails, moving them to
@@ -87,11 +98,19 @@ Techincal Design:
 		      d) Filters: Allow the user to set up a filter that
 		      	 automatically redirects recieved emails from specific
 			 addresses into other folders.
-		      
+		      e) Address Book: Map names to email addresses
 
 	   Data Structures:
 
-	   Algortihms:
+		struct for emails in memory (to, [cc], from, subject, contents)
+
+		Hash table to map names to email addresses (optional)
+
+		Array of those struct email's for search capabilities
+
+	   Algorithms:
+
+		Binary tree search
 
 Timeline:
 

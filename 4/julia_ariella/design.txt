@@ -1,0 +1,12 @@
+Music Library Project Proposal
+Julia Hou and Ariella Kahan
+
+PROPOSAL:
+We want to recreate iTunes in the terminal. Users will be able to create accounts (with passwords stored in text files) and on these accounts they’ll be able to put songs in a music library. They’ll also be able to make playlists. All “songs” will have genres, singers, and names. The program will be able to actually play the music the users choose and it’ll be able to “shuffle” songs in the Playlist. Additionally, after you listen to a song other songs will pop up as “suggested songs” if they have the same genre.
+
+IDEAS FROM CLASS:
+-pointers
+-reading and writing files (for the accounts)
+-arrays and dynamically allocated memory (for the songs)
+
+

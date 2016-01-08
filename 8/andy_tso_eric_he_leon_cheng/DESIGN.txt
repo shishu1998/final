@@ -18,9 +18,12 @@ A description as to how the project will be used (describe the user interface).
 It will follow the same pattern as fserver. Two programs will be made where one will be initiated by the server while the other program is to be initiated by the player.
 
 CONCEPTS USED:
-How you will be using the topics covered in class in the project.
-Allocating memory.
 
+Semaphores used to create "turns."
+Shared memory segments contain the color and value of the last card played.
+        As each card is played, we write to this segment.
+
+Allocating memory.
 Working with files.
 Finding information about files (stat and such).
 Processes (forking, exec etc...)

@@ -15,6 +15,7 @@ Andrew Kratsios, Felipe Mansilla
 	- A dare game wherein a person issues an outrageous dare to another person, the recipient of the dare must say 1 out of a certain number, demonstrating the likelihood that they will perform the dare. A third party (in this case the computer) counts the other two people down from 3: i.e. 3,2,1. After the countdown, the darer and the daree must say a number through 1 and the certain number (if they said 1-15, it would have to be a number between that). If both participants say the same number, then the daree must perform the dare. -Urban Dictionary
 
 - Description of Usage:
+	- A player will "log on" by running opening the program on their computer.
 	- Players will have the option to create or join an Odds Are game.
 	- If a game is created, the dare will be posted onto a list of pending dares
 	- Players can view the list of pending dares and choose to join a game

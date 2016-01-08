@@ -1,0 +1,42 @@
+MKS-65 in C
+
+Members:
+	Mariya Gedrich, Katherine Gershfeld, Samuel Zhang
+	Period 8
+
+Description: 
+Single-player Blackjack in the terminal, with additional passive aggressive chat features. As in any other blackjack game, there is a dealer (artificial intelligence) and at least one player. This blackjack game will play by standard blackjack rules, with a potential leaderboard in multiplayer.
+If there is time, we may extend it to other casino games, such as slots and roulette. If there is MORE time, we may implement networking to include a physical walking-around casino (Mars Vegas) experience in the lab. 
+
+User Experience: 
+	ASCII-based cards, user can choose to hit or stand with the (h) or (s) keys (may or may not implement double down and/or split). The user would run our program, which would start the game of blackjack. The user may have the option to wait for other players to join the game (up to three others). At the beginning, players place bets and the dealer would deal initial cards to the players. Then, one by one each player would be prompted for their action. If everyone chose to stand, the dealer would deal cards to itself using casino standards. Additionally, the users will have the option to choose from a numbered list of passive aggressive messages to send to each other, as per typical networked card game protocol. 
+
+Technical Design:
+	Topics Used:
+		Networking
+		Memory Allocation
+		File writing (potentially keeping score)
+		Shared memory (player money)
+		User input
+	Breakdown:
+		M: 
+User input for blackjack
+			Server side of network
+		K: 
+			User + dealer integration
+Visualization of cards
+			Client side of network
+		S: 
+Dealer AI
+			Bit of both server and client
+	Data Structures:
+		Card struct
+will store (as of now) the number/suit as a string and the value as an int
+	Algorithms:
+		Randomizing for shuffling cards
+
+Timeline:
+01-11-2016: Complete single player BlackJack (no networking)
+01-16-2016: Set up networking
+01-19-2016: Integrate BlackJack into the networking
+if done: extra deadlines to be determined

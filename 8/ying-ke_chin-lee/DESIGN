@@ -31,9 +31,13 @@ Description of techical design:
 		parts of fserver assignment (not sure if this counts)
 
 Timeline:
-	DESIGN file -> Jan 8
+	DESIGN file -> Jan 5
 	Display stats of different lots by entering into shell (lots in file as input)
-		-> Jan 
+		-> Jan 5:
+			-started working with only one lot for testing
+		-> Jan 7
+			- user can choose to display item
+			- working on bidding
 	Join to parts of fserver code
 		-> Jan 
 	Work on bidding (altering bidding history etc)

@@ -1,0 +1,17 @@
+Group: Jake Waksbaum
+
+Task: Create an IM server and client(s)
+
+User Interface
+===============
+On startup/login, the user will choose a username. The server will reject it if a user with that username is currently connected. Then they will get a list of other currently connected users. They can choose another user and send them a message. They will see all the messages they’ve received, along with the users who sent them, all in one list.
+
+Techinical Design
+=================
+The main part of the project will be the chat server. It’s job is to make sure chats get delivered to the correct people. It will use networking to connect to it’s clients, and forking to allow for multiple clients using the central dispatch server model.
+
+The client will take user input, form the appropriate request and send it to the server. It will then update the display when it receives a response from the server.
+
+More features like chat records, password protected usernames, and friendslists would all require a persistent database. Maybe if I finish everything else, I can find a database with C bindings or some sort of API.
+
+The chat server itself will take about 3 weeks. Then the terminal client will take about 1 week, and the website GUI another week.

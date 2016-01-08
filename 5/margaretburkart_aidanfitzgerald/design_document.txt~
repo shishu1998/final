@@ -1,0 +1,38 @@
+Group Members: Margaret Burkart and Aidan Fitzgerald
+
+Project: A terminal-based email client using networking.
+
+User Interface:
+     Terminal.
+
+     The user must first set up an account, if he/she does not have one already.
+
+     Then the user must log on to his/her account.
+
+     The various folders (Inbox, Sent, Drafts, Archive, Flagged, etc.)
+     can be seen using ls and accessed using cd.
+
+     A "compose" command will open up a text editor in which to write the email.
+
+     The user hits ENTER to send.
+
+     The program will take the first line of the file as the address and the
+     second line of the file as the subject. (If we have time, we may include
+     cc'ing).
+
+     The program will send the text file to the computer that matches
+     the account specified in the address.
+
+     When a user recieves an email, it will appear as a text file in his/her
+     inbox and a notification message will be printed on the terminal screen
+     regardless of the folder the user is in.
+
+Techincal Design:
+	  Related Topics:
+	  	  Networking
+			This is how emails (text files) will be sent from one
+			computer to another
+
+		  Shared Memory
+		  	 This is where account information (email addresses
+			 and passwords) will be stored.

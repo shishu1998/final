@@ -1,0 +1,93 @@
+Group Members: Margaret Burkart and Aidan Fitzgerald
+
+Project: A terminal-based email client using networking.
+
+User Interface:
+     Terminal.
+
+     The user must first set up an account, if he/she does not have one already.
+
+     Then the user must log on to his/her account.
+
+     The various folders (Inbox, Sent, Drafts, Archive, Flagged, etc.)
+     can be seen using ls and accessed using cd.
+
+     A "compose" command will open up a text editor in which to write the email.
+
+     The user hits ENTER to send.
+
+     The program will take the first line of the file as the address and the
+     second line of the file as the subject. (If we have time, we may include
+     cc'ing).
+
+     The program will send the text file to the computer that matches
+     the account specified in the address.
+
+     When a user recieves an email, it will appear as a text file in his/her
+     inbox and a notification message will be printed on the terminal screen
+     regardless of the folder the user is in.
+
+Techincal Design:
+	  Related Topics:
+	  	  Networking
+			This is how emails (text files) will be sent from one
+			computer to another
+
+		  Shared Memory
+		  	 This is where account information (email addresses
+			 and passwords) will be stored.
+
+		  Working with Files
+		  	 Files will be created and opened by the program.
+
+		  Processes
+			 We will be using exec to use the cd and ls commands
+
+	   Project Breakdown:
+	   	   1) Accounts
+		      a) Create a piece of shared memory that can be accessed by			 multiple computers
+		      b) Allow the user to create an account by inputting an
+		      	 email address and password. Save this information to
+			 the piece of shared memory.
+
+	   	   2) Folders
+		      a) Set up the file system (Inbox, Sent, etc.)
+		      b) Allow the user to navigate between them.
+`		      c) Allow the user to create folders.
+
+		   3) Compose
+		      Set up the "compose" command, which will:
+		      a) Create a file in the Drafts folder
+		      b) Open this file in a text editor
+
+		   4) Send (without networking yet)
+		      Allow the user to send the email (user side only)
+		      a) Moves the file to the Sent folder
+
+		   5) Networking
+		      Actually sending and recieving these files
+		      a) Send: user networking to send the email to the computer			 specified by the correct address.
+		      b) Recieve: enable recieved emails to show up in Inbox.
+		      	 Print a notification message
+
+	   	   6) Opening emails
+		      Allow the user to open email files
+		      a) Have the program open specified file in a text editor
+		   
+		   7) Fun Optional Things
+		      a) Flags: Allow the user to flag emails, moving them to
+		      	 the Flagged folder.
+		      b) Searches: Allow the user to search for the location of				 an email by address or subject.
+		      c) Hashtags: Allow the user to attach hashtags to emails f			 or use in searches.
+		      d) Filters: Allow the user to set up a filter that
+		      	 automatically redirects recieved emails from specific
+			 addresses into other folders.
+		      
+
+	   Data Structures:
+
+	   Algortihms:
+
+Timeline:
+
+

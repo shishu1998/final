@@ -1,6 +1,7 @@
 David Veller, Mayank Vanjani, Jason Shin
 
 Dungeons and Dragons
+
 We will be trying to create our own version of D&D. Two people will be playing on different computers. The first person will be the dungeon master, and the second person will be the “hero”. The dungeon master can either help or hinder the hero, as he or she sees fit. The hero will have x turns to clear the dungeon. The DM and the hero will have a set of random options from a preset list each turn to choose from, and some will work better than others. However, akin to D&D all actions will have some randomness to them, but better choices will have better chances of success. For example, a turn in the game might go something like this:
 (Anything in parentheses is not on the actual screen)
 (DM screen)

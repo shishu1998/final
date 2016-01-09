@@ -1,6 +1,6 @@
 Project Design: Create an instant messaging server
 
-(only me)
+Members: Kayla Sinoimeri and Sarah Joseph
 
 On startup/login, the user will choose a unique username. When they log onto this server, they will see a list of who else is also
 currently logged on. They will be able to select another username and open a chat with them (or if they have already chatted, they will

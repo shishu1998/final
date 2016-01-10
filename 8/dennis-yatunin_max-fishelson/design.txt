@@ -1,0 +1,25 @@
+You can't C my battleship!
+
+By Dionysus Yatunin and Maximus Fishelson
+
+You - Battleship?! But that's so unoriginal!
+Us  - Ah, but have you ever played Battleship with 10 other people, all on different computers?
+You - Woah... Dude, that's sick! Wait but does it have single player mode for when I'm feeling lonely?
+Us  - You bet it has single player mode! And it has options for changing the size of the board!
+You - Oh, boy! I bet it has really neat graphics as well, right?
+Us  - Well, um... Hey, look at that dodo behind you!
+You - What? A dodo? Where?
+Us  - *crickets*
+
+Sirius Things:
+Sirius has a visual apparent magnitude of −1.46, making it the brightest star in the Earth's night sky.
+It is slowly moving closer to the Solar System, so its brightness will continue to increase over the next 60,000 years.
+It is actually a binary star system, with the main Sirius A joined by its faint white dwarf companion, called Sirius B.
+Sirius A is about twice as massive as the Sun and has an absolute visual magnitude of 1.42.
+
+Serious Things:
+This project will make use of networking, interprocess communication, and string manipulation (and maybe file i/o for record-keeping).
+Users will play our game through the terminal, with a text-based interface that displays maps and allows commands to be entered.
+There might be several options for board size and ship count, or users might set those themselves.
+A user will be able to either play against the computer or choose to start a multiplayer game, to which others may then connect.
+Turns might be limited in terms of time (useful in multiplayer games so everyone else doesn't have to wait for a slow player).

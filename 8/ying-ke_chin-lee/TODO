@@ -1,0 +1,12 @@
+
+1) Display stats of different lots by entering into shell (lots in file as input)
+  -> Jan 5:
+    -started working with only one lot for testing
+  -> Jan 7
+    - user can choose to display item
+    - working on bidding (see next item)
+
+2) Work on bidding (altering bidding history etc)
+3) Join to parts of fserver code
+  -> Jan 
+4) Generalize to multiple participants of auction

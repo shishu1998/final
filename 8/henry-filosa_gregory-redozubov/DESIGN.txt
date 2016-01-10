@@ -36,3 +36,20 @@ Server:
 	-Data sent to the server by a user will be placed into a folder based on user and data type
 	-When a user connects the server will check those folders and pass on the objects it finds inside
 	-The server will automatically pass data to users who are connected without placing it in a folder 
+
+Client Protocol:
+       -Ask user if logging in or creating new account
+       -Connect to server
+       -Verify account, old or new
+       -Recieve backlog from server
+       1.Accept user input 
+       2.Package into struct to send to server
+       3.Recieve confirmation of struct recieved
+       4.Send data 
+       5.Recieve confirmation of data recieved
+       -Repeat 1-5
+
+Server Protocol:
+       -On startup, ask user if new server
+       	   *WARNING: Saying that server has previously been set up at this location will lead to erros*
+       -

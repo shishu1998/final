@@ -20,6 +20,9 @@ int main() {
     exit(1);
   }
 
+  int optval = 1;
+  setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
+  
   memset(&serv_addr, 0, sizeof(serv_addr));
 
   portno = 5001;
@@ -43,21 +46,31 @@ int main() {
     exit(1);
   }
 
-  FILE *stream = fdopen(clientconnfd, "w");
+  //  FILE *stream = fdopen(clientconnfd, "w");
 
-  char *input = fgets(buffer, sizeof(buffer), stream);
+  //  char *input = fgets(buffer, sizeof(buffer), stream);
 
-  if (!input) {
+  //  if (!input) {
+
+  int n = read(clientconnfd, buffer, sizeof(buffer) - 1);
+  
+  if (n < 0) {
     perror("Error reading from socket");
     exit(1);
+  }
+  else {
+    buffer[n] = 0;
   }
 
   printf("Here is the message: %s\n", buffer);
 
-  if (fprintf(stream, "I got your message\n") < 0) {
+  n = write(clientconnfd, buffer, strlen(buffer));
+  
+  if (n < 0) {
+  //  if (fprintf(stream, "I got your message\n") < 0) {
     perror("Error sending response");
     exit(1);
   }
-      
+  
   return 0;
 }

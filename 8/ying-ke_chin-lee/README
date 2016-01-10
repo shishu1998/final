@@ -1,2 +1,19 @@
 Project member(s):
 	Ying-ke Chin-Lee
+
+Compile:
+	So far, just make and run "./main"
+
+List of files in repo:
+	BUGS
+	DESIGN
+	README
+	TODO
+	makefile
+	main.c
+	server.c
+	client.c
+	writing.c
+	control.c
+	display.h
+	lot_struct.h

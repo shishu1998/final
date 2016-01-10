@@ -12,6 +12,7 @@ Type in the following and press enter to compile:
       
 To Run
 ------
+
    //first set up the server
    ./server
 
@@ -45,6 +46,7 @@ Files with Actual Code
 * dots.h
 * tictac.c
 * tictac.h
+
 Informational Files
 -------------------
 * DESIGN.txt

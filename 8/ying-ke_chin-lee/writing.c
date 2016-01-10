@@ -20,7 +20,7 @@ union semun {
 struct sembuf sb;
 
 void prev_line() {
-	printf("The previous line was:\n");
+	printf("The previous bid was:\n");
 	FILE *fp = fopen(fname, "r");
 	if (fp != NULL) {
 		char line[1000];
@@ -46,7 +46,7 @@ int main() {
 
 	prev_line();
 	printf("\nEnter bid: \n");
-	char bid[1000];
+	char line[1000];
 	fgets(line, sizeof(line), stdin);
 	int fd = open(fname, O_CREAT|O_APPEND|O_RDWR);
 

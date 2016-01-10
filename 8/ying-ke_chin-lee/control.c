@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 	if (strcmp(argv[1], "-c") == 0) {
 		create();
 	} else if (strcmp(argv[1], "-r") == 0) {
-		remv();
+//		remv();
 	} else {
 		printf("You have entered an invalid argument.\n");
 	}

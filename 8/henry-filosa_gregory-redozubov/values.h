@@ -17,4 +17,11 @@ typedef struct base{
   int size;
 }base;
 
+char * help="You have the following commands:\n\t1 - Send a message\n\t2 - Send a file\n\t3- Send a command";
+
+#define MAXRCVLEN 500
+#define PORTNUM 2300
+#define NAME_LEN 21
+#define PASS_LEN 21
+
 #endif

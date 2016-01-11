@@ -6,19 +6,25 @@ Summary: A terminal-based C clone of the online game TypeRacer (see http://play.
 
 
 User interface: The user interface will consist of two main parts.
-	The first part, at the top of the window/screen, will display the current player's progress along with the progress of all the other players, very similar to how the cars are displayed on TypeRacer. We'll likely just use text to display this, as such:
+	The first part, at the top of the window/screen, will display the current player's progress along with the progress of all the other players, very similar to how the cars are displayed on TypeRacer. 
+	We'll likely just use text to display this, as such:
 
 Welcome, Player 1!
 Player 1: Start|-------------o~o>----------|Finish
 Player 2: Start|-----o~o>------------------|Finish
 Player 3: Start|-------------------o~o>----|Finish
 
-	The second part will be the words that the player is supposed to type. Using text of different color in terminal, we'll show which words the player entered correctly (probably green), which ones they entered incorrectly (probably red) and which one they're currently on (probably... blue?).
+	The second part will be the words that the player is supposed to type. 
+	Using text of different color in terminal, we'll show which words the player entered correctly (probably green), 
+	which ones they entered incorrectly (probably red) and which one they're currently on (probably... blue?).
 
 The player will have to type the words in order as fast as possible, without any typos, and press "enter" or "space" after every word (haven't decided which yet)
 Their "car" will advance for every word enered correctly. Words that they enter incorrectly will simply be marked red and the player will recieve no credit for them (or worse, be moved backwards).
 
-Ideally, everything would happen inside one terminal window, and this is what we'll try to do. However, we recognize that this could prove to be rather difficult since parts of the window would need to update while the user is entering text, without clearing what the user has already entered. If this proves to be too difficult, we will split the game into two terminal windows, one for each of the two "parts" noted above. One will display the progress (which will often need to refresh as the player is entering text) and the other will show the words the player has typed/is typing (which only needs to refresh after each time the player enters a word.
+Ideally, everything would happen inside one terminal window, and this is what we'll try to do. 
+However, we recognize that this could prove to be rather difficult since parts of the window would need to update while the user is entering text, without clearing what the user has already entered. 
+If this proves to be too difficult, we will split the game into two terminal windows, one for each of the two "parts" noted above. 
+One will display the progress (which will often need to refresh as the player is entering text) and the other will show the words the player has typed/is typing (which only needs to refresh after each time the player enters a word.
 
 
 Technical design:

@@ -5,7 +5,7 @@
 #include "lot_struct.h"
 #include "display.h"
 
-//Lot *pcurr_lot;
+Lot *pcurr_lot;
 
 /*
 	For testing out bits of code
@@ -36,7 +36,7 @@ void init_lots(Lot *lots) {
 int main() {
 	Lot lots[3];
 	init_lots(lots);
-//	*pcurr_lot = lots[0];
+	pcurr_lot = &lots[0];
 	display(lots[0]);
 	return 0;
 }

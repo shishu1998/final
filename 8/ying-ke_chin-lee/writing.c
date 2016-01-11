@@ -8,7 +8,7 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
-//#include "lot_struct.h"
+#include "lot_struct.h"
 
 //extern Lot *pcurr_lot;
 

@@ -8,6 +8,10 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
+//#include "lot_struct.h"
+
+//extern Lot *pcurr_lot;
+
 char *fname = "bids.txt"; // will have to make one bid file per item later on
 
 union semun {
@@ -17,45 +21,52 @@ union semun {
 	struct seminfo *_buf;
 };
 
-struct sembuf sb;
-
-void prev_line() {
-	printf("The previous bid was:\n");
-	FILE *fp = fopen(fname, "r");
-	if (fp != NULL) {
-		char line[1000];
-
-		while (fgets(line, sizeof(line), fp) != NULL) {
-			//printf("This line is %s\n", line);
-		}
-		printf("%s\n", line);
-	} else {
-		printf("Could not open\n");
-		exit(1);
-	}
-}
-
 int main() {
-	int semkey = ftok("writing.c", 'a');
-	int semid = semget(semkey, 1, IPC_CREAT|0666);
+	int shmkey = ftok("control.c", 'a');
+	int semkey = ftok("control.c", 'b');
+	printf("semkey = %d, shmkey = %d\n", semkey, shmkey);
 
+	int semid = semget(semkey, 1, IPC_CREAT|0644);
+
+	struct sembuf sb;
+	sb.sem_num = 0;
 	sb.sem_flg = SEM_UNDO;
 	sb.sem_op = -1;
-	sb.sem_num = 0;
-	//semop(semid, &sb, 1);
+	semop(semid, &sb, 1);
 
-	prev_line();
+	int shid = shmget(shmkey, sizeof(int), 0644);
+	printf("shid = %d\n", shid);
+
+	int fd = open(fname, O_RDONLY);
+	int* shnum = shmat(shid, 0, 0);
+
+	lseek(fd, -1 * (*shnum), SEEK_END);
+
+	char prev_bid[*shnum];
+	read(fd, &prev_bid, *shnum);
+	close(fd);
+
+	fd = open(fname, O_WRONLY|O_APPEND);
 	printf("\nEnter bid: \n");
-	char line[1000];
+	char line[256];
 	fgets(line, sizeof(line), stdin);
-	int fd = open(fname, O_CREAT|O_APPEND|O_RDWR);
+
+	*shnum = strlen(line);
+	char *tmp = line;
+	write(fd, tmp, *shnum);
+	close(fd);
+	shmdt(shnum);
+	sb.sem_op = 1;
+	semop(semid, &sb, 1);
 
 	// find out if this new bid is higher than the old bid
+	printf("previous bid = %s\n", prev_bid);
+	printf("This is entered bid: %s\n", line);
 	
-	
-	write(fd, line, strlen(line));
-	close(fd);
-	//printf("This is entered bid: %s\n", line);
-	
+	if (atof(prev_bid) >= atof(line)) {
+		printf("You cannot bid that amount.\n");
+	} else {
+		printf("Bid successful\n");
+	}
 	return 0;
 }

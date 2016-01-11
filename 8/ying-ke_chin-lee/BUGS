@@ -2,6 +2,13 @@ JAN 5
 - exec'd twice, creating two new tabs in Chromium browser rather than one
 	- FIXED Jan 6
 
+JAN 10
+- accidentally made it so new bid wipes out old bid =___=
+- shmid error 22: invalid argument in control.c
+	- sort of fixed but still wipes out old bid
+		- FIXED, but...
+- tried to use extern to access current lot being edited (to change new low bid price).  Errors abound.
+
 more bugs
 doesn't run yet lololol
 

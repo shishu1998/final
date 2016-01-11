@@ -45,50 +45,45 @@ void print_story() {
 }
 
 void create() {
-	int fd;
-	fd = open(fname, O_TRUNC);
-	
-	shmkey = ftok("control.c", 'a');
-	if (shmkey < 0) printf("shmkey: error %d: %s\n", errno, strerror(errno));
+	shmid = shmget(shmkey, sizeof(int), IPC_CREAT|0644);
+	semid = semget(semkey, 1, IPC_CREAT|0644);
 
-	semkey = ftok("control.c", 'b');
-	if (semkey < 0) printf("semkey: error %d: %s\n", errno, strerror(errno));
-
-	shmid = shmget(shmkey, 1, IPC_CREAT|0666);
-	if (shmid < 0) printf("shmid: error %d: %s\n", errno, strerror(errno));
-
-	semid = semget(semkey, 1, IPC_CREAT|0666);
-	if (semid < 0) printf("semid: error %d: %s\n", errno, strerror(errno));
-	
-	sb.sem_num = 0;
-	sb.sem_op = -1;
-	sb.sem_flg = SEM_UNDO;
-
-//	printf("got here\n");
-//	semop(semid, &sb, 1);
-}
-
-/* NOT IN USE YET
-void remv() {
+	fd = open(fname, O_APPEND);
 	close(fd);
-
-	printf("closing: semkey = %d, semID = %d\n", semkey, semid);
-	printf("closing: shmkey = %d, shmID = %d\n", shmkey, shmid);
-	sb.sem_op = 1;
-	semop(semid, &sb, 1);
-
-	semctl(semid, 0, IPC_RMID);
-	shmctl(shmid, IPC_RMID, NULL);
-
-	printf("\nclosed: semkey = %d, semID = %d\n", semkey, semid);
-	printf("closed: shmkey = %d, shmID = %d\n", shmkey, shmid);
 	
-	printf("\nFull story:\n");
-	print_story();
+	semctl(semid, 0, SETVAL, 1);
+
 }
-*/
+
+
+void remv() {
+	shmid = shmget(shmkey, sizeof(int), -644);
+	semid = semget(semkey, 1, 0644);
+
+	shmctl(shmid, IPC_RMID, NULL);
+	semctl(semid, 0, IPC_RMID);
+
+	fd = open(fname, "O_RDONLY");
+	struct stat sf;
+	stat(fname, &sf);
+	char fst[sf.st_size];
+	read(fd, fst, sf.st_size);
+	printf("%s\n", fst);
+
+	close(fd);
+}
+
 
 int main(int argc, char **argv) {
+	shmkey = ftok("control.c", 'a');
+	if (shmkey < 0) printf("shmkey3: error %d: %s\n", errno, strerror(errno));
+
+	semkey = ftok("control.c", 'b');
+	if (semkey < 0) printf("semkey3: error %d: %s\n", errno, strerror(errno));
+/*
+	semctl(semid, 0, IPC_RMID);
+	shmctl(shmid, IPC_RMID, NULL);
+*/
 	if (argc == 1) {
 		printf("You are missing an argument.\n");
 		exit(1);
@@ -96,7 +91,7 @@ int main(int argc, char **argv) {
 	if (strcmp(argv[1], "-c") == 0) {
 		create();
 	} else if (strcmp(argv[1], "-r") == 0) {
-//		remv();
+		remv();
 	} else {
 		printf("You have entered an invalid argument.\n");
 	}

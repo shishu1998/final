@@ -6,6 +6,8 @@ typedef struct Lot {
 	int hi_bid;
 } Lot;
 
+//extern Lot *pcurr_lot;
+
 void print(Lot l) {
 	printf("\nLot #%d: %s\n", l.number, l.name);
 	printf("currently at $%d\n", l.hi_bid);

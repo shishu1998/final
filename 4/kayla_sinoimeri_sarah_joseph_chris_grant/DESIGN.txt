@@ -1,3 +1,5 @@
+DW APPROVED
+
 Project Design: Create an instant messaging server
 
 Members: Kayla Sinoimeri, Chris Grant, and Sarah Joseph

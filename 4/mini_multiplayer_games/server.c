@@ -6,6 +6,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "connect4.h"
+#include "dots.h"
+#include "tictac.h"
+#include "client_relations.h"
+
 //This is just copied from your source code (mostly)
 int client_handshake( int *from_server ) {
 

@@ -8,9 +8,8 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
-#include "lot_struct.h"
-
-extern Lot *pcurr_lot;
+//extern Lot *pcurr_lot;
+Lot *pcurr_lot;
 
 char *fname = "bids.txt"; // will have to make one bid file per item later on
 
@@ -21,7 +20,7 @@ union semun {
 	struct seminfo *_buf;
 };
 
-int main() {
+int main_w() {
 	int shmkey = ftok("control.c", 'a');
 	int semkey = ftok("control.c", 'b');
 	printf("semkey = %d, shmkey = %d\n", semkey, shmkey);
@@ -49,27 +48,32 @@ int main() {
 	fd = open(fname, O_WRONLY|O_APPEND);
 	printf("\nEnter bid: \n");
 	char line[256];
+	getchar();
 	fgets(line, sizeof(line), stdin);
-
-	*shnum = strlen(line);
-	char *tmp = line;
-	write(fd, tmp, *shnum);
-	close(fd);
-	shmdt(shnum);
-	sb.sem_op = 1;
-	semop(semid, &sb, 1);
+	printf("fgets received %s\n", line);
 
 	// find out if this new bid is higher than the old bid
 	printf("previous bid = %s\n", prev_bid);
 	printf("This is entered bid: %s\n", line);
 	
+	printf("tried to print1\n");
 	print(*pcurr_lot);
-//	printf("pcurr_lot, %s\n", pcurr_lot);
-//	int pbid = pcurr_lot->hi_bid;
+	printf("tried to print2\n");
+
+	*shnum = strlen(line);
+	char *tmp = line;
+
 	if (atof(prev_bid) >= atof(line)) {
 		printf("You cannot bid that amount.\n");
 	} else {
+		write(fd, tmp, *shnum);
 		printf("Bid successful\n");
 	}
+	
+	close(fd);
+	shmdt(shnum);
+	sb.sem_op = 1;
+	semop(semid, &sb, 1);
+
 	return 0;
 }

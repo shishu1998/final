@@ -7,7 +7,17 @@ JAN 10
 - shmid error 22: invalid argument in control.c
 	- sort of fixed but still wipes out old bid
 		- FIXED, but...
-- tried to use extern to access current lot being edited (to change new low bid price).  Errors abound.
+- tried to use global variables to access current lot being edited (to change new low bid price).  
+	- uses global variable but hangs on This is entered bid: 
+	- does write to bids file.
+	- invalid pointer error.
+	- changed it back so linker error
+	- fixed linker error but now invalid pointer error
+	- fixed (was a wrong "free()") but now nothing happens...doesn't allow bid at all
+
+JAN 11
+- turns out there were some malloc'ing issues that were complicated, ended up not making global vars
+- now updates, "allows" bids as it should BUT still need to make lot value update.
 
 more bugs
 doesn't run yet lololol

@@ -63,7 +63,7 @@ void remv() {
 	shmctl(shmid, IPC_RMID, NULL);
 	semctl(semid, 0, IPC_RMID);
 
-	fd = open(fname, "O_RDONLY");
+	fd = open(fname, O_RDONLY);
 	struct stat sf;
 	stat(fname, &sf);
 	char fst[sf.st_size];

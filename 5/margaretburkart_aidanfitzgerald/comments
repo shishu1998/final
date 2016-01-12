@@ -1,10 +1,20 @@
 Comments on Design Document by aidan fitz
+-> Comments on comments by margaret burkart
 
  - Why use shared memory? Sure, it'll persist after the program closes, but it
    will be gone when the computer shuts down.
+   -> We're not. We aggreed not to, but the change didn't make it into the design doc.
+   -> The account information (not including passwords; passwords are another thing we decided to ditch that didn't get taken
+      out of the doc) will have to be stored on whatever computer we're using as the server.
 
  - cd cannot be opened by exec. Also, cd won't work the same way it does in
    the shell.
+   -> No, but ls can.
+   -> Or, we could use cd to go back into the main mail program, like:
+        mail/inbox/ >> cd
+        mail/ >> cd starred
+        mail/starred >>
+      This would ensure that cd works exactly the way the user expects it to (exactly the way it works in the shell.
 
    Suppose your folders are:
     - inbox
@@ -18,10 +28,15 @@ Comments on Design Document by aidan fitz
    When you start the program, you are in inbox. Then, to go from inbox to starred,
    you type "cd starred". The shell's cd would attempt to take you to the
    sub-directory inbox/starred. Our version of cd takes you instead to starred.
+   -> Instead, could we implement a "go_to" command to do the same thing? We shouldn't use the same command name (cd) for something that
+      usually works differently; it may confuse the user
 
  - Why not use SMTP?
 
    - May be too complicated
+     -> I aggree. No reason why we can't make our own protocol.
 
    - SMTP requires \r\n for line breaks, Linux uses \n. We can't be f***ed to convert
      back and forth between \n and \r\n every time we send and receive email.
+     -> That does sound annoying.
+     -> P.S.: Please join me in making this project completely PG :)

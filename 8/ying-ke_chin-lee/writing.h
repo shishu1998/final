@@ -20,6 +20,13 @@ union semun {
 	struct seminfo *_buf;
 };
 
+char *del_newline(char *in) {
+	char *c;
+	if ((c=strchr(in, '\n')) != NULL)
+		*c = '\0';
+	return in;
+}
+
 int main_w() {
 	int shmkey = ftok("control.c", 'a');
 	int semkey = ftok("control.c", 'b');
@@ -57,17 +64,24 @@ int main_w() {
 	printf("This is entered bid: %s\n", line);
 	
 	printf("tried to print1\n");
-	print(*pcurr_lot);
 	printf("tried to print2\n");
 
 	*shnum = strlen(line);
 	char *tmp = line;
 
-	if (atof(prev_bid) >= atof(line)) {
+	char *prev_del_newline = del_newline(prev_bid);
+	char *line_del_newline = del_newline(line);
+
+	printf("p_d_n = %s, l_d_n = %s\n", prev_del_newline, line_del_newline);
+	if (atof(prev_del_newline) >= atof(line_del_newline)) {
 		printf("You cannot bid that amount.\n");
 	} else {
 		write(fd, tmp, *shnum);
+		pcurr_lot->hi_bid = atof(line);
+	//	printf("atof(line) %s\n", atof(line));
+	//	printf("atof(prev_bid) %s\n", atof(prev_bid));
 		printf("Bid successful\n");
+		print(*pcurr_lot);
 	}
 	
 	close(fd);

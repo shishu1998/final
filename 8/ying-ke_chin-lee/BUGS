@@ -18,6 +18,7 @@ JAN 10
 JAN 11
 - turns out there were some malloc'ing issues that were complicated, ended up not making global vars
 - now updates, "allows" bids as it should BUT still need to make lot value update.
+	- FIXED and does update lot value now, not that this actually matters, the way I have written this program...
 
 more bugs
 doesn't run yet lololol

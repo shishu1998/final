@@ -1,11 +1,19 @@
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 typedef struct card{
   char content[100];
   char type[100];
   int owner;
 }card;
+
+card makecard(char* content,char* type){
+  card* out = (card*)malloc(sizeof(card));
+  out->type = type;
+  out->content = content;
+  return out;
+}
 
 int randNum(){
   int descriptor = open("/dev/urandom", O_RDONLY);
@@ -30,7 +38,30 @@ void shuffle(card deck[]){
   }
 }
 
-card* makedeck(){
+card* makedeck(char* type){
+  card* deck;
+  int descriptor;
+  char buffer[20000];
+  char* maketype = (char*)malloc(sizeof("green"));
+  if(type == "red"){
+    descriptor = open("reddeck",O_RDONLY);
+    deck = (card*)malloc(sizeof(card)*746);
+    maketype = "red";
+  }
+  if(type == "green"){
+    descriptor = open("greendeck",O_RDONLY);
+    deck = (card*)malloc(sizeof(card)*249);
+    maketype = "green";
+  }
+  read(descriptor,buffer,sizeof(buffer));
+  char* temp;
+  int i = 0;
+  while(buffer){
+    temp = strsep(&buffer,"\n");
+    deck[i] = makecard(temp,maketype);
+    i ++;
+  }
+  return deck;
 }
 
 

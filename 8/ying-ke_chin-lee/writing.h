@@ -75,8 +75,10 @@ int main_w() {
 	printf("p_d_n = %s, l_d_n = %s\n", prev_del_newline, line_del_newline);
 	if (atof(prev_del_newline) >= atof(line_del_newline)) {
 		printf("You cannot bid that amount.\n");
+		close(fd);
 	} else {
 		write(fd, tmp, *shnum);
+		close(fd);
 		pcurr_lot->hi_bid = atof(line);
 	//	printf("atof(line) %s\n", atof(line));
 	//	printf("atof(prev_bid) %s\n", atof(prev_bid));
@@ -84,7 +86,7 @@ int main_w() {
 		print(*pcurr_lot);
 	}
 	
-	close(fd);
+	//close(fd);
 	shmdt(shnum);
 	sb.sem_op = 1;
 	semop(semid, &sb, 1);

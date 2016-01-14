@@ -1,7 +1,7 @@
 DW APPROVED
 
-# FINAL PROJECT
-JARHead by Alvin Lin, Roy Xu, and Jay Froment-Rudder
+# JARHead
+Alvin Lin, Roy Xu, and Jay Froment-Rudder
 
 ## Proposal
 We will be creating a blockhead type multi-player action game where the object is to hit and kill the opposing player.

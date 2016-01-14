@@ -3,12 +3,12 @@
 #include <string.h>
 
 typedef struct card{
-  char content[100];
-  char type[100];
+  char* content;
+  char* type;
   int owner;
 }card;
 
-card makecard(char* content,char* type){
+struct card* makecard(char* content,char* type){
   card* out = (card*)malloc(sizeof(card));
   out->type = type;
   out->content = content;
@@ -23,7 +23,7 @@ int randNum(){
   return *num;
 }
 
-void shuffle(card deck[]){
+void shuffle(card* deck){
   int len = sizeof(deck)/sizeof(card);
   int rand1;
   int rand2;
@@ -38,7 +38,7 @@ void shuffle(card deck[]){
   }
 }
 
-card* makedeck(char* type){
+struct card* makedeck(char* type){
   card* deck;
   int descriptor;
   char buffer[20000];
@@ -54,14 +54,23 @@ card* makedeck(char* type){
     maketype = "green";
   }
   read(descriptor,buffer,sizeof(buffer));
+  char* cards = buffer;
   char* temp;
   int i = 0;
-  while(buffer){
-    temp = strsep(&buffer,"\n");
-    deck[i] = makecard(temp,maketype);
+  while(cards){
+    temp = strsep(&cards,"\n");
+    deck[i] = *makecard(temp,maketype);
     i ++;
   }
   return deck;
+}
+
+void printdeck(card* deck){
+  int i = 0;
+  while(deck[i].content){
+    printf("%s\n",deck[i].content);
+    i++;
+  }
 }
 
 

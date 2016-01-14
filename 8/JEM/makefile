@@ -3,6 +3,5 @@ mary: mary.c
 
 clean: 
 	rm *~
-	rm *.o
 	rm *#
 	clear

@@ -23,7 +23,7 @@ int randNum(){
   return *num;
 }
 
-void shuffle(card deck[]){
+void shuffle(card* deck){
   int len = sizeof(deck)/sizeof(card);
   int rand1;
   int rand2;

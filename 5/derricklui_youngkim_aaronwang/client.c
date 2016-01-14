@@ -32,11 +32,24 @@ void parse_input() {
   fgets(input, MAX_LINE, stdin);
   if(input[0] == '/') {
     printf("input: %s", input);
-    printf("no seg fault pls\n");
   }
 }
 
-int main(int argc, char**argv) {
+/* 
+ * Should prompt to pick team members
+ * Check if the prompted team members exist within the list, then make sure 
+ *  the user picks the appropriate number of team members
+ */
+void pick_members(char* list, int number) {
+  return;
+}
+
+/*
+ * Derrick TODO:
+ * Set up client prompt (should print [Chat])
+ */
+
+int main() {
   char name[MAX_NAME_LENGTH];
 
   storename(name);

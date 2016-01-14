@@ -1,9 +1,9 @@
 DW APPROVED
 
 ## Names:
-* Jared Beh
-* Michael Rivera
-* Thomas Wong
+* Jared Beh (server connections)
+* Michael Rivera (client-side display)
+* Thomas Wong (server-side game processes)
 
 ## Proposal: "Ultimate Tic-Tac-Toe"
 * Two players are presented with 9 tic-tac-toe boards arranged in a 3x3 square. The game starts with one player making a mark

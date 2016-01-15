@@ -60,7 +60,7 @@ struct deck *makedeck(char* type){
   if(type == "green"){
     descriptor = open("greendeck",O_RDONLY);
     newDeck->cards = (card*)malloc(sizeof(card)*249);
-    newDeck->size=249
+    newDeck->size=249;
     maketype = "green";
   }
   read(descriptor,buffer,sizeof(buffer));

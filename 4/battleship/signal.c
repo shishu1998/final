@@ -8,18 +8,24 @@
 
 static void sighandler( int signo ){
 
-  int i,n;
+  int i,n,end,win;
   time_t t;
 
   srand((unsigned) time(&t));
   n = rand() % 3;
-    
+  end = 0;
+
   if (signo == SIGINT){
-    printf("You waved the white flag\n");
+    if (end == 0){
+      printf("You waved the white flag\n");
     if (n == 1){
       printf("What a sore loser!\n");
-    }
+      printf("You will never bring honor to your family!\n");
+	}
     else printf ("It's ok! Try again next time!\n");
+    }
+    else 
+      printf ("You faught well, See you on the battle field next time\n");
     exit(0);
   }
 }
@@ -27,7 +33,7 @@ static void sighandler( int signo ){
 int main(){
   
   signal(SIGINT,sighandler);
-  
+
   while(1){
     printf("this keeps going \n");
     sleep(1);

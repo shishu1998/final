@@ -72,7 +72,7 @@ struct deck *makedeck(char* type){
     newDeck->cards[i] = *makecard(temp,maketype);
     i ++;
   }
-  return deck;
+  return newDeck;
 }
 
 void printdeck(deck *d){

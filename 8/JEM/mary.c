@@ -20,6 +20,7 @@ int hand_in_maryiage(int *from_suitor) {//file descriptor of client (read)
   
   strnpy(buffer, "Let me take you to PROM!");
   write(mary_server, vuffer, sizeof(buffer));
+  return mary_server;
 }
 
     int main() {

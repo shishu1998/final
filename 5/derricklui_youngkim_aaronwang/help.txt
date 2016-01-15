@@ -1,0 +1,18 @@
+Avalon
+
+Avalon is a game of deception. 
+Basic Gameplay:
+The forces of Good are pitted against the forces of Evil. 
+The Evil players remain hidden among the Good players.
+A single Good player, Merlin, knows who the Evil players are (except Mordred), and must speak in riddles to help his team, and to avoid revealing his identity.
+If Merlin is discovered, he can be killed at the end of the game, allowing Evil to win.
+
+Each turn, the "King" of the round votes to bring a certain amount of people on a quest.
+The entire party can vote on whether or not to let the quest continue, or can stop it before it even begins.
+This provides the players an opportunity to talk to each other and try and deduce who the Evil players are.
+If the quest is vetoed, the "King" card is passed to the next player and a new round begins.
+If the quest is continued, the players that are on the quest secretly choose to pass or fail the quest. The bad players want to strategically pass/fail the quests to gain trust and deceive the good players.
+If the Good team passes 3 quests, they win, but the Evil team can still kill Merlin if they know his identity and win the game.
+If the Evil team fails 3 quests, they win right away.
+
+

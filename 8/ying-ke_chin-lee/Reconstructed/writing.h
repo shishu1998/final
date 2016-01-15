@@ -8,9 +8,6 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
-//extern Lot *pcurr_lot;
-Lot *pcurr_lot;
-
 char *fname = "bids.txt"; // will have to make one bid file per item later on
 
 char entered_bid[256];
@@ -29,7 +26,7 @@ char *del_newline(char *in) {
 	return in;
 }
 
-int main_w() {
+int file_write(char *to_write) {
 	int shmkey = ftok("control.c", 'a');
 	int semkey = ftok("control.c", 'b');
 	printf("semkey = %d, shmkey = %d\n", semkey, shmkey);
@@ -55,8 +52,8 @@ int main_w() {
 	close(fd);
 
 	fd = open(fname, O_WRONLY|O_APPEND);
-	printf("\nEnter bid: \n");
 	char line[256];
+	strcpy(line, to_write); //this might be necessary...
 	getchar();
 	fgets(line, sizeof(line), stdin);
 	printf("fgets received %s\n", line);
@@ -75,20 +72,12 @@ int main_w() {
 	char *line_del_newline = del_newline(line);
 
 	printf("p_d_n = %s, l_d_n = %s\n", prev_del_newline, line_del_newline);
-	if (atof(prev_del_newline) >= atof(line_del_newline)) {
-		printf("You cannot bid that amount.\n");
-		strcpy(entered_bid, "[NONE]");
-		close(fd);
-	} else {
-		write(fd, tmp, *shnum);
-		strcpy(entered_bid, tmp);
-		close(fd);
-		pcurr_lot->hi_bid = atof(line);
+	write(fd, tmp, *shnum);
+	strcpy(entered_bid, tmp);
+	close(fd);
 	//	printf("atof(line) %s\n", atof(line));
 	//	printf("atof(prev_bid) %s\n", atof(prev_bid));
-		printf("Bid successful\n");
-		print(*pcurr_lot);
-	}
+	printf("Bid successful\n");
 	
 	//close(fd);
 	shmdt(shnum);

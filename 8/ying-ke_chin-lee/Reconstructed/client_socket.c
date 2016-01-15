@@ -19,6 +19,9 @@ void error(const char *msg)
 	exit(0);
 }
 
+void bid() {
+}
+
 int main(int argc, char *argv[])
 {
 	printf("Your paddle number is: %d\n", getpid());

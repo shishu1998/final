@@ -1,5 +1,3 @@
-DW APPROVED
-
 # JARHead
 Alvin Lin, Roy Xu, and Jay Froment-Rudder
 

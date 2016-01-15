@@ -1,9 +1,9 @@
 DW APPROVED
 
 ## Names:
-* Jared Beh
-* Michael Rivera
-* Thomas Wong
+* Jared Beh (server connections)
+* Michael Rivera (client-side display)
+* Thomas Wong (server-side game processes)
 
 ## Proposal: "Ultimate Tic-Tac-Toe"
 * Two players are presented with 9 tic-tac-toe boards arranged in a 3x3 square. The game starts with one player making a mark
@@ -16,16 +16,15 @@ http://mathwithbaddrawings.com/ultimate-tic-tac-toe-original-post/
 * The game will be played within the terminal. We plan on using a server to control the gameplay.
     
 ## Technical Design:
-* Server
-* Shared Memory
-* File writing
-* Terminal input
-* Game processes
-* 2D Array
-* Semaphore
-* Random
+* Server (server hosts all board info)
+* File writing (for visual info)
+* Terminal input (one piece of info at a time; R,C,r,c)
+* Instruction page upon connection
+* Game processes (X or O)
+* 2D array of Structs (each containing 2D Array + "who won" + "is full")
+* Random (for first turn)
     
 ## Timeline:
-* 1/13/16: Server running
-* 1/18/16: Basic Gameplay
+* 1/18/16: Server running
+* 1/24/16: Basic Gameplay
 * Due Date: Extra Features?

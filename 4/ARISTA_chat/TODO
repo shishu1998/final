@@ -1,0 +1,5 @@
+1/14/16
+We copied over the forking server code, but we're still figuring out
+client to client connection, which prob requires networking
+We also found login code that hides your password when you type it
+

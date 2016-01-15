@@ -5,7 +5,9 @@ Group Members: Ivan Lin
 Description of Project:
 This will be a tool to assist in file management. It will make complex file and directory operations much simpler on users who do not wish to learn or remember regex expressions or look up certain flags. It will be able to map out directory trees and allow for better user organization.
 
-The project will have a user friendly interface to allow users to search for patterns in files and rename or manipulate them. There will be user prompts and simpler ways to sort, rename, delete, and create files to make things easier for users.
+Instead of writing out a pattern, there will be questions, user prompts, and input fields users can answer to find specific files. There will be options to create folders and automatically move and organize files. Options will include: sorting, renaming, deleting, and creating files and directories.
+
+The interface will be a form.
 
 Expansion Plans:
 Possibly a GUI version
@@ -14,6 +16,7 @@ Lessons Used:
 file and directory control
 program execution
 string formatting
+
 
 Timeline:
 1/6/16: Initial proposal submitted

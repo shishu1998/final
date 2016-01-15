@@ -4,6 +4,7 @@
 //#include "lot_struct.h"
 
 #define browser "chromium-browser"
+
 void bid();
 
 void display(Lot l) {
@@ -61,7 +62,9 @@ void bid() {
 				wait(&status);
 			}
 			
+			printf("got to begin of writing program\n");
 			// start the writing program, which will write bids
+/*
 			char *cmds[2] = {"./writing", NULL};
 			int f1 = fork();
 			if (f1 == 0) {
@@ -70,6 +73,8 @@ void bid() {
 			} else {
 				wait(&status);
 			}
+*/
+			main_w();
 
 			// close bid info
 			char *remv[3] = {"./control", "-r", NULL};

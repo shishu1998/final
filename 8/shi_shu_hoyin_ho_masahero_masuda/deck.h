@@ -2,16 +2,18 @@
 #include <unistd.h>
 #include <string.h>
 
-typedef struct deck{
-  card *cards;
-  int size;
-}deck;
+
 
 typedef struct card{
   char* content;
   char* type;
   int owner;
 }card;
+
+typedef struct deck{
+  card *cards;
+  int size;
+}deck;
 
 struct card* makecard(char* content,char* type){
   card* out = (card*)malloc(sizeof(card));

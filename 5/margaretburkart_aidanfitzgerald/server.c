@@ -50,30 +50,62 @@ int main() {
 void server_talk(int socket_client) {
   char *buffer;
   int size;
+  user *u;
 
   int r;
 
-  r = read(socket_client, &size, sizeof(int));
-  if (r < 0) {
-    perror("Error reading transmission size");
-    exit(1);
-  }
-  else if (r < sizeof(int)) {
-    fprintf(stderr, "Error reading transmission size: %d of %d bytes read\n", r, sizeof(int));
-    exit(1);
-  }
+  while (6667) {
 
-  buffer = malloc(size + 1);
+    // Read transmission size
+    r = read(socket_client, &size, sizeof(int));
+    if (r < 0) {
+      perror("Error reading transmission size");
+      exit(1);
+    }
+    else if (r < sizeof(int)) {
+      fprintf(stderr, "Error reading transmission size: %d of %lu bytes read\n", r, sizeof(int));
+      exit(1);
+    }
 
-  r = read(socket_client, buffer, size);
-  if (r < 0) {
-    perror("Error reading data from socket");
-    exit(1);
+    // Read transmission into dynamically allocated buffer
+    buffer = malloc(size + 1);
+
+    r = read(socket_client, buffer, size);
+    if (r < 0) {
+      perror("Error reading data from socket");
+      exit(1);
+    }
+    else {
+      buffer[r] = 0;
+    }
+
+    // TODO: parse input
+    if (strstart(buffer, "LOGIN")) {
+      u = server_login(buffer);
+    }
+    if (strstart(buffer, "LOGOUT")) {
+      destroy(u);
+      close(socket_client);
+      free(buffer);
+      exit(0);
+    }
+
+    // Done with transmission content
+    free(buffer);
+
   }
-  else {
-    buffer[r] = 0;
-  }
+  // END LOOP
 
-  // TODO: parse input
+  // Done with session
+  free(u);
+}
 
+user *server_login(char *buffer) {
+  user *u = malloc(sizeof(user));
+  sscanf(buffer, "Username: %ms", &(u->name));
+  sscanf(buffer, "Password: %ms", &(u->passwd));
+
+  // TODO: validate
+
+  return u;
 }

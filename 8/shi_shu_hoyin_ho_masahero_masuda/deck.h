@@ -28,7 +28,7 @@ int randNum(){
   return *num;
 }
 
-void shuffle(deck d){
+void shuffle(deck *d){
   int rand1;
   int rand2;
   card temp;
@@ -36,14 +36,14 @@ void shuffle(deck d){
   while(counter < 1000){
     rand1 = randNum() % d->size;
     rand2 = randNum() % d->size;
-    temp = d[rand1];
-    d[rand1] = d[rand2];
-    d[rand2] = temp;
+    temp = d->cards[rand1];
+    d->cards[rand1] = d->cards[rand2];
+    d->cards[rand2] = temp;
     counter++;
   }
 }
 
-struct deck makedeck(char* type){
+struct deck *makedeck(char* type){
   deck *newDeck;
   int descriptor;
   char buffer[20000];

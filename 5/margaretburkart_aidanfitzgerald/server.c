@@ -25,7 +25,7 @@ int main() {
   // listen() does not block until a client initiates a connection
   listen(socket_id, 1);
 
-  while (420) {
+  while (9001) {
     // Step 4. Accept a client and assign the connection to a new file descriptor
     socket_client = accept(socket_id, NULL, NULL);
 
@@ -44,5 +44,36 @@ int main() {
       continue;
     }
   }
+
+}
+
+void server_talk(int socket_client) {
+  char *buffer;
+  int size;
+
+  int r;
+
+  r = read(socket_client, &size, sizeof(int));
+  if (r < 0) {
+    perror("Error reading transmission size");
+    exit(1);
+  }
+  else if (r < sizeof(int)) {
+    fprintf(stderr, "Error reading transmission size: %d of %d bytes read\n", r, sizeof(int));
+    exit(1);
+  }
+
+  buffer = malloc(size + 1);
+
+  r = read(socket_client, buffer, size);
+  if (r < 0) {
+    perror("Error reading data from socket");
+    exit(1);
+  }
+  else {
+    buffer[r] = 0;
+  }
+
+  // TODO: parse input
 
 }

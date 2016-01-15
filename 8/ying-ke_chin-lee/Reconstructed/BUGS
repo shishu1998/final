@@ -29,6 +29,11 @@ JAN 13:
 - tried to make it so that ?/y/n request for input in while loop, but now the server is not printing out updates in bids.
 - shared memory torture is now a waste because I'm not making good use of it anymore.
 
+JAN 15
+- realized new version in progress ("Reconstructed") hangs after asking whether you want to view the work.  Probably forgot to clean up those last few parts
+	- FIXED a couple minutes later...
+- need to make Bid do something LOOL (it's in the wrong loop...)
+
 more bugs
 doesn't run yet lololol
 

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -9,19 +11,23 @@
 
 #include "values.h"
  
-
-int connect_server(int mysocket){
-  struct sockaddr_in dest; 
-  //zero the struct 
-  memset(&dest, 0, sizeof(dest));               
-  dest.sin_family = AF_INET;
-  //set destination IP number - localhost, 127.0.0.1
-  dest.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-  //set destination port number
-  dest.sin_port = htons(PORTNUM);               
-  connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr));
+int connect_server(){
+  struct sockaddr_in sock; 
+  int socket_id = socket(AF_INET, SOCK_STREAM, 0);
+  sock.sin_family = AF_INET; //socket type to IPv4
+  sock.sin_port = htons(PORTNUM); //port # 
+  //convert IP address to correct format and insert into sock.sin_addr
+  inet_aton( "127.0.0.1", &(sock.sin_addr) ); 
+  //insert the socket info stuff into the file thing
+  bind(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  //attempt a connection. Will return -1and set errno if failed
+  int error = connect( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (error==-1){
+    printf("Error connecting to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  return socket_id;
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -38,12 +44,13 @@ int main(int argc, char *argv[])
      printf("When creating you new account please keep in mind these restrictions:\n\tMaximum username length: %d characters\n\tMaximum password length: %d characters\n",NAME_LEN-1,PASS_LEN-1);
    printf("\nUsername:\n");
    fgets(name,NAME_LEN,stdin);
-   printf("\nUsername:\n");
+   printf("\nPassword:\n");
    fgets(password,PASS_LEN,stdin);
    strtok(name,"\n");
    strtok(password,"\n");
    printf("Username: =%s= Password: =%s=\n",name,password);
    //connect to server
+   int socket_id=connect_server();
    if (ans=='1'){
      //verify correct name and password
      //if incorrect disconnect
@@ -55,10 +62,10 @@ int main(int argc, char *argv[])
    }       
    //Begin standard operation
    //Create socket
-   int mysocket = socket(AF_INET, SOCK_STREAM, 0);
-   //Connect to server
-   connect_server(mysocket);
-
+   char buf[6];
+   read(socket_id,&buf,6);
+   printf("Message recieved: %s\n",buf);
+   close(socket_id);
    /*
    len = recv(mysocket, buffer, MAXRCVLEN, 0);
    // We have to null terminate the received data ourselves 

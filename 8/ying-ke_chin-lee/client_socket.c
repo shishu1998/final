@@ -7,8 +7,10 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 
+#include "old_main.h"
+
 /*
-	CODE COURTESY OF http://www.linuxhowtos.org/C_C++/socket.htm
+	CODE ADAPTED FROM http://www.linuxhowtos.org/C_C++/socket.htm
 */
 
 void error(const char *msg)
@@ -19,6 +21,7 @@ void error(const char *msg)
 
 int main(int argc, char *argv[])
 {
+	printf("Your paddle number is: %d\n", getpid());
 	int sockfd, portno, n;
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
@@ -46,14 +49,24 @@ int main(int argc, char *argv[])
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
 		error("ERROR connecting");
 
-	int f = fork();
-	int status;
-	if(f == 0) {
-		char *arr[2] = {"./main", NULL};
-		execvp(arr[0], arr);
-		exit(0);
-	} else wait(&status);
-	
+	old_main();
+
+	// for some reason prints "Pls enter the msg" twice...??!
+//	printf("Your bid: "); // this is going to be a problem, need to reformulate code so that I can just access the entered bid from the writing program.  Maybe through global (local) var?
+	strcpy(buffer, entered_bid);
+//	bzero(buffer,256);
+//	fgets(buffer,255,stdin);
+	n = write(sockfd,buffer,strlen(buffer));
+	if (n < 0) 
+		 error("ERROR writing to socket");
+	bzero(buffer,256);
+	n = read(sockfd,buffer,255);
+	if (n < 0) 
+		 error("ERROR reading from socket");
+	printf("%s\n",buffer);
+	close(sockfd);
+
+/*	
 	printf("Please enter the message: ");
 	bzero(buffer,256);
 	fgets(buffer,255,stdin);
@@ -66,5 +79,6 @@ int main(int argc, char *argv[])
 		 error("ERROR reading from socket");
 	printf("%s\n",buffer);
 	close(sockfd);
+*/
 	return 0;
 }

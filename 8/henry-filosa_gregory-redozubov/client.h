@@ -1,17 +1,11 @@
 #ifndef client
 #define client
 
-Int process();
+int connect_server();
 /*======== Int process() ==========
-  Inputs:  char[] command
-  Returns: Boolean
-  Processes command and breaks into components. Returns 0 if invalid command.
-  ====================*/
-
-struct package():
-/*======== Void package() ==========
-  Inputs: char[]
-  Returns: struct *
+  Inputs:  None
+  Returns: Int
+  Attempts to connect to server, returns socket_id upon success
   ====================*/
 
 #endif

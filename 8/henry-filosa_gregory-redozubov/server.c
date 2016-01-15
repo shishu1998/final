@@ -3,22 +3,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
- 
-#define PORTNUM 2300
- 
-int is_exit(char buf[],int to_client,int from_client){
-  if (strcmp(buf,"exit")==0){
-    close(to_client);
-    close(from_client);
-    printf("Client has disconnected\n");
-    return 1;
-  }
-  return 0;
-}
+
+#include "values.h"
+#include "server.h"
 
 static void sighandler(int signo){
   if (signo==SIGINT){
@@ -26,6 +18,23 @@ static void sighandler(int signo){
   }
 }
 
+void get_user(char * ans, char name[], char password[], int socket_client){
+  int error=read(socket_client,ans,1);
+  if (error==-1){
+    printf("Error recieving ANS: %s\n",strerror(errno));
+    exit(42);
+  }
+  read(socket_client,name,NAME_LEN);
+  if (error==-1){
+    printf("Error recieving NAME: %s\n",strerror(errno));
+    exit(42);
+  }
+  read(socket_client,password,PASS_LEN);
+  if (error==-1){
+    printf("Error recieving PASSWORD: %s\n",strerror(errno));
+    exit(42);
+  }
+}
 int main(int argc, char *argv[]){
   signal(SIGINT,sighandler);
   int socket_id, socket_client;
@@ -45,8 +54,12 @@ int main(int argc, char *argv[]){
     child_pid=fork();
     if (child_pid==0){
       printf("Child process\n");
+      char ans;
+      char name[NAME_LEN];
+      char password[PASS_LEN];
+      get_user(&ans,name,password,socket_client);
+      printf("ANS: %c NAME: %s PASSWORD: %s\n",ans,name,password);
       //do child stuff
-      write(socket_client,"hello",6);
       close(socket_client);
       printf("Connection closed\n");
     }

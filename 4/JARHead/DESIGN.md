@@ -1,10 +1,15 @@
-DW APPROVED
+# DW APPROVED
 
 # JARHead
 Alvin Lin, Roy Xu, and Jay Froment-Rudder
 
 ## Proposal
-We will be creating a blockhead type multi-player action game where the object is to hit and kill the opposing player.
+We will be creating a multi-player action game where the object is to hit and kill the opposing player based on the popular Flash game Boxhead 2-Player.
+
+## Dependencies
+```bash
+sudo apt-get install libncurses-dev
+```
 
 ## Design
 Will be run through the shell using ASCII characters as game objects. First player to reach a pre-determined number of kills wins.

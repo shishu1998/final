@@ -30,8 +30,8 @@ int main() {
   while(1) {
     printf("<mary_server> waiting for connection...\n");
     mary_server = hand_in_maryiage(&from_suitor);//returns file descriptor of pipe?
-    printf("hand_in_marriage is complete\m");
-    While(from_suitor, buffer, sizeof(buffer))) {
+    printf("hand_in_marriage is complete\n");
+    while(read(from_suitor, buffer, sizeof(buffer))) {
       printf("<mary_server> received: [%s]\n", buffer);
       write (mary_server, buffer, sizeof(buffer));
       strncpy(buffer, "", sizeof(buffer));

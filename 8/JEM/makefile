@@ -6,5 +6,6 @@ suitor: suitor.c
 
 clean: 
 	rm *~
+	rm *?
 	rm *#
 	clear

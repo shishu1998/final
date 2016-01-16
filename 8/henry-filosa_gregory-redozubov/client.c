@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 #include <errno.h>
 
 #include <arpa/inet.h>
@@ -11,6 +12,18 @@
 
 #include "values.h"
 #include "client.h"
+
+//Needs to be global for signandler to work
+int socket_id;
+
+static void sighandler(int signo){
+  if (signo==SIGINT){
+    printf("Closing socket\n");
+    close(socket_id);
+    printf("Socket closed\n");
+    exit(42);
+  }
+}
  
 int connect_server(){
   struct sockaddr_in sock; 
@@ -49,9 +62,10 @@ void send_user(char * ans,char name[], char pass[], int socket_id){
 }
 
 int main(int argc, char *argv[]){
-   char name[NAME_LEN];
-   char password[PASS_LEN];
-   char ans;
+  signal(SIGINT,sighandler);
+  char name[NAME_LEN];
+  char password[PASS_LEN];
+  char ans;
    while (ans!='1' && ans!='2'){
      printf("Welcome to DW-NET\nAre you:\n1-Logging in\n2-Creating a new account\n");
      fgets(&ans,3,stdin);
@@ -66,7 +80,7 @@ int main(int argc, char *argv[]){
    strtok(password,"\n");
    printf("Username: =%s= Password: =%s=\n",name,password);
    //connect to server
-   int socket_id=connect_server();
+   socket_id=connect_server();
    if (ans=='1'){
      send_user(&ans,name,password,socket_id);
      //verify correct name and password

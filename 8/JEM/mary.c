@@ -31,13 +31,15 @@ int main() {
   
   int mary_server, from_suitor;
   char buffer[100];
-
-  mary_server = hand_in_maryiage(&from_suitor);//returns file descriptor of pipe?
+  //mary_server = hand_in_maryiage(&from_suitor);//returns file descriptor of pipe?
   while(1) {
-    read(from_suitor, buffer, sizeof(buffer));
-    printf("<Mary> received [%s]\n", buffer);
-    strncat(buffer, "purple", sizeof(buffer) - 1);
-    write (mary_server, buffer, sizeof(buffer));
+    printf("<mary_server> waiting for connection...\n");
+    mary_server = hand_in_maryiage(&from_suitor);//returns file descriptor of pipe?
+    while (read(from_suitor, buffer, sizeof(buffer))) {
+      printf("<mary_server> received [%s]\n", buffer);
+      write (mary_server, buffer, sizeof(buffer));
+      strncpy(buffer, "", sizeof(buffer));
+    }
   }
   close(mary_server);
   close(from_suitor);

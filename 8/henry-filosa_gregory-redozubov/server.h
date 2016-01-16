@@ -1,39 +1,13 @@
 #ifndef server
 #define server
-#include <sys/stat.h>
 
-void setup(){
-  
+void setup();  
   /*======== void setup() ==========
   Inputs: none
   Returns: nothing
   Creates file to hold usernames & passwords (userlist),
    file for usernames that are logged in(logged) and main directory
   ====================*/
-
-  
-  if (stat("/root", &st) == -1) {
-    mkdir("/root", 0700);
-  }   
-
-  
-  /*  char *directory = "root";
-
-  struct stat dir = {0};
-  if(stat(directory, &dir) == -1) {
-      mkdir(directory, 0755);
-      printf("created directory testdir successfully! \n");
-    }
-
-  int filedescriptor = open(directory/"log.txt", O_RDWR | O_APPEND | O_CREAT);
-  if (filedescriptor < 0) {
-      perror("Error creating my_log file\n");
-      exit(-1);
-    }
-  */
-}
-
-
 
 void startup();
 /*======== void startup() ==========

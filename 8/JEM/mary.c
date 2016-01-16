@@ -41,7 +41,7 @@ int main() {
     fgets(buffer, sizeof(buffer), stdin);
     write(mary_server, buffer, sizeof(buffer));
     read(from_suitor, buffer,sizeof(buffer) );
-    strncpy(buffer, "", sizeof(buffer));
+    //strncpy(buffer, "", sizeof(buffer));
     printf("<mary> suitor sent a message: [%s]\n", buffer);
 
 

@@ -34,13 +34,22 @@ int main() {
     printf("<mary_server> waiting for connection...\n");
     mary_server = hand_in_maryiage(&from_suitor);//returns file descriptor of pipe?
     
-    while(read(from_suitor, buffer, sizeof(buffer))) {
-      printf("<mary_server> received: [%s]\n", buffer);
-      write (mary_server, buffer, sizeof(buffer));
-      strncpy(buffer, "", sizeof(buffer));
-    }
-    close(mary_server);
+    //while(read(from_suitor, buffer, sizeof(buffer))) {
+    //printf("<mary_server> received: [%s]\n", buffer);
+  
+    printf("<mary> enter message:");
+    fgets(buffer, sizeof(buffer), stdin);
+    write(mary_server, buffer, sizeof(buffer));
+    read(from_suitor, buffer,sizeof(buffer) );
+    strncpy(buffer, "", sizeof(buffer));
+    printf("<mary> suitor sent a message: [%s]\n", buffer);
+
+
+    //write(mary_server, buffer, sizeof(buffer));
+    //strncpy(buffer, "", sizeof(buffer));
   }
+    close(mary_server);
+    // }
   close(from_suitor);
   return 0;
 }

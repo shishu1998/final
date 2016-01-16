@@ -37,6 +37,7 @@ int main() {
     fgets(buffer, sizeof(buffer), stdin);
     write(to_server, buffer, sizeof(buffer));
     read(from_server, buffer,sizeof(buffer) );
+    //strncpy(buffer, "", sizeof(buffer)); 
     printf("<suitor> Mary sent a message: [%s]\n", buffer);
   }
 

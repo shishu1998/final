@@ -15,8 +15,8 @@ int hand_in_maryiage(int *from_suitor) {//file descriptor of client (read)
   *from_suitor = open("CHAT", O_RDONLY);
   remove("CHAT");
   read(*from_suitor, buffer, sizeof(buffer));  
-  mary_server = open(buffer, O_WRONLY);
-  
+  //mary_server = open(buffer, O_WRONLY);
+  printf("<mary> connection is established: [%s]\n", buffer);
   strcpy(buffer, "Let me take you to PROM!");
   write(mary_server, buffer, sizeof(buffer));
 

@@ -98,8 +98,16 @@ void server_talk(int socket_client) {
     if (strstart(buffer, "LOGIN")) {
       u = server_login(buffer);
     }
-    if (strstart(buffer, "LOGOUT")) {
-      destroy(u);
+    else if (strstart(buffer, "GET")) {
+      // Retrieve one email
+      
+    }
+    else if (strstart(buffer, "POST")) {
+      // Upload one email
+      
+    }
+    else if (strstart(buffer, "LOGOUT")) {
+      user_freemem(u);
       close(socket_client);
       free(buffer);
       exit(0);
@@ -120,7 +128,33 @@ user *server_login(char *buffer) {
   sscanf(buffer, "Username: %ms", &(u->name));
   sscanf(buffer, "Password: %ms", &(u->passwd));
 
-  // TODO: validate
+  // Validate login
+  FILE *userfile = fopen("users.csv", "r+");
+  user *account = user_find(u->name, userfile);
+  fclose(userfile);
 
+  if (account) {
+    if (strcmp(u->passwd, account->passwd) == 0) {
+      // Username and password correct
+      user_freemem(account);
+      return u;
+    }
+
+    else {
+      // Valid username, wrong password
+      user_freemem(u);
+      user_freemem(account);
+      errno = EACCES;
+      return NULL;
+    }
+  }
+
+  else {
+    // No such user
+    user_freemem(u);
+    errno = ENOENT;
+    return NULL;
+  }
+  
   return u;
 }

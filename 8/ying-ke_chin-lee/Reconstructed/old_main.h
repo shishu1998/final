@@ -50,6 +50,7 @@ int old_main() {
 	char b[1];
 	scanf("%s", b);
 	if (strcmp(b, "?") == 0) {
+		BID_MODE = 0;
 		print(*pcurr_lot);
 		display(lots[0]);
 		//free(pcurr_lot);
@@ -57,8 +58,17 @@ int old_main() {
 		BID_MODE = 1;
 		printf("Bidmode = %d\n", BID_MODE);
 	} else {
+		BID_MODE = 0;
 		if (strcmp(b, "x") == 0) printf("You chose to exit, exiting!\n");
 		else printf("Invalid entry; exiting.\n");
+		
+		// tell server someone has left
+/*
+		// nah leave til later you have other problems lol
+		char *buffer = "gone";
+		portno = atoi(gettheportno);
+		sockfd
+*/
 		exit(0);
 	}
 //	} //okay once I comment out the while loop, it doesn't let me enter a new bid but it doesn't hang.

@@ -25,14 +25,18 @@ JAN 11
 JAN 13:
 - now tried to server-ify it, but need to find a way to handle invalid bids.
 - Okay, now it sort of takes care of that.  Using ?/y/n method to check which action to perform; it's not good so far...
-- I should really figure out how to free the Lot pointer...
 - tried to make it so that ?/y/n request for input in while loop, but now the server is not printing out updates in bids.
 - shared memory torture is now a waste because I'm not making good use of it anymore.
 
-JAN 15
+JAN 15:
 - realized new version in progress ("Reconstructed") hangs after asking whether you want to view the work.  Probably forgot to clean up those last few parts
 	- FIXED a couple minutes later...
 - need to make Bid do something LOOL (it's in the wrong loop...)
+- don't try to give negative input yet x___x it's not ready to deal with silly input
+
+JAN 16:
+- fixed fgets hang (was a typo left over from reorganizing the code)
+- need to figure out why client code suddenly decides to quit on its own.
 
 more bugs
 doesn't run yet lololol

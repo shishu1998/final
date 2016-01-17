@@ -98,14 +98,17 @@ void server_talk(int socket_client) {
     if (strstart(buffer, "LOGIN")) {
       u = server_login(buffer);
     }
+
     else if (strstart(buffer, "GET")) {
       // Retrieve one email
       
     }
+
     else if (strstart(buffer, "POST")) {
       // Upload one email
       
     }
+
     else if (strstart(buffer, "LOGOUT")) {
       user_freemem(u);
       close(socket_client);
@@ -120,7 +123,7 @@ void server_talk(int socket_client) {
   // END LOOP
 
   // Done with session
-  destroy(u);
+  user_freemem(u);
 }
 
 user *server_login(char *buffer) {

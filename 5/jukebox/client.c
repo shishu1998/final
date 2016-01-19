@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   int i;
 
   //create the socket
-  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+  socket_id = socket( AF_INET, SOCK_DGRAM, 0 );
   
   //bind to port/address
   struct sockaddr_in sock;
@@ -30,9 +30,10 @@ int main(int argc, char **argv) {
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
-
-  read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
-  
+  while(1){
+    read( socket_id, buffer, sizeof(buffer));
+    printf("<client> received: [%s]\n", buffer );
+    strcpy(buffer, "");
+  }
   return 0;
 }

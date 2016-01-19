@@ -32,18 +32,11 @@ int read_top_level(char *path){
       //file is file
     }
     dir_file = readdir(dir);
-
     printf("%s\n",name);
   }
  
   close(map_file);
   closedir(dir);
-}
-
-int directTo(int newfd){
-  int newout = dup(1);
-  int temp = dup2(newfd, 1);
-  
 }
 
 int main( int argc, char *argv[] ){

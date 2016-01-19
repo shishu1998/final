@@ -23,7 +23,7 @@ int send_song(char * song_name, int socket_client, struct sockaddr_in listener){
        //sendto(socket_client, lyric, strlen(lyric)+1, 0, (struct sockaddr *)&listener, sizeof(listener)<0);
 //printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric);
 printf("\n");
-}
+
    exit(0);
 }
 

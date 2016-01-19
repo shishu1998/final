@@ -30,12 +30,12 @@ void welcomeScreen(void){
   printf("  OO\n");
   printf("  OO\n");
   sleep(1);
-  printf("  OO\n");
-  printf("  OO\n");
-  printf("  OO\n");
-  printf("  OO\n");
-  printf("  OO\n");
-  printf("  OOOOOO\n");
+  printf("OO\n");
+  printf("OO\n");
+  printf("OO\n");
+  printf("OO\n");
+  printf("OO\n");
+  printf("OOOOOO\n");
   sleep(1);
   printf("OOOOOO\n");
   printf("OO\n");

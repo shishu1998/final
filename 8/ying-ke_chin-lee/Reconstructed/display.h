@@ -6,6 +6,7 @@
 #define browser "chromium-browser"
 
 void bid();
+void query();
 
 void display(Lot l) {
 	char *cmds[3] = {browser, l.url, NULL};
@@ -35,7 +36,14 @@ void display(Lot l) {
 		int status;
 		wait(&status);
 	}
-	bid();
+//	bid();
+}
+
+/*
+	Find out what user wants to do (?/b/x)
+*/
+void query() {
+	printf("Enter an action\n");// I MAY NOT USE THIS FUNCTION AFTER ALL
 }
 
 /*

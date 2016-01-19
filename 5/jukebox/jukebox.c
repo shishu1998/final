@@ -4,17 +4,27 @@
 #include <string.h>
 #include <unistd.h>
 
+
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 
-int new_client(socket_client){
+int send_song(char * song_name, int socket_client, struct sockaddr_in listener){
   //socket client is now fd 
   //interact with client
-  char * lyric = "Pardon me, are you Aaron Burr, sir?";
-  while(1)
-  write(socket_client, lyric, sizeof(lyric));
-  exit(0);
+	char *song[5242880]; //5 mb is enough right?
+	int song_file = open(song_name, O_RDONLY);
+	read(song_file, song, sizeof(song));
+   //char *lyric = "Pardon me, are you Aaron Burr, sir?";
+   //printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric); 
+//drops some packets but okay
+   	write(socket_client, lyric, strlen(lyric) +1);
+       //sendto(socket_client, lyric, strlen(lyric)+1, 0, (struct sockaddr *)&listener, sizeof(listener)<0);
+//printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric);
+printf("\n");
+}
+   exit(0);
 }
 
 
@@ -40,7 +50,8 @@ int main() {
     printf("<server> connected: %d\n", socket_client );
     int cpid = fork();
     if (cpid == 0){
-      new_client(socket_client);
+      printf("in the client plce\n");
+      send_song("Non-Stop", socket_client, listener);
     }
   }
   return 0;

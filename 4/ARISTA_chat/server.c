@@ -1,77 +1,49 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <signal.h>
+#include <stdlib.h>
+
 #include <string.h>
+#include <unistd.h>
 
-int server_handshake(int *from_client){
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-  int to_client;
-  char line[100];
+int main() {
 
-  mkfifo("bacon", 0644);
-  *from_client = open("bacon", O_RDONLY);
-  read(*from_client, line, sizeof(line));
-  printf("<server> got connection request: [%s]\n", line);
-  remove("bacon");
-
-  to_client = open(line, O_WRONLY);
-  strncpy(line, "sizzle sizzle", sizeof(line));
-  write(to_client, line, sizeof(line));
-
-  return to_client;
-
-}
-
-char process(char *s){
-  while(*s) {
-	*s = (*s - 'a' + 13) % 26 +'a';
-	s++;
-  }
-}
-
-void client_connection(int to_client, int from_client) {
+  int socket_id, socket_client;
   
-  char line[100];
-
-  while(read(from_client, line, sizeof(line))) {
-    printf("<server> received [%s]\n", line);
-    process(line);
-    printf("<server> processed input\n");
-    write(to_client, line, sizeof(line));
-    strncpy(line, "", sizeof(line)); 
-  }
+  //create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
-}
-
-void sighandler(int signo) {
-	if (signo == SIGINT) {
-		remove("bacon");
-		printf("Exiting and closing\n");
-		exit(0);
-	}
-}
-
-int main(){
-
-  signal(SIGINT,sighandler);
-
-  int to_client, from_client;;
+  //bind to port/address
+  struct sockaddr_in listener;
+  listener.sin_family = AF_INET;  //socket type IPv4
+  listener.sin_port = htons(5000); //port #
+  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
+  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  
+  listen( socket_id, 1 );
 
   while(1){
-    printf("<server> waiting for connection\n");
-    to_client = server_handshake(&from_client);
 
-    client_connection(to_client, from_client);
+    printf("<server> listening\n");
+    socket_client = accept( socket_id, NULL, NULL );
+    printf("<server> connected: %d\n", socket_client );
 
-    if(!(fork())) {
-	client_connection(to_client, from_client);
-        close(to_client);
+    if (fork() ==0){
+
+      printf("Enter text to write:\n");
+      char s[100];
+      fgets(s, sizeof(s), stdin);
+      write(socket_client, s, sizeof(s));
+      printf("<server> waiting\n");
+      sleep(2);
+      read(socket_client, s, sizeof(s));
+      printf("<server> received: %s\n", s);
+
+    }else{
+      close(socket_client);
     }
-
   }
 
   return 0;

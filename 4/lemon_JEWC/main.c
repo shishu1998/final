@@ -11,8 +11,14 @@ int main(){
   printf("\e[7mPlease enter the name of the file you are creating or editing.\e[27m\n");
   char response[100];
   fgets(response,100,stdin);
-  printf("Your response was %s",response);
-
+  strtok(response,"\n");
+  if(access(response,F_OK)!=-1){
+    printf("\e[7m%s\e[27m exists. Now opening.\n\n",response);
+    execlp("cat","cat",response,NULL);
+  }
+  else{
+    printf("\e[7m%s\e[27m does not exist. Now creating.\n",response);
+  }
 
 
   return 0;

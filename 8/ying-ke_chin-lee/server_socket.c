@@ -12,8 +12,11 @@
 #include <netinet/in.h>
 
 /*
-	CODE COURTESY OF http://www.linuxhowtos.org/C_C++/socket.htm
+	CODE ADAPTED FROM http://www.linuxhowtos.org/C_C++/socket.htm
 */
+
+int paddles[5]; //currently allow only 5 bidders at a time
+int num_paddles;
 
 void dostuff(int); /* function prototype */
 void error(const char *msg)
@@ -24,6 +27,7 @@ void error(const char *msg)
 
 int main(int argc, char *argv[])
 {
+	num_paddles = 0;
 	 int sockfd, newsockfd, portno, pid;
 	 socklen_t clilen;
 	 struct sockaddr_in serv_addr, cli_addr;
@@ -78,6 +82,6 @@ void dostuff (int sock)
 	n = read(sock,buffer,255);
 	if (n < 0) error("ERROR reading from socket");
 	printf("Here is the message: %s\n",buffer);
-	n = write(sock,"I got your message",18);
+	n = write(sock,"New bid:",18);
 	if (n < 0) error("ERROR writing to socket");
 }

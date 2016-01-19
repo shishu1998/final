@@ -2,13 +2,20 @@
 #include <unistd.h>
 #include <string.h>
 
+
+
 typedef struct card{
-  char content[100];
-  char type[100];
+  char* content;
+  char* type;
   int owner;
 }card;
 
-card makecard(char* content,char* type){
+typedef struct deck{
+  card *cards;
+  int size;
+}deck;
+
+struct card* makecard(char* content,char* type){
   card* out = (card*)malloc(sizeof(card));
   out->type = type;
   out->content = content;
@@ -23,45 +30,57 @@ int randNum(){
   return *num;
 }
 
-void shuffle(card deck[]){
-  int len = sizeof(deck)/sizeof(card);
+void shuffle(deck *d){
   int rand1;
   int rand2;
   card temp;
   int counter = 0;
   while(counter < 1000){
-    rand1 = randNum() % len;
-    rand2 = randNum() % len;
-    temp = deck[rand1];
-    deck[rand1] = deck[rand2];
-    deck[rand2] = temp;
+    rand1 = randNum() % d->size;
+    rand2 = randNum() % d->size;
+    temp = d->cards[rand1];
+    d->cards[rand1] = d->cards[rand2];
+    d->cards[rand2] = temp;
+    counter++;
   }
 }
 
-card* makedeck(char* type){
-  card* deck;
+struct deck *makedeck(char* type){
+  deck *newDeck;
   int descriptor;
   char buffer[20000];
+  newDeck->size = (int)malloc(sizeof(int));
   char* maketype = (char*)malloc(sizeof("green"));
   if(type == "red"){
     descriptor = open("reddeck",O_RDONLY);
-    deck = (card*)malloc(sizeof(card)*746);
+    newDeck->cards = (card*)malloc(sizeof(card)*746);
+    newDeck->size=746;
     maketype = "red";
   }
   if(type == "green"){
     descriptor = open("greendeck",O_RDONLY);
-    deck = (card*)malloc(sizeof(card)*249);
+    newDeck->cards = (card*)malloc(sizeof(card)*249);
+    newDeck->size=249;
     maketype = "green";
   }
   read(descriptor,buffer,sizeof(buffer));
+  char* cards = buffer;
   char* temp;
   int i = 0;
-  while(buffer){
-    temp = strsep(&buffer,"\n");
-    deck[i] = makecard(temp,maketype);
+  while(cards){
+    temp = strsep(&cards,"\n");
+    newDeck->cards[i] = *makecard(temp,maketype);
     i ++;
   }
-  return deck;
+  return newDeck;
+}
+
+void printdeck(deck *d){
+  int i = 0;
+  while(d->cards[i].content){
+    printf("%s\n",d->cards[i].content);
+    i++;
+  }
 }
 
 

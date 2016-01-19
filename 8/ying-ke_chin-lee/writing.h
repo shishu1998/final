@@ -13,6 +13,8 @@ Lot *pcurr_lot;
 
 char *fname = "bids.txt"; // will have to make one bid file per item later on
 
+char entered_bid[256];
+
 union semun {
 	int val;
 	struct semid_ds *buf;
@@ -75,9 +77,11 @@ int main_w() {
 	printf("p_d_n = %s, l_d_n = %s\n", prev_del_newline, line_del_newline);
 	if (atof(prev_del_newline) >= atof(line_del_newline)) {
 		printf("You cannot bid that amount.\n");
+		strcpy(entered_bid, "[NONE]");
 		close(fd);
 	} else {
 		write(fd, tmp, *shnum);
+		strcpy(entered_bid, tmp);
 		close(fd);
 		pcurr_lot->hi_bid = atof(line);
 	//	printf("atof(line) %s\n", atof(line));

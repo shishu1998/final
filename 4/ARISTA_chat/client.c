@@ -1,62 +1,49 @@
-#include <stdlib.h>
 #include <stdio.h>
-
-#include <unistd.h>
-#include <fcntl.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
+#include <stdlib.h>
 #include <string.h>
-int client_handshake(int *from_server){
+#include <unistd.h>
 
-  int to_server;
-  char buffer[100];
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-  sprintf(buffer, "%d", getpid());
-  mkfifo(buffer, 0644);
+int main(int argc, char **argv) {
 
-  to_server = open("bacon", O_WRONLY);
-  write(to_server, buffer, sizeof(buffer));
+  int socket_id;
+  char buffer[256];
+  int i;
 
-  *from_server = open(buffer, O_RDONLY);
-
-  read(*from_server, buffer, sizeof(buffer));
-  printf("<client> connection established: [%s]\n", buffer);
-
-  return to_server;
-
-}
-
-int main(){
-
-  int to_server, from_server;
-  char buffer[100];
-
-  to_server = client_handshake(&from_server);
+  //create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+  
+  //bind to port/address
+  struct sockaddr_in sock;
+  sock.sin_family = AF_INET;   
+  sock.sin_port = htons(5000);
+  //Set the IP address to connect to
+  //127.0.0.1 is the "loopback" address of any machine
+  inet_aton( "127.0.0.1", &(sock.sin_addr) );
+  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  
+  //attempt a connection
+  i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  printf("<client> connect returned: %d\n", i);
 
   while(1){
 
-    printf("<client> enter text: ");
-    fgets(buffer, sizeof(buffer), stdin);
-    *strchr(buffer, '\n') = 0;
-    printf("<client> input sent to server: [%s]\n",buffer);
-    
-    if(strncmp(buffer, "exit", sizeof(buffer)) == 0) {
-      close(to_server);
-      close(from_server);
-      exit(0);
-    }
-    
-    write(to_server, buffer, sizeof(buffer));
-    read(from_server, buffer, sizeof(buffer));
-    printf("<client> received: [%s]\n", buffer);
-		
+    printf("<client> waiting\n");
+    char s[100];
+    sleep(1);
+    read(socket_id, s, sizeof(s));
+    printf("<client> received: %s\n", s);
+    printf("Enter text to write:\n");
+    scanf("%s", s);
+    write(socket_id, s, sizeof(s));
   }
 
-  close(to_server);
-  close(from_server);
-
+  // read( socket_id, buffer, sizeof(buffer));
+  //printf("<client> received: [%s]\n", buffer );
+  
   return 0;
-
 }

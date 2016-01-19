@@ -1,59 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <unistd.h>
 
-#include "connect4.h"
-#include "dots.h"
-#include "tictac.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "server.h"
+//#include "connect4.h"
+//#include "dots.h"
+//#include "tictac.h"
 #include "client_relations.h"
 
-//This is just copied from your source code (mostly)
-int client_handshake( int *from_server ) {
-
-  int to_server;
-  char buffer[100];
-  
-  sprintf(buffer, "%d", getpid() );
-  mkfifo( buffer, 0644 );
-
-  printf("Awaiting connection \n");
-  to_server = open( "aaron", O_WRONLY );
-  write( to_server, buffer, sizeof(buffer) );
-
-  *from_server = open( buffer, O_RDONLY );
-  remove( buffer );
-
-  read( *from_server, buffer, sizeof(buffer) );
-  printf("Connection Established: [%s]\n", buffer );
-
-  return to_server;
-}
 
 
 int main() {
 
-  int to_server;
-  int from_server;
-  char buffer[100];
-  printf("If you wish to exit, you must connect first\n");
-  to_server = client_handshake( &from_server );
-
-  while (1) {
-    printf("Type in an amazing line: \n");
-    fgets( buffer, sizeof(buffer), stdin );
-    *strchr( buffer, '\n') = 0;
-    if (strcmp(buffer,"exit") == 0) exit(0);
-    write( to_server, buffer, sizeof(buffer) );
-    read( from_server, buffer, sizeof(buffer) );
-    printf("<client> received: [%s]\n", buffer );
-  }
-
-  close( to_server );
-  close( from_server );
+  int socket_id, socket_client;
+  
+  //create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+  
+  //bind to port/address
+  struct sockaddr_in listener;
+  listener.sin_family = AF_INET;  //socket type IPv4
+  listener.sin_port = htons(24601); //port #
+  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
+  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  
+  socket_client = server_handshake(socket_id);
+  client_connection(socket_client);
   
   return 0;
+}
+
+int server_handshake(int socket_id) {
+  while (1) {
+    listen(socket_id, 1);
+    printf("<server> listening\n");
+    int socket_client = accept(socket_id, NULL, NULL);
+    int parent = fork();
+    if (!parent) {
+      printf("<server> connected: %d\n", socket_client);
+      return socket_client;
+    }
+  }
+}
+
+void client_connection(int socket_client) {
+
+  char * understanding;
+  char buffer[256];
+  while (read(socket_client, buffer, sizeof(buffer))) {
+    printf("buffer:%s\n",
+    printf( "<server> received [%s] from client %d\n", buffer, socket_client);
+    understanding = understand(buffer);
+    strcpy(buffer, understanding);
+    printf("UNDERSTANDING %s\n",understand(buffer));
+    write (socket_client, "bye", sizeof("bye"));
+    strncpy(buffer, "", sizeof(buffer));
+    printf("buffer:%s\n",buffer);
+  }
+  
 }

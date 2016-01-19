@@ -2,64 +2,157 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
+#include <signal.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/ipc.h> 
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <fcntl.h>
+
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
- 
-#define PORTNUM 2300
- 
-int is_exit(char buf[],int to_client,int from_client){
-  if (strcmp(buf,"exit")==0){
-    close(to_client);
-    close(from_client);
-    printf("Client has disconnected\n");
-    return 1;
+
+#include "values.h"
+#include "server.h"
+
+//Need to be global for sighandler to work
+int socket_id;
+int socket_client;
+int ppid;
+
+static void sighandler(int signo){
+  if (signo==SIGINT){
+    int status;
+    int error;
+    while (wait(NULL) > 0){
+      //parent waits until all children have exited
+      ;
+    }
+    if (getppid() != ppid){
+      //Exit procedure for children
+      printf("!!!\n");
+      error=close(socket_client);
+      if (error == -1)
+	perror("Error closing client socket\n");
+      exit(42);
+    }
+    else{
+      error=close(socket_id);
+      if (error == -1)
+	perror("Error closing main socket\n");
+      printf("Main socket closed\n");
+      error=semctl(semget(ftok(file_path, sem_id),0,0),0,IPC_RMID,0);
+      if (error==-1)
+	printf("Error removing semaphores: %s\n",strerror(errno));
+      printf("Semaphores removed\n");
+      exit(42);
+    }
   }
-  return 0;
 }
 
-static void sig(int signo){
-  if (signo==SIGINT){
-    remove("well_known");
+void setup(){
+  int error=mkdir("root", 0777);
+  if (error == -1)
+    perror("Root directory already exists\n");
+  printf("Root directory established\n");
+  int fd = open("root/log.txt", O_RDWR | O_APPEND | O_CREAT,0664);
+  if (fd < 0) {
+    perror("Error creating log file\n");
+    exit(-1);
+  }
+  error = close(fd);
+  if (error == -1){
+    perror("Error closing log file\n");
+    exit(42);
+  }
+  printf("log file established \n");
+  fd = open("root/users.txt", O_RDWR | O_APPEND | O_CREAT, 0664);
+  if (fd < 0) {
+    perror("Error creating user file\n");
+    exit(-1);
+  }
+  error = close(fd);
+  if (error == -1){
+    perror("Error closing user file\n");
+    exit(42);
+  }
+  printf("userlist established\n");
+  int semaphore=semget(ftok(file_path, sem_id),2,0664 | IPC_CREAT | IPC_EXCL);
+  if (semaphore==-1){
+    printf("Error creating log & userlist semaphore: %s\n",strerror(errno));
+    exit(42);
+  }
+  union semun command;
+  unsigned short forks[2]={100,100};
+  command.array=forks;
+  error=semctl(semaphore,0,SETALL,command);
+  if (error==-1){
+    printf("Error setting semaphore value: %s\n",strerror(errno));
     exit(42);
   }
 }
 
+void get_user(char * ans, char name[], char password[], int socket_client){
+  int error=read(socket_client,ans,1);
+  if (error==-1){
+    printf("Error recieving ANS: %s\n",strerror(errno));
+    exit(42);
+  }
+  read(socket_client,name,NAME_LEN);
+  if (error==-1){
+    printf("Error recieving NAME: %s\n",strerror(errno));
+    exit(42);
+  }
+  read(socket_client,password,PASS_LEN);
+  if (error==-1){
+    printf("Error recieving PASSWORD: %s\n",strerror(errno));
+    exit(42);
+  }
+}
 
-
-int main(int argc, char *argv[])
-{
-    char* msg = "Hello World !\n";
-
-    struct sockaddr_in dest; /* socket info about the machine connecting to us */
-    struct sockaddr_in serv; /* socket info about our server */
-    int mysocket;            /* socket used to listen for incoming connections */
-    socklen_t socksize = sizeof(struct sockaddr_in);
-
-    memset(&serv, 0, sizeof(serv));           /* zero the struct before filling the fields */
-    serv.sin_family = AF_INET;                /* set the type of connection to TCP/IP */
-    serv.sin_addr.s_addr = htonl(INADDR_ANY); /* set our address to any interface */
-    serv.sin_port = htons(PORTNUM);           /* set the server port number */    
-
-    mysocket = socket(AF_INET, SOCK_STREAM, 0);
-  
-    /* bind serv information to mysocket */
-    bind(mysocket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
-
-    /* start listening, allowing a queue of up to 1 pending connection */
-    listen(mysocket, 1);
-    int consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
-  
-    while(consocket)
-    {
-        printf("Incoming connection from %s - sending welcome\n", inet_ntoa(dest.sin_addr));
-	
-        send(consocket, msg, strlen(msg), 0); 
-        close(consocket);
-        consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
+int main(int argc, char *argv[]){
+  ppid=getppid();
+  signal(SIGINT,sighandler);
+  printf("Establishing user file, log file, root directory. Creating semaphores...\n");
+  setup();
+  printf("Setup complete \n");
+  int child_pid;
+  socket_id = socket( AF_INET, SOCK_STREAM, 0);
+  struct sockaddr_in listener;
+  listener.sin_family = AF_INET; //socket type to IPv4
+  listener.sin_port = htons(PORTNUM); //port # 
+  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
+  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  listen(socket_id,1);
+  printf("Socket established\n");
+  while(1){
+    printf("<Server> waiting for connection\n");
+    socket_client = accept(socket_id, NULL, NULL);
+    printf("Connection established\n");
+    child_pid=fork();
+    if (child_pid==0){
+      printf("Child process\n");
+      char ans;
+      char name[NAME_LEN];
+      char password[PASS_LEN];
+      get_user(&ans,name,password,socket_client);
+      printf("ANS: %c NAME: %s PASSWORD: %s\n",ans,name,password);
+      if (ans=='1'){
+	//Check if user logged in
+	//authenticate password. If correct, move on. Otherwise terminate
+	//Put loop here
+	//check for waiting mail
+	//send size of mail to be sent in bytes (int). If none, 0
+	//send mail
+	//wait to recieve messages
+	//pass on messages
+	//check for mail, repeat above
+      }
+      //do child stuff
+      close(socket_client);
+      printf("Connection closed\n");
     }
-
-    close(mysocket);
-    return EXIT_SUCCESS;
+  }
 }

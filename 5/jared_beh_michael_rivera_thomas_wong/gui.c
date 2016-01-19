@@ -1,0 +1,11 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+
+char *clientformat(char *position,char player,char* board){
+  char *ret = "";
+
+  return 0;
+}

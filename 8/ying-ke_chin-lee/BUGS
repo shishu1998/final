@@ -22,6 +22,9 @@ JAN 11
 		- JAN 12: but no longer writes value into file??  Did I do that on purpose?
 	- I will need a way to free those pointers once I'm done....not sure how to do this yet.
 
+JAN 13:
+- now tried to server-ify it, but need to find a way to handle invalid bids.
+
 more bugs
 doesn't run yet lololol
 

@@ -2,34 +2,70 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <errno.h>
+
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
 #include "values.h"
- 
+#include "client.h"
 
-int connect_server(int mysocket){
-  struct sockaddr_in dest; 
-  //zero the struct 
-  memset(&dest, 0, sizeof(dest));               
-  dest.sin_family = AF_INET;
-  //set destination IP number - localhost, 127.0.0.1
-  dest.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-  //set destination port number
-  dest.sin_port = htons(PORTNUM);               
-  connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr));
+//Needs to be global for signandler to work
+int socket_id;
+
+static void sighandler(int signo){
+  if (signo==SIGINT){
+    printf("Closing socket\n");
+    close(socket_id);
+    printf("Socket closed\n");
+    exit(42);
+  }
+}
+ 
+int connect_server(){
+  struct sockaddr_in sock; 
+  int socket_id = socket(AF_INET, SOCK_STREAM, 0);
+  sock.sin_family = AF_INET; //socket type to IPv4
+  sock.sin_port = htons(PORTNUM); //port # 
+  //convert IP address to correct format and insert into sock.sin_addr
+  inet_aton( "127.0.0.1", &(sock.sin_addr) ); 
+  //insert the socket info stuff into the file thing
+  bind(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  //attempt a connection. Will return -1and set errno if failed
+  int error = connect( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (error==-1){
+    printf("Error connecting to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  return socket_id;
 }
 
+void send_user(char * ans,char name[], char pass[], int socket_id){
+  int error=write(socket_id,ans,1);
+  if (error==-1){
+    printf("Error sending ANS to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  error=write(socket_id,name,NAME_LEN);
+  if (error==-1){
+    printf("Error sending name to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  error=write(socket_id,pass,PASS_LEN);
+  if (error==-1){
+    printf("Error sending password to server: %s\n",strerror(errno));
+    exit(42);
+  }
+}
 
-int main(int argc, char *argv[])
-{
-   char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-   char name[NAME_LEN];
-   char password[PASS_LEN];
-
-   char ans;
+int main(int argc, char *argv[]){
+  signal(SIGINT,sighandler);
+  char name[NAME_LEN];
+  char password[PASS_LEN];
+  char ans;
    while (ans!='1' && ans!='2'){
      printf("Welcome to DW-NET\nAre you:\n1-Logging in\n2-Creating a new account\n");
      fgets(&ans,3,stdin);
@@ -38,27 +74,30 @@ int main(int argc, char *argv[])
      printf("When creating you new account please keep in mind these restrictions:\n\tMaximum username length: %d characters\n\tMaximum password length: %d characters\n",NAME_LEN-1,PASS_LEN-1);
    printf("\nUsername:\n");
    fgets(name,NAME_LEN,stdin);
-   printf("\nUsername:\n");
+   printf("\nPassword:\n");
    fgets(password,PASS_LEN,stdin);
    strtok(name,"\n");
    strtok(password,"\n");
    printf("Username: =%s= Password: =%s=\n",name,password);
    //connect to server
+   socket_id=connect_server();
    if (ans=='1'){
+     send_user(&ans,name,password,socket_id);
      //verify correct name and password
      //if incorrect disconnect
      //If correct, recieve any backlog of msgs,files,commands
    }
    if (ans=='2'){
+     send_user(&ans,name,password,socket_id);
      //See if uername available
      //If not available, ask user to create a different name. Resend that
    }       
    //Begin standard operation
    //Create socket
-   int mysocket = socket(AF_INET, SOCK_STREAM, 0);
-   //Connect to server
-   connect_server(mysocket);
-
+   char buf[6];
+   read(socket_id,&buf,6);
+   printf("Message recieved: %s\n",buf);
+   close(socket_id);
    /*
    len = recv(mysocket, buffer, MAXRCVLEN, 0);
    // We have to null terminate the received data ourselves 

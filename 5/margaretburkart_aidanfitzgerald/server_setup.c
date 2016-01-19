@@ -4,12 +4,12 @@ int main() {
 
   // Make mail directory
   // Needs to be rwx* so that we can cd into it
-  mkdir("mail", 0744);
+  mkdir("mail.d", 0744);
 
   printf("mkdir\n");
   
   // Initialize user list flat file
-  int userfile = creat("mail/users.csv", 0644);
+  int userfile = creat("mail.d/users.csv", 0644);
   printf("touch\n");
 
   char line[] = "username,password\n";

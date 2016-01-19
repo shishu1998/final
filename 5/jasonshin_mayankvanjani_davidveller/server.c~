@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fnctl.h>
+
+char* printMap() {
+  int fdMap = open("map.txt", O_RDONLY);
+  char[1000] mapStr;  
+  read(fdMap, &mapstr, sizeof(mapStr));
+  printf("%s\n", mapStr);
+  return mapStr;
+}
+
+int main() {
+  printMap()
+  return 0;
+}

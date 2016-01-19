@@ -28,13 +28,32 @@ printf("\nNew command name: %s\n" , name);
 
  
 }
+boolean canCommand(char * name ){//return non zero of successful and prints contents of the file
+  // that stores all the commands
+  char *file_contents;
+  long input_file_size;
+  FILE *input_file = fopen(input_file_name, "rb");
+  fseek(input_file, 0, SEEK_END);
+  input_file_size = ftell(input_file);
+  rewind(input_file);
+  file_contents = malloc(input_file_size * (sizeof(char)));
+  fread(file_contents, sizeof(char), input_file_size, input_file);
+  fclose(input_file);
+  //sets last char to zero
+  
+  file_contents = malloc((input_file_size + 1) * (sizeof(char)));
+  fread(file_contents, sizeof(char), input_file_size, input_file);
+  fclose(input_file);
+  file_contents[input_file_size] = 0;
+  return strstr(file_contents, name)
+}
 null printAll() { 
 int character;
 FILE * filepointer = fopen("a.txt",  "r" ) ;
 //while char not at end of file
 while ((character=fgetc(filepointer)) != EOF) {
 putchar(character); /* print the character */
-}
+ }
 }
 int main() {
   //testin to see if it writes

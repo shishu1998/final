@@ -1,8 +1,8 @@
 #ifndef server
 #define server
 
-void setup();
-/*======== void setup() ==========
+void setup();  
+  /*======== void setup() ==========
   Inputs: none
   Returns: nothing
   Creates file to hold usernames & passwords (userlist),
@@ -13,7 +13,7 @@ void startup();
 /*======== void startup() ==========
   Inputs: none
   Returns: nothing
-  Creates semaphore to guard access to the userlist
+  Creates semaphore to guard access to the userlist and and logged
   ====================*/
 
 int authenticate();

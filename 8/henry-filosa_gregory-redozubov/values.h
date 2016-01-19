@@ -17,6 +17,18 @@ typedef struct base{
   int size;
 }base;
 
+//Needs to be commented out for linux systems
+/*
+union semun {
+  int val;
+  struct semid_ds *buf;
+  unsigned short *array;
+  struct seminfo *_buf; 
+};
+*/
+
+char * file_path="root";
+int sem_id = 42;
 char * help="You have the following commands:\n\t1 - Send a message\n\t2 - Send a file\n\t3- Send a command";
 
 #define MAXRCVLEN 500

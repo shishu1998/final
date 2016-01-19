@@ -1,7 +1,11 @@
-server: server.c
+all: server.c server.h client.c client.h values.h
+	make server
+	make client
+
+server: server.c server.h values.h
 	gcc -o server server.c
 
-client: client.c
+client: client.c client.h values.h
 	gcc -o client client.c
 
 #For when you're really lazy

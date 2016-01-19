@@ -7,10 +7,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "connect4.h"
-#include "dots.h"
-#include "tictac.h"
+#include "server.h"
+//#include "connect4.h"
+//#include "dots.h"
+//#include "tictac.h"
 #include "client_relations.h"
+
+
 
 int main() {
 
@@ -26,13 +29,38 @@ int main() {
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
-  listen( socket_id, 1 );
-  printf("<server> listening\n");
-
-  socket_client = accept( socket_id, NULL, NULL );
-  printf("<server> connected: %d\n", socket_client );
-
-  write( socket_client, "hello", 6 );
+  socket_client = server_handshake(socket_id);
+  client_connection(socket_client);
   
   return 0;
+}
+
+int server_handshake(int socket_id) {
+  while (1) {
+    listen(socket_id, 1);
+    printf("<server> listening\n");
+    int socket_client = accept(socket_id, NULL, NULL);
+    int parent = fork();
+    if (!parent) {
+      printf("<server> connected: %d\n", socket_client);
+      return socket_client;
+    }
+  }
+}
+
+void client_connection(int socket_client) {
+
+  char * understanding;
+  char buffer[256];
+  while (read(socket_client, buffer, sizeof(buffer))) {
+    printf("buffer:%s\n",
+    printf( "<server> received [%s] from client %d\n", buffer, socket_client);
+    understanding = understand(buffer);
+    strcpy(buffer, understanding);
+    printf("UNDERSTANDING %s\n",understand(buffer));
+    write (socket_client, "bye", sizeof("bye"));
+    strncpy(buffer, "", sizeof(buffer));
+    printf("buffer:%s\n",buffer);
+  }
+  
 }

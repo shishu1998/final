@@ -3,7 +3,7 @@ typedef struct Lot {
 	int number;
 	char name[100];
 	char description[1000];
-	int hi_bid;
+	int hi_bid; // figure out some nice way of getting rid of it and all its references
 } Lot;
 
 void print(Lot l) {

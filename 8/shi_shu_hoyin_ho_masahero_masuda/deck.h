@@ -2,16 +2,18 @@
 #include <unistd.h>
 #include <string.h>
 
-typedef struct deck{
-  card *cards;
-  int size;
-}deck;
+
 
 typedef struct card{
   char* content;
   char* type;
   int owner;
 }card;
+
+typedef struct deck{
+  card *cards;
+  int size;
+}deck;
 
 struct card* makecard(char* content,char* type){
   card* out = (card*)malloc(sizeof(card));
@@ -28,7 +30,7 @@ int randNum(){
   return *num;
 }
 
-void shuffle(deck d){
+void shuffle(deck *d){
   int rand1;
   int rand2;
   card temp;
@@ -36,14 +38,14 @@ void shuffle(deck d){
   while(counter < 1000){
     rand1 = randNum() % d->size;
     rand2 = randNum() % d->size;
-    temp = d[rand1];
-    d[rand1] = d[rand2];
-    d[rand2] = temp;
+    temp = d->cards[rand1];
+    d->cards[rand1] = d->cards[rand2];
+    d->cards[rand2] = temp;
     counter++;
   }
 }
 
-struct deck makedeck(char* type){
+struct deck *makedeck(char* type){
   deck *newDeck;
   int descriptor;
   char buffer[20000];
@@ -58,7 +60,7 @@ struct deck makedeck(char* type){
   if(type == "green"){
     descriptor = open("greendeck",O_RDONLY);
     newDeck->cards = (card*)malloc(sizeof(card)*249);
-    newDeck->size=249
+    newDeck->size=249;
     maketype = "green";
   }
   read(descriptor,buffer,sizeof(buffer));
@@ -70,7 +72,7 @@ struct deck makedeck(char* type){
     newDeck->cards[i] = *makecard(temp,maketype);
     i ++;
   }
-  return deck;
+  return newDeck;
 }
 
 void printdeck(deck *d){

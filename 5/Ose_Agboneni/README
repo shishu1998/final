@@ -7,5 +7,5 @@ Basic: RPS between two clients
        	  2.5. Semaphores helpful here?
        3. Both clients prompted to enter R, P, or S
        4. Subservers store inputs in a Shared Memory Segment
-       5. Main Server looks at inputs and passes judgement
+       5. Subservers look at inputs and pass judgement
        6. Winner and loser get appropriate messages

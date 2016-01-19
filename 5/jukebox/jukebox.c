@@ -7,16 +7,20 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 
-int new_client(socket_client){
+int send_song(char * song_name, int socket_client, struct sockaddr_in listener){
   //socket client is now fd 
   //interact with client
-   char *lyric = "Pardon me, are you Aaron Burr, sir?";
-   printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric); 
-   while(1){
+	char *song[5242880]; //5 mb is enough right?
+	int song_file = open(song_name, O_RDONLY);
+	read(song_file, song, sizeof(song));
+   //char *lyric = "Pardon me, are you Aaron Burr, sir?";
+   //printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric); 
 //drops some packets but okay
-       write(socket_client, lyric, strlen(lyric)+1);
+   	write(socket_client, lyric, strlen(lyric) +1);
+       //sendto(socket_client, lyric, strlen(lyric)+1, 0, (struct sockaddr *)&listener, sizeof(listener)<0);
 //printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric);
 printf("\n");
 }
@@ -29,7 +33,7 @@ int main() {
   int socket_id, socket_client;
   
   //create the socket
-  socket_id = socket( AF_INET, SOCK_DGRAM, 0 );
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
   //bind to port/address
   struct sockaddr_in listener;
@@ -38,16 +42,16 @@ int main() {
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
-//listen( socket_id, 1 );
+  listen( socket_id, 1 );
   printf("The jukebox server is up and running and waiting for clients to connect.\n");
 
   while (1) {
-//socket_client = accept( socket_id, NULL, NULL );
+    socket_client = accept( socket_id, NULL, NULL );
     printf("<server> connected: %d\n", socket_client );
     int cpid = fork();
     if (cpid == 0){
       printf("in the client plce\n");
-      new_client(socket_client);
+      send_song("Non-Stop", socket_client, listener);
     }
   }
   return 0;

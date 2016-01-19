@@ -9,6 +9,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+int play_song(){
+	//counting on you roz
+}
+
 int main(int argc, char **argv) {
 
   int socket_id;
@@ -16,7 +20,7 @@ int main(int argc, char **argv) {
   int i;
 
   //create the socket
-  socket_id = socket( AF_INET, SOCK_DGRAM, 0 );
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
   //bind to port/address
   struct sockaddr_in sock;
@@ -31,7 +35,8 @@ int main(int argc, char **argv) {
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
   while(1){
-    read( socket_id, buffer, sizeof(buffer));
+    //recvfrom( socket_id, buffer, sizeof(buffer), 0, (struct sockaddr *)&sock, sizeof(sock) < 0);
+    read(socket_id, buffer, sizeof(buffer));
     printf("<client> received: [%s]\n", buffer );
     strcpy(buffer, "");
   }

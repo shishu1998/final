@@ -9,6 +9,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+int play_song(){
+	//counting on you roz
+}
+
 int main(int argc, char **argv) {
 
   int socket_id;
@@ -30,9 +34,11 @@ int main(int argc, char **argv) {
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
-
-  read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
-  
+  while(1){
+    //recvfrom( socket_id, buffer, sizeof(buffer), 0, (struct sockaddr *)&sock, sizeof(sock) < 0);
+    read(socket_id, buffer, sizeof(buffer));
+    printf("<client> received: [%s]\n", buffer );
+    strcpy(buffer, "");
+  }
   return 0;
 }

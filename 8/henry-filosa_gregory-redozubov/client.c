@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 #include <errno.h>
 
 #include <arpa/inet.h>
@@ -10,6 +11,19 @@
 #include <sys/socket.h>
 
 #include "values.h"
+#include "client.h"
+
+//Needs to be global for signandler to work
+int socket_id;
+
+static void sighandler(int signo){
+  if (signo==SIGINT){
+    printf("Closing socket\n");
+    close(socket_id);
+    printf("Socket closed\n");
+    exit(42);
+  }
+}
  
 int connect_server(){
   struct sockaddr_in sock; 
@@ -29,13 +43,29 @@ int connect_server(){
   return socket_id;
 }
 
-int main(int argc, char *argv[])
-{
-   char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-   char name[NAME_LEN];
-   char password[PASS_LEN];
+void send_user(char * ans,char name[], char pass[], int socket_id){
+  int error=write(socket_id,ans,1);
+  if (error==-1){
+    printf("Error sending ANS to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  error=write(socket_id,name,NAME_LEN);
+  if (error==-1){
+    printf("Error sending name to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  error=write(socket_id,pass,PASS_LEN);
+  if (error==-1){
+    printf("Error sending password to server: %s\n",strerror(errno));
+    exit(42);
+  }
+}
 
-   char ans;
+int main(int argc, char *argv[]){
+  signal(SIGINT,sighandler);
+  char name[NAME_LEN];
+  char password[PASS_LEN];
+  char ans;
    while (ans!='1' && ans!='2'){
      printf("Welcome to DW-NET\nAre you:\n1-Logging in\n2-Creating a new account\n");
      fgets(&ans,3,stdin);
@@ -50,13 +80,15 @@ int main(int argc, char *argv[])
    strtok(password,"\n");
    printf("Username: =%s= Password: =%s=\n",name,password);
    //connect to server
-   int socket_id=connect_server();
+   socket_id=connect_server();
    if (ans=='1'){
+     send_user(&ans,name,password,socket_id);
      //verify correct name and password
      //if incorrect disconnect
      //If correct, recieve any backlog of msgs,files,commands
    }
    if (ans=='2'){
+     send_user(&ans,name,password,socket_id);
      //See if uername available
      //If not available, ask user to create a different name. Resend that
    }       

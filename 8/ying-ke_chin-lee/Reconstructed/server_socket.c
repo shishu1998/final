@@ -10,6 +10,7 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <signal.h>
 
 #include "writing.h"
 
@@ -19,7 +20,7 @@
 
 int paddles[5]; //currently allow only 5 bidders at a time
 int num_paddles;
-char *bidfile = "curr_bid.txt";
+//char *bidfile = "curr_bid.txt";
 
 void dostuff(int); /* function prototype */
 void write_bid(char *); // check if you can write the new bid, and then do the sem/shmem stuff
@@ -29,8 +30,17 @@ void error(const char *msg)
 	exit(1);
 }
 
+static void sighandler(int signo) {
+	// get rid of the annoying mario
+	if (signo == SIGINT) {
+		printf("ctrl c was hit\n");
+		exit(0);
+	}
+}
+
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sighandler);
 
 	num_paddles = 0;
 	int sockfd, newsockfd, portno, pid;
@@ -44,6 +54,7 @@ int main(int argc, char *argv[])
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) 
 		error("ERROR opening socket");
+
 	bzero((char *) &serv_addr, sizeof(serv_addr));
 	portno = atoi(argv[1]);
 	serv_addr.sin_family = AF_INET;
@@ -64,6 +75,7 @@ int main(int argc, char *argv[])
 			error("ERROR on fork");
 		if (pid == 0)  {
 			close(sockfd);
+			printf("\nA new user has connected to the auction.\n");
 			dostuff(newsockfd);
 			exit(0);
 		}
@@ -89,14 +101,17 @@ void dostuff (int sock)
 	printf("Here is the message: %s\n",buffer);
 	n = write(sock,"New bid:",18);
 	if (n < 0) error("ERROR writing to socket");
+	else write_bid(buffer);
 }
 
 void write_bid(char *offer) {
 	int status;
-	int fd = open(bidfile, O_CREAT|O_RDWR); // current highest bid
+	int fd;
 	char old_bid[256]; // should be ample space
 	read(fd, old_bid, sizeof(old_bid));
+	printf("(SS: ensuring atoi works) %d, %d\n", atoi(offer), atoi(old_bid));
 	if (atoi(offer) > atoi(old_bid)) {
+		printf("SS: trying to input bid...\n");
 		// now start writing.
 		//open bid
 		int f = fork();
@@ -110,13 +125,9 @@ void write_bid(char *offer) {
 			else {
 				wait(&status);
 			}
+			// write the bids
 			file_write(offer);
-/*			
-			printf("got to begin of writing program\n");
-			// start the writing program, which will write bids
-			main_w();
 
-*/
 			// close bid info
 			char *remv[3] = {"./control", "-r", NULL};
 			int f2 = fork();
@@ -127,8 +138,10 @@ void write_bid(char *offer) {
 				wait(&status);
 			}
 		} else {
-			printf("\nYou have already been outbid.\n");
-			close(fd);
-		}
+			wait(&status);
+		} 
+	} else {
+		printf("\nSS: You have already been outbid.\n");
+		close(fd);
 	}
 }

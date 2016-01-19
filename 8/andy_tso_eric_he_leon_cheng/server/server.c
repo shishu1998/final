@@ -26,6 +26,15 @@ int server_handshake( int *from_client ) {
 	int to_client;
 	char buffer[100];
 
+	//WIP: Gotta work on this later
+	// //ask for desired_total
+	// char desired_total;
+	// printf("<server> enter stuff: ");
+	// fgets( desired_total, sizeof(desired_total), stdin );
+	// *strchr( desired_total, '\n') = 0;
+	// printf("desired_total: %d\n", desired_total);
+
+
 	mkfifo( "mario", 0644 ); //create WKP
 	*from_client = open( "mario", O_RDONLY ); //Open & wait for connect
 	remove( "mario" ); //once connected, remove the pipe file

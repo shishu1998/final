@@ -13,7 +13,15 @@ struct player
   card cards[1000];
 }
 
+int total_players;
+int current_player;
 
-void player_order(){
+//Note: Skip and Reverse are to be dealt with later
+void next_player(){
+  player players[ total_players ];
 
+  if ( current_player >= total_players )
+    current_player = 0;
+  else
+    current_player++;
 }

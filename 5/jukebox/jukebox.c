@@ -4,7 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
-
+#include <dirent.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <fcntl.h>
@@ -13,20 +13,35 @@
 int send_song(char * song_name, int socket_client, struct sockaddr_in listener){
   //socket client is now fd 
   //interact with client
-	char *song[5242880]; //5 mb is enough right?
+	char song[5242880]; //5 mb is enough right?
 	int song_file = open(song_name, O_RDONLY);
 	read(song_file, song, sizeof(song));
    //char *lyric = "Pardon me, are you Aaron Burr, sir?";
    //printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric); 
 //drops some packets but okay
-   	write(socket_client, lyric, strlen(lyric) +1);
+   	write(socket_client, song, strlen(song) +1);
        //sendto(socket_client, lyric, strlen(lyric)+1, 0, (struct sockaddr *)&listener, sizeof(listener)<0);
 //printf("Sending %d bytes: [%s] .\n", strlen(lyric), lyric);
 printf("\n");
-}
+
    exit(0);
 }
 
+int list_songs(/*int socket_client*/){
+  DIR * music_dir = opendir("music");
+  struct dirent *file;
+  char song_list[1024];
+  while((file = readdir(music_dir)) && strlen(song_list) < 1024){
+    printf("filename : [%s]\n", file->d_name);
+    strcat(song_list, file->d_name);
+    strcat(song_list, "\n");
+    printf("new list: [%s]\n", song_list);
+  }
+  
+  printf("total song list: \n[%s]\n ", song_list);
+  closedir(music_dir);
+
+}
 
 int main() {
 
@@ -45,7 +60,7 @@ int main() {
   listen( socket_id, 1 );
   printf("The jukebox server is up and running and waiting for clients to connect.\n");
 
-  while (1) {
+  /* while (1) {
     socket_client = accept( socket_id, NULL, NULL );
     printf("<server> connected: %d\n", socket_client );
     int cpid = fork();
@@ -53,6 +68,7 @@ int main() {
       printf("in the client plce\n");
       send_song("Non-Stop", socket_client, listener);
     }
-  }
+    } */
+  list_songs();
   return 0;
 }

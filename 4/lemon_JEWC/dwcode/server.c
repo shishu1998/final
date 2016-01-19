@@ -11,7 +11,6 @@
 int main() {
 
   int socket_id, socket_client;
-  int exit_status = 0;
   
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -19,7 +18,7 @@ int main() {
   //bind to port/address
   struct sockaddr_in listener;
   listener.sin_family = AF_INET;  //socket type IPv4
-  listener.sin_port = htons(6000); //port #
+  listener.sin_port = htons(24601); //port #
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
@@ -29,11 +28,7 @@ int main() {
   socket_client = accept( socket_id, NULL, NULL );
   printf("<server> connected: %d\n", socket_client );
 
-  //fgets something
   write( socket_client, "hello", 6 );
-  exit_status ++;
   
-  exit_status = 0;
-
   return 0;
 }

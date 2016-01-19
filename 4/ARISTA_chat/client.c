@@ -1,5 +1,8 @@
+//http://stackoverflow.com/questions/7808331/how-to-connect-two-clients-from-the-server
+
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <string.h>
 #include <unistd.h>
 
@@ -38,8 +41,9 @@ int main(int argc, char **argv) {
     read(socket_id, s, sizeof(s));
     printf("<client> received: %s\n", s);
     printf("Enter text to write:\n");
-    scanf("%s", s);
+    fgets(s, sizeof(s), stdin);
     write(socket_id, s, sizeof(s));
+
   }
 
   // read( socket_id, buffer, sizeof(buffer));

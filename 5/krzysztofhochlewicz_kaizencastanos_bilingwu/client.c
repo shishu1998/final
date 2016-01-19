@@ -17,7 +17,7 @@ char game_header[] = "************************* Welcome to bootleg TypeRacer! **
 char sample_text[] = "This is a sample sentence.\n";
 //char curr;
 
-char completed_words[] = "";
+char completed_words[1024] = "";
 char *current_word;
 char current_typed[128];
 char current_char;

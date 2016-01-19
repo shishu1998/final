@@ -13,7 +13,7 @@
 int send_song(char * song_name, int socket_client, struct sockaddr_in listener){
   //socket client is now fd 
   //interact with client
-	char *song[5242880]; //5 mb is enough right?
+	char song[5242880]; //5 mb is enough right?
 	int song_file = open(song_name, O_RDONLY);
 	read(song_file, song, sizeof(song));
    //char *lyric = "Pardon me, are you Aaron Burr, sir?";
@@ -30,11 +30,14 @@ printf("\n");
 int list_songs(/*int socket_client*/){
   DIR * music_dir = opendir("music");
   struct dirent *file;
-  file = readdir(music_dir);
   char song_list[1024];
-  while(file && strlen(song_list) < 1024){
+  while((file = readdir(music_dir)) && strlen(song_list) < 1024){
+    printf("filename : [%s]\n", file->d_name);
     strcat(song_list, file->d_name);
+    strcat(song_list, "\n");
+    printf("new list: [%s]\n", song_list);
   }
+  
   printf("total song list: \n[%s]\n ", song_list);
   closedir(music_dir);
 

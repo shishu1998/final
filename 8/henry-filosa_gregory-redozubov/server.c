@@ -156,3 +156,28 @@ int main(int argc, char *argv[]){
     }
   }
 }
+
+
+
+
+
+
+int authenticate(char name[], char password[]){
+  /* Returns: boolean
+  Checks userlist for username and password
+  Checks logged to see if user already logged in
+  Returns 0 if correct combination not present or the user is already logged in
+  */
+  
+  int fd = read(/root/log.txt, 
+  
+
+int add_user(char name[], char password[]){
+  /*Returns boolean
+  Checks user to see if name is already taken
+  Return 1 if name is available and appends name and password to userlist,
+  creates directory folders(mailboxes) for the new user.
+  Takes into account semaphores (array)
+  Returns 0 if name is taken
+  */
+  

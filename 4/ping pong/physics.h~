@@ -1,0 +1,4 @@
+typedef struct{
+  int magnitude;
+  int angle;
+} vector;

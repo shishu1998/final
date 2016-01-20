@@ -53,11 +53,15 @@ int connect_to_server(char * hostname, int port) {
   // create socket
   socket_id = socket(AF_INET, SOCK_STREAM, 0);
 
+  struct in_addr *addr;
+  e = hostname_to_ip(hostname, &addr);
+  printf("%s\n", inet_ntoa(*addr));
+
   // bind to port/address
   struct sockaddr_in sock = {
     .sin_family = AF_INET,
     .sin_port = htons(port),
-    .sin_addr = hostname_to_ip(hostname);
+    .sin_addr = *addr
   };
 
   bind(socket_id, (struct sockaddr *)&sock, sizeof(sock));
@@ -94,14 +98,15 @@ int handle_response(int socket_id) {
 /*
  * Credit http://www.binarytides.com/hostname-to-ip-address-c-sockets-linux/
  */
-struct in_addr hostname_to_ip(char * hostname) {
-  struct hostent *he;
+int hostname_to_ip(char * hostname, struct in_addr** addr) {
+  struct hostent *he = (void *)123456789;
 
   he = gethostbyname(hostname);
   if (he == NULL) {
-    //struct in_addr fail;
-    //return fail;
+    return -1;
   }
 
-  return (struct in_addr) *(he->h_addr);
+  *addr = (struct in_addr *) he->h_addr;
+
+  return 0;
 }

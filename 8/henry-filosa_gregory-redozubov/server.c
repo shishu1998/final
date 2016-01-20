@@ -23,16 +23,23 @@ int socket_client;
 int ppid;
 
 static void sighandler(int signo){
+  int status;
+  int error;
+  if (signo==SIGPIPE){
+    error=close(socket_client);
+    if (error == -1)
+	perror("Error closing client socket\n");
+    printf("Client disconnected, child exiting\n");
+    exit(42);
+  }
   if (signo==SIGINT){
-    int status;
-    int error;
     while (wait(NULL) > 0){
       //parent waits until all children have exited
       ;
     }
     if (getppid() != ppid){
       //Exit procedure for children
-      printf("!!!\n");
+      printf("Child exiting\n");
       error=close(socket_client);
       if (error == -1)
 	perror("Error closing client socket\n");
@@ -150,9 +157,38 @@ int main(int argc, char *argv[]){
 	//pass on messages
 	//check for mail, repeat above
       }
+      while(1==1){
       //do child stuff
+	sleep(1);
+	printf("child\n");
+      }
       close(socket_client);
       printf("Connection closed\n");
     }
   }
 }
+
+
+
+
+
+
+int authenticate(char name[], char password[]){
+  /* Returns: boolean
+  Checks userlist for username and password
+  Checks logged to see if user already logged in
+  Returns 0 if correct combination not present or the user is already logged in
+  */
+  
+  int fd = read(/root/log.txt, 
+  
+
+int add_user(char name[], char password[]){
+  /*Returns boolean
+  Checks user to see if name is already taken
+  Return 1 if name is available and appends name and password to userlist,
+  creates directory folders(mailboxes) for the new user.
+  Takes into account semaphores (array)
+  Returns 0 if name is taken
+  */
+  

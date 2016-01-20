@@ -10,6 +10,22 @@
 #include <errno.h>
 
 void process(int fd, int sockfd){
+  char send[256];
+  char recv[256];
+  int num_bytes;
+
+  if (i==0){//send
+    fgets(send, sizeof(send), stdin);
+    send(sockfd, send, sizeof(send));
+
+  }else{//receive
+    num_bytes=recv(sockfd,recv,sizeof(recv));
+    recv[num_bytes]='\0';
+    printf("%s\n", recv);
+    fflush(stdout);
+    
+  }
+
 }
 
 int main(int argc, char **argv) {
@@ -31,11 +47,11 @@ int main(int argc, char **argv) {
   //Set the IP address to connect to
   //127.0.0.1 is the "loopback" address of any machine
   inet_aton( "127.0.0.1", &(sock.sin_addr) );
-  //bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   if (connect(socket_id, (struct sockaddr *)&sock, sizeof(sock))==-1){
     printf("connect: %s\n", strerror(errno));
   }
-
+  
   FD_ZERO(&master);
   FD_ZERO(&read_fds);
   FD_SET(0, &master);
@@ -54,12 +70,12 @@ int main(int argc, char **argv) {
     }
   }
   //attempt a connection
-  /*
+  
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
 
   read( socket_id, buffer, sizeof(buffer));
   printf("<client> received: [%s]\n", buffer );
-  */
+  
   return 0;
 }

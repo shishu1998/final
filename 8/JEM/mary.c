@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <string.h>
 
-
 int hand_in_maryiage(int *from_suitor) {//file descriptor of client (read)
   int mary_server;//file descriptor of server end (write)
   char buffer[100];

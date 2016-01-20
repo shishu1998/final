@@ -6,8 +6,8 @@
 #include <signal.h>
 #include "deck.h"
 
-card* red = makedeck("red");
-card* green = makedeck("green");
+card* red;
+card* green;
 int playerturn;
 int playernum = 0;
 
@@ -20,7 +20,7 @@ static void sighandler(int signo){
 }
 
 int handshake(int *from_player){
-
+  
   int to_player;
   char buffer[100];
 
@@ -47,6 +47,7 @@ char* process(char* string){
 }
 
 void player_connection(int to_player,int from_player){
+  
   char buffer[100];
   printf("before while loop\n");
   while(read(from_player,buffer,sizeof(buffer))){
@@ -71,7 +72,9 @@ int main(){
     to_player = handshake(&from_player);
 
     if(to_player != 0){
+      
       player_connection(to_player,from_player);
+      
       close(to_player);
     }
   }

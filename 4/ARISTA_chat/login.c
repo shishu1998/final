@@ -65,29 +65,32 @@ int tutorlogin() {
     printf("Error %d: %s\n", errno, strerror(errno));
   }
 
-  printf("Login or Register?\n");
-  char action[100];
-  fgets(action, sizeof(action), stdin);
-
   int accessing = 0;
+	int completed;
   while (accessing == 0) {
-    if (strcmp("Login", action) >= 0) {
+	  printf("login or register?\n");
+	  char action[100];
+  	fgets(action, sizeof(action), stdin);
+    if (strcmp(action,"login") >= 0) {
       registereduser();
+	completed = 1;
       accessing = 1;
-    } else if (strcmp("Register", action) >= 0) {
+    } else if (strcmp(action,"register") >= 0) {
       printf("okay cool");
-      newuser() ;
+      newuser();
+	completed = 1;
       accessing = 1;
     } else {
       printf("We didn't understand your response. Please try again.\n");
-    }
+    	completed = 0;
+	}
   }
 
   //search for username in tutoraccounts.txt
   //if it exists, ask for password
   //if not, ask to create account and double check password
 
-  return 1;
+  return completed;
 }
 
 int main() {
@@ -95,7 +98,7 @@ int main() {
   if (tutoraccounts < 0) {
     printf("Error %d: %s\n", errno, strerror(errno));
   } else {
-    printf("Program laoded.\n");
+    printf("Program loaded.\n");
   }
   close(tutoraccounts);
 

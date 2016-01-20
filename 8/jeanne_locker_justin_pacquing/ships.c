@@ -17,15 +17,17 @@
 
 char uboard [11][11]; //your board
 char oboard [11][11]; //your opponent's board
+int shippies[10]; //the placement of your ships
 
 
-/*======== void makeboards() ==========
-Inputs:
 
-Result:
+/*======== void makeBoards() ==========
+Inputs: none
+
+Result: creates the displayed boards for play
 
 ====================*/
-void makeboards(){
+void makeBoards(){
   int d = 1;
   int a = 0;
   while (d < 11){
@@ -42,7 +44,45 @@ void makeboards(){
   }
 }
 
-int setup(){
+/*======== void makeFleet() ==========
+Inputs: 
+int place: user's inputted placement of a ship
+int places[]: array holding all ship places
+
+Result:
+fills up places[] with user's inputs
+
+====================*/
+int makeFleet(int place, int places[]){
+  printf("Input where you want your first ship! Each ship is one unit./nDon't use any spaces between the numbers.");
+  scanf("%s", &pos);
+}
+
+
+/*======== int checkMatey() ==========
+Inputs:
+int guess: opponent's guess of where user's ship is
+int places[]: user's ship placement
+
+Result:
+returns either 1 or 0: 1 if the guess hit, 0 if it didn't
+
+====================*/
+int checkMatey(int guess, int places[]){
+  int ind = 0;
+  int result = 0;
+  while (places[ind] != NULL){
+    if (places[ind] == guess){
+      result = 1;
+    } else {
+      ind++;
+    }
+  }
+  return result;
+}
+
+
+int play(){
 
   int pos;
   
@@ -50,8 +90,8 @@ int setup(){
   //insert grid setup
   printf("It's time to arrange your fleet.");
   //printf("Input where you want the leftmost or topmost part of your ship: ");
-  printf("Input where you want your ship! Each ship is one unit: ");
-  scanf("%s", &pos);
+  makefleet();
+  
   
   //a bunch of stuff
   return 0;

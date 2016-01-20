@@ -38,12 +38,16 @@ int main(){
 
   fill_buffers(map,0,first_line);
   
+  print_buffers(first_line);
+
   open_screen_buffer();
+  print_buffers(first_line);
+  
   while (1){
-    printf("HI YALL");
     fflush(stdout);
     sleep(1);
   }
+  
   open_preserved_screen();
   
   cleanup(first_line);
@@ -53,14 +57,17 @@ int main(){
 int fill_buffers(int file, int start_read, line* first_line){
   FILE* fstream = fdopen(file,"r");
   size_t buff_size = sizeof((*first_line).text); 
-  printf("%d\n",buff_size);
-  int read;
-  read = (int)getline(&(*first_line).text, &buff_size, fstream);
+  int read = (int)getline(&(*first_line).text, &buff_size, fstream);
+  int i;
+  while(first_line->next != NULL){
+    read = (int)getline(&(*first_line).text, &buff_size, fstream);
+    first_line = first_line->next;
+  }
 }
   
 int print_buffers(line* first_line){
   while (first_line->next){
-    printf("%s\n",first_line->text);
+    printf("%s",first_line->text);
     first_line = first_line->next;
   }
 }
@@ -75,10 +82,8 @@ int open_preserved_screen(){
 
 int init(line* line_node, winsize* window){
   int i;
-  for (i=0; i<4; i++){
-    //for (i=0; i<window->ws_row; i++){
+  for (i=0; i<window->ws_row; i++){
     line_node->text = (char*)malloc(window->ws_col);
-    printf("cols: %d, actually: %d",window->ws_col,(int)sizeof());
     line_node->next = (line*)malloc(sizeof(line));
     line_node = line_node->next;
   }

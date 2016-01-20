@@ -179,8 +179,32 @@ int authenticate(char name[], char password[]){
   Checks logged to see if user already logged in
   Returns 0 if correct combination not present or the user is already logged in
   */
+  FILE *fr;
+  int count1 = 0, count2 = 0, check = 0, i, j, flag;
+  fr = fopen("root/log/txt", "rt");
+  while(fgets(line, 80, fr) != NULL){
+    sscanf (line, "%ld", &elapsed_seconds);
+  }
+  fclose(fr);
+  //open and read the file
+  //keep file in stringarray 
+  //DON'T FORGET TO CLOSE
+  for(i=0; i <= count1 - count2; i++){
+    for(j=i; j < i + count2; j++){
+      flag = 1;
+      if(name[j] != fr[j - i])
+	{
+	  flag = 0;
+	  break;
+	}
+    }
+    if(flag == 1)
+      return 0;
+    else
+      return -1;
+  }
+}
   
-  int fd = read(/root/log.txt, 
   
 
 int add_user(char name[], char password[]){

@@ -6,6 +6,33 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <errno.h>
+#include <sys/ipc.h>
+#include <sys/types.h>
+#include <sys/sem.h>
+#include <fcntl.h>
+
+int desired_total;
+int player_count;
+
+void ask_for_total(){
+	player_count = 0;
+
+	printf("<server> How many players? ");
+	scanf ("%d",&desired_total);
+	printf("desired_total: %d\n", desired_total);
+}
+
+void players_connect(){
+	if (player_count==desired_total){
+		printf("Desired total has been reached!\n\n");
+	} else{
+	  player_count++;
+	}
+	printf("a player has joined\n");
+	printf("players connected: %d\n", player_count);
+}
+
 
 void process( char *s ) {
 	while ( *s ) {
@@ -30,6 +57,7 @@ int server_handshake( int *from_client ) {
 	*from_client = open( "mario", O_RDONLY ); //Open & wait for connect
 	remove( "mario" ); //once connected, remove the pipe file
 
+	players_connect();
 
 	int f = fork();
 	if (f == 0) {
@@ -49,24 +77,22 @@ int server_handshake( int *from_client ) {
 
 void client_connection( int to_client, int from_client ) {
 	char buffer[100];
+	char position[100];
 	printf("before client_connection while loop\n");
 	while( read( from_client, buffer, sizeof(buffer) ) ) {
 		printf( "<server> received [%s]\n", buffer );
 		process( buffer );
 		write( to_client, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO CLIENT
 		strncpy( buffer, "", sizeof(buffer) );
+		position
+		write( to_client, buffer, sizeof(buffer));
 	}
 }
 
 int main() {
 	signal(SIGINT, sighandler);
 
-	//WIP: Should we make this handling more secure/error-proof?
-	//asking for desired_total
-	int desired_total;
-	printf("<server> enter stuff: ");
-	scanf ("%d",&desired_total);
-	printf("desired_total: %d\n", desired_total);
+	ask_for_total();
 
 	int to_client;
 	int from_client;

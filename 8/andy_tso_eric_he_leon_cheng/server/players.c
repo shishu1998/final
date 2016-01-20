@@ -30,4 +30,3 @@ void next_player(){
 void add_player(player p){
   player_list[ current_player ] = p;
 }
-

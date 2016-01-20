@@ -6,12 +6,10 @@
 #include <signal.h>
 #include "deck.h"
 
-
-card* reddeck;
-card* greendeck;
+card* red = makedeck("red");
+card* green = makedeck("green");
 int playerturn;
-int playernum;
-
+int playernum = 0;
 
 static void sighandler(int signo){
   if(signo == SIGINT){

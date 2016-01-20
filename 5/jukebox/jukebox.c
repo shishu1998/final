@@ -24,10 +24,10 @@ int handle_client(int socket_client){
     if (strcmp(buf, "q") == 0){
       exit(0);
     }
-    if (strcmp(buf[0], "p") == 0){
+    if (strcmp((char*)buf[0], "p") == 0){
       send_song(buf, socket_client);
     }
-    buf = ""; //clear th buffer
+    
   }
 
 }

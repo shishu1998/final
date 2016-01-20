@@ -8,7 +8,8 @@ int main(){
   printdeck(red);
   //printdeck(green);
   shuffle(red);
-  shuffle(green);
+  //  printdeck(red);
+  //  shuffle(green);
   //printdeck(red);
   //shuffle(&green);
   return 0;

@@ -29,7 +29,7 @@ int server_handshake(int *from_client){
   char buff[100];
 
   mkfifo( "popeye", 0644 );
-  from_client = open( "popeye", O_RDONLY );
+  *from_client = open( "popeye", O_RDONLY );
   printf("At Last! My Client in shining armor\n");
 
   remove("popeye");
@@ -65,7 +65,7 @@ int main(){
     printf("Will a Client in shining armor complete me?\n");
     to_client  = server_handshake(&from_client);
 
-    client_connection( to_client, form_client);
+    client_connect( to_client, from_client);
 
     close( to_client);
   }

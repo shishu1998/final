@@ -23,16 +23,23 @@ int socket_client;
 int ppid;
 
 static void sighandler(int signo){
+  int status;
+  int error;
+  if (signo==SIGPIPE){
+    error=close(socket_client);
+    if (error == -1)
+	perror("Error closing client socket\n");
+    printf("Client disconnected, child exiting\n");
+    exit(42);
+  }
   if (signo==SIGINT){
-    int status;
-    int error;
     while (wait(NULL) > 0){
       //parent waits until all children have exited
       ;
     }
     if (getppid() != ppid){
       //Exit procedure for children
-      printf("!!!\n");
+      printf("Child exiting\n");
       error=close(socket_client);
       if (error == -1)
 	perror("Error closing client socket\n");
@@ -150,9 +157,62 @@ int main(int argc, char *argv[]){
 	//pass on messages
 	//check for mail, repeat above
       }
+      while(1==1){
       //do child stuff
+	sleep(1);
+	printf("child\n");
+      }
       close(socket_client);
       printf("Connection closed\n");
     }
   }
 }
+
+
+
+
+
+
+int authenticate(char name[], char password[]){
+  /* Returns: boolean
+  Checks userlist for username and password
+  Checks logged to see if user already logged in
+  Returns 0 if correct combination not present or the user is already logged in
+  */
+  FILE *fr;
+  int count1 = 0, count2 = 0, check = 0, i, j, flag;
+  fr = fopen("root/log/txt", "rt");
+  while(fgets(line, 80, fr) != NULL){
+    sscanf (line, "%ld", &elapsed_seconds);
+  }
+  fclose(fr);
+  //open and read the file
+  //keep file in stringarray 
+  //DON'T FORGET TO CLOSE
+  for(i=0; i <= count1 - count2; i++){
+    for(j=i; j < i + count2; j++){
+      flag = 1;
+      if(name[j] != fr[j - i])
+	{
+	  flag = 0;
+	  break;
+	}
+    }
+    if(flag == 1)
+      return 0;
+    else
+      return -1;
+  }
+}
+  
+  
+
+int add_user(char name[], char password[]){
+  /*Returns boolean
+  Checks user to see if name is already taken
+  Return 1 if name is available and appends name and password to userlist,
+  creates directory folders(mailboxes) for the new user.
+  Takes into account semaphores (array)
+  Returns 0 if name is taken
+  */
+  

@@ -1,2 +1,45 @@
 Project member(s):
 	Ying-ke Chin-Lee
+
+Compile:
+	So far, just make and run "./main"
+
+List of files in repo:
+	BUGS
+	DESIGN
+	README
+	TODO
+
+	makefile
+
+	main.c
+		- void init_lots(Lot *lots)
+		- int main()
+
+	server.c
+		- void process(char *s) -> should be DELETED
+		- void sighandler(int signo)
+		- server_handshake(int *from_client)
+		- void client_connection(int to_client, int from_client)
+		- int main()
+	client.c
+		- int client_handshake(int *from_server)
+		int main()
+
+	writing.c
+		- union semun
+		- void prev_line()
+		- int main()
+	control.c
+		- union semun
+		- void print_story()
+		- void create()
+		- void remv() -> temporarily COMMENTED OUT
+		- int main()
+
+	display.h
+		- void display(Lot l)
+		- void bid() -> UNDER CONSTRUCTION
+	lot_struct.h
+		- typedef struct Lot
+		- void print(Lot l)

@@ -1,10 +1,9 @@
-DW NOTES: 
-This needs more information. Will this be a network multiplayer game or single computer game? What topics from this semester will you be using and how?
+DW APPROVED
 
 Group Members: Shi Shu, Ho Yin Ho, Masahero Masuda(period 5)
 
 Description of Project:
-Apples to Apples - the safe for work version of cards against humanity
+Apples to Apples(network game) - the safe for work version of cards against humanity
 This project is the C version of the game apples to apples. The decks of green cards and red cards will be stored in plain text file and then shuffled stored in an array in the server. There will be an array to store the used red cards in case they run out. Each player has their own client, which performs a handshake with the server when they join the game and are assigned a number. When all players have joined, the game begins, and the game winning amount of cards will be set by the amount of times the handshake is performed. Each card is a struct with the content of card(string), type of card(string, red or green), and an integer(owner's number). The hand for each player is stored in an array in client, the player must type in a number for the card that they want to use. Their card of choice's content is then piped to the server and sent to the player with the green card. The green card player then picks a card and chooses who gets to keep the green card. The card content is sent back to the server and matched with the player number. The player gets the green card and if they reached the winning conditions, they are declared the winner.
 
 Incorporations of what we learned in class:
@@ -16,3 +15,4 @@ Structures - Cards are made into structures
 
 Dates:
 1/4/16 - Get project Approved
+1/13/16 - Get all the decks and basic stuff set up

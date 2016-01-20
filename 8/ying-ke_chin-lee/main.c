@@ -4,9 +4,11 @@
 
 #include "lot_struct.h"
 #include "display.h"
+#include "writing.h"
 
 /*
 	For testing out bits of code
+	manually initialized bids.txt
 */
 
 void init_lots(Lot *lots) {
@@ -33,6 +35,11 @@ void init_lots(Lot *lots) {
 int main() {
 	Lot lots[3];
 	init_lots(lots);
+	int i = 0;
+	pcurr_lot = (Lot *)malloc(sizeof(Lot));
+	pcurr_lot = &lots[i];
+	print(*pcurr_lot);
 	display(lots[0]);
+	//free(pcurr_lot);
 	return 0;
 }

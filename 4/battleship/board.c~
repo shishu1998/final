@@ -1,0 +1,10 @@
+//this is meant to be the file that writse a history of one's commands to a file
+//will have to read the file to see if a shot fired actually hits
+
+
+
+
+int storeCommand() {//keeps a log of all entered commands , whether a correct input of not
+  //needed so that a commands isnt entered twice
+
+}

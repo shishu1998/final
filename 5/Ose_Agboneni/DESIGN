@@ -1,0 +1,8 @@
+DW APPROVED
+
+Ose Agboneni
+
+Project: Network Rock-Paper-Scissors tournament. I plan on coding a program that would allow up to 16 clients connect to a main server, which would then pit them against each other in a Rock-Paper-Scissors tournament. 
+
+Interface: At the moment, I plan for the user to access this tournament via terminal. No other interface will be necessary
+

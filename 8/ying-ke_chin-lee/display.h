@@ -5,6 +5,8 @@
 
 #define browser "chromium-browser"
 
+void bid();
+
 void display(Lot l) {
 	char *cmds[3] = {browser, l.url, NULL};
 	
@@ -33,6 +35,7 @@ void display(Lot l) {
 		int status;
 		wait(&status);
 	}
+	bid();
 }
 
 void bid() {
@@ -46,6 +49,7 @@ void bid() {
 		exit(0);
 	} else {
 		//open bid
+		printf("why does nothing happen\n");
 		int f = fork();
 		if (f == 0) {
 			char *creat[3] = {"./control", "-c", NULL};
@@ -54,9 +58,13 @@ void bid() {
 				execvp(creat[0], creat);
 				exit(0);
 			}
-			else wait(&status);
+			else {
+				wait(&status);
+			}
 			
+			printf("got to begin of writing program\n");
 			// start the writing program, which will write bids
+/*
 			char *cmds[2] = {"./writing", NULL};
 			int f1 = fork();
 			if (f1 == 0) {
@@ -65,6 +73,8 @@ void bid() {
 			} else {
 				wait(&status);
 			}
+*/
+			main_w();
 
 			// close bid info
 			char *remv[3] = {"./control", "-r", NULL};

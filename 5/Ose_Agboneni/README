@@ -1,0 +1,11 @@
+/~~~~~~~~~~~~~~~~~~~~~~~~Rock-Paper-Scissors Tourney~~~~~~~~~~~~~~~~~~~/
+
+1-14-16
+Basic: RPS between two clients
+       1. Client 1 connects to server and is put on hold (subserver forked off)
+       2. Client 2 connects to server and game begins (subserver forked off)
+       	  2.5. Semaphores helpful here?
+       3. Both clients prompted to enter R, P, or S
+       4. Subservers store inputs in a Shared Memory Segment
+       5. Main Server looks at inputs and passes judgement
+       6. Winner and loser get appropriate messages

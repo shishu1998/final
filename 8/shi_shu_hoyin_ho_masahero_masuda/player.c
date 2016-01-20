@@ -5,6 +5,17 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "deck.h"
+
+card hand[17];
+
+void printhand(){
+  int counter = 0;
+  while(hand[counter].content){
+    printf("%d.%s",counter,hand[counter].content);
+    counter ++;
+  }
+}
 
 int player_handshake(int *from_server){
   int to_server;
@@ -36,6 +47,7 @@ int main(){
   
   to_server = player_handshake(&from_server);
   while(1){
+    printhand();
     printf("type something: ");
     fgets(buffer,sizeof(buffer),stdin);
     *strchr(buffer,'\n') = 0;

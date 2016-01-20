@@ -18,7 +18,7 @@ int main() {
   //bind to port/address
   struct sockaddr_in listener;
   listener.sin_family = AF_INET;  //socket type IPv4
-  listener.sin_port = htons(24601); //port #
+  listener.sin_port = htons(50123); //port #
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   

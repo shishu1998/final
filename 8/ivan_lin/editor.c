@@ -17,43 +17,13 @@
 
 typedef struct line {int term_line; int file_line; char* text; struct line* next;} line;
 typedef struct winsize winsize;
-int print_selection(int file, winsize* window, int start_read){
-  FILE* fstream = fdopen(file,"r");
-  char *buffer = malloc((*window).ws_col);
-  ssize_t buff_size = sizeof(buffer);
 
-  int read;
-  
-  read = getline(&buffer, &buff_size, fstream);
-  
-  free(buffer);
-}
-
-int open_screen_buffer(){
-  printf(ALT_BUFFER);
-}
-
-int open_preserved_screen(){
-  printf(PRESERVED_SCREEN);
-}
-
-int init(line* line_node, winsize* window){
-  int i;
-  for (i=0; i<(*window).ws_row; i++){
-    (*line_node).text = malloc((*window).ws_col);
-    (*line_node).next = malloc(sizeof(line));
-    line_node = (*line_node).next;
-  }
-  return 0;
-}
-
-int cleanup(line* line_node){
-  while ((*line_node).next){
-    free(line_node);
-    line_node = (*line_node).next;
-  }
-  return 0;
-}
+int init(line*, winsize*);
+int cleanup(line*);
+int fill_buffers(int, int, line*);
+int print_buffers(line*);
+int open_screen_buffer();
+int open_preserved_screen();
 
 int main(){
   int cursor_row, cursor_col, read_line;
@@ -66,14 +36,64 @@ int main(){
 
   int map = open("./map",O_RDONLY);
 
+  fill_buffers(map,0,first_line);
+  
+  print_buffers(first_line);
+
   open_screen_buffer();
+  print_buffers(first_line);
+  
   while (1){
-    printf("HI YALL");
     fflush(stdout);
     sleep(1);
   }
+  
   open_preserved_screen();
-
+  
   cleanup(first_line);
   close(map);
+}
+
+int fill_buffers(int file, int start_read, line* first_line){
+  FILE* fstream = fdopen(file,"r");
+  size_t buff_size = sizeof((*first_line).text); 
+  int read = (int)getline(&(*first_line).text, &buff_size, fstream);
+  int i;
+  while(first_line->next != NULL){
+    read = (int)getline(&(*first_line).text, &buff_size, fstream);
+    first_line = first_line->next;
+  }
+}
+  
+int print_buffers(line* first_line){
+  while (first_line->next){
+    printf("%s",first_line->text);
+    first_line = first_line->next;
+  }
+}
+
+int open_screen_buffer(){
+  printf(ALT_BUFFER);
+}
+
+int open_preserved_screen(){
+  printf(PRESERVED_SCREEN);
+}
+
+int init(line* line_node, winsize* window){
+  int i;
+  for (i=0; i<window->ws_row; i++){
+    line_node->text = (char*)malloc(window->ws_col);
+    line_node->next = (line*)malloc(sizeof(line));
+    line_node = line_node->next;
+  }
+  return 0;
+}
+
+int cleanup(line* line_node){
+  while (line_node->next){
+    free(line_node);
+    line_node = line_node->next;
+  }
+  return 0;
 }

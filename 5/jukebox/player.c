@@ -18,8 +18,3 @@ int playsong(char * song){
   execvp(pointers[0], pointers);
   return 0;
 }
-
-int main(){
-  playsong("State_of_Grace.mp3");
-  return 0;
-}

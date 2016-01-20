@@ -15,6 +15,7 @@ struct player
 
 int total_players;
 int current_player;
+player player_list[1000];
 
 //Note: Skip and Reverse are to be dealt with later
 void next_player(){
@@ -25,3 +26,8 @@ void next_player(){
   else
     current_player++;
 }
+
+void add_player(player p){
+  player_list[ current_player ] = p;
+}
+

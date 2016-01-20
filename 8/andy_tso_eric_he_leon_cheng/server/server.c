@@ -61,8 +61,8 @@ void client_connection( int to_client, int from_client ) {
 int main() {
 	signal(SIGINT, sighandler);
 
-	// WIP: Gotta work on this later
-	//ask for desired_total
+	//WIP: Should we make this handling more secure/error-proof?
+	//asking for desired_total
 	int desired_total;
 	printf("<server> enter stuff: ");
 	scanf ("%d",&desired_total);

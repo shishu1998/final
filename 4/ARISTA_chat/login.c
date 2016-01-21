@@ -24,11 +24,11 @@ int getch() {
 }
 
 
-char * newuser() {
+int newuser() {
   printf("Type in your 4-digit ID for the username.\n");
-  char username[100];
-  fgets(username, sizeof(username), stdin);
-
+  int username = 0;
+  scanf("%i",&username);
+/*
   printf("\n Type in a  password: ");
   char pwd[25],ch='a';
   int i=0;
@@ -37,25 +37,28 @@ char * newuser() {
     if(ch==13) {
       break;
     } else if(ch==8) {
-      if(i!=0) { /*this is for avoiding the ENTER instructions getting deleted */
-	printf("\b");  /*printing backspace to move cursor 1 pos back*/
-	printf("%c",32);/*making the char invisible which is already on console*/
-	printf("\b"); /*printing backspace to move cursor 1 pos back*/
+      if(i!=0) { //this is for avoiding the ENTER instructions getting deleted 
+	printf("\b");  //printing backspace to move cursor 1 pos back
+	printf("%c",32);//making the char invisible which is already on console
+	printf("\b"); //printing backspace to move cursor 1 pos back
 	i--;
 	pwd[i]='\0';
       } else {
 	continue;
       }
     } else {
-      putchar('*');/* char - '*' will be printed instead of the character */
+      putchar('*');/* char - '*' will be printed instead of the character 
       pwd[i]=ch;
       i++;
     }
   }
+*/
   return username;
 }
 
-char * registereduser() {
+int registereduser() {
+
+	return 1;
 
 }
 
@@ -66,23 +69,20 @@ int tutorlogin() {
   }
 
   int accessing = 0;
-	int completed;
+  int username = 0;
   while (accessing == 0) {
-	  printf("login or register?\n");
-	  char action[100];
-  	fgets(action, sizeof(action), stdin);
-    if (strcmp(action,"login") >= 0) {
-      registereduser();
-	completed = 1;
-      accessing = 1;
-    } else if (strcmp(action,"register") >= 0) {
-      printf("okay cool");
-      newuser();
-	completed = 1;
-      accessing = 1;
-    } else {
-      printf("We didn't understand your response. Please try again.\n");
-    	completed = 0;
+	printf("Press 1 to login or 2 to register.\n");
+	int action;
+	scanf("%i",&action);
+	if (action == 1) {
+      		username = registereduser();
+      		break;
+   	 } else if (action == 2) {
+        	username = newuser();
+      		break;
+ 	} else {
+      		printf("We didn't understand your response. Please try again.\n");
+    		continue;
 	}
   }
 
@@ -90,7 +90,8 @@ int tutorlogin() {
   //if it exists, ask for password
   //if not, ask to create account and double check password
 
-  return completed;
+	printf("%i\n",username);
+  return username;
 }
 
 int main() {
@@ -113,11 +114,11 @@ int main() {
 
     if (strcmp(student,"tutor") >= 0) {
       printf("\nWelcome tutor! Please login.\n");
-      moveon = 1;
       int loggedin = 0;
       while (loggedin == 0)
-	if (tutorlogin()) {
+	if (tutorlogin() != 0) {
 	  printf("Thank you for logging in\n");
+	  moveon = 1;
 	  loggedin = 1;
 	} else {
 	  printf("There was an error while logging in.");

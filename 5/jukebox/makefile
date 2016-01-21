@@ -1,4 +1,4 @@
-all: jukebox client
+all: jukebox client player
 
 jukebox: jukebox.c jukebox.h 
 	gcc jukebox.c -o jukebox
@@ -6,7 +6,9 @@ jukebox: jukebox.c jukebox.h
 client: client.c client.h
 	gcc client.c -o client
 
+player: player.c
+	gcc player.c -o player
+
 clean:
-	rm *.out
 	rm *~
 	rm *#

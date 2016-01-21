@@ -47,8 +47,8 @@ int send_song(char * user_input, int socket_client){
     while((file = readdir(music_dir))){
       if (i > 1){ //skip the . and ..
 	char * test_title = file->d_name;
-	char sub_title[3]
-	memcpy(sub_title, test_title[0], 3);
+	char sub_title[3];
+	memcpy(sub_title, test_title, 3);
 	sub_title[3] = '\0';
 	if (strcmp(sub_title, substr) == 0){
 	  //this is the right song
@@ -65,7 +65,7 @@ int send_song(char * user_input, int socket_client){
     //end song title loop
 
     int song_file = open(song_title, O_RDONLY);
-    read(song_title, song, sizeof(song));
+    read(song_file, song, sizeof(song));
     write(socket_client, song, strlen(song) +1);
     printf("\n");
 }

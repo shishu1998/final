@@ -23,9 +23,9 @@ int getsize(card* deck){
   return counter;
 }
 
-int randNum(){
+unsigned int randNum(){
   int descriptor = open("/dev/urandom", O_RDONLY);
-  int *num = (int *)malloc(4);
+  unsigned int *num = (unsigned int *)malloc(4);
   read(descriptor,num,4);
   close(descriptor);
   return *num;
@@ -35,12 +35,14 @@ void shuffle(card* deck){
   int len = getsize(deck);
   int rand1;
   int rand2;
-  card* temp = (card*)malloc(sizeof(card));
+  //  card* temp = (card*)malloc(sizeof(card));
+  card *temp;
   int counter = 0;
-  while(counter < 1000){
+  while(counter < 20){
     rand1 = randNum() % len;
     rand2 = randNum() % len;
-    *temp = deck[rand1];
+    printf("%s SWAP %s\n",deck[rand1].content,deck[rand2].content);
+    temp = &deck[rand1];
     deck[rand1] = deck[rand2];
     deck[rand2] = *temp;
     counter ++;

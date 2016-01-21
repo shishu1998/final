@@ -26,7 +26,9 @@ static void sighandler(int signo){
   }
   if (signo==SIGINT){
     printf("Closing socket\n");
-    close(socket_id);
+    error=close(socket_id);
+    if (error == -1)
+      perror("Error closing socket\n");
     printf("Socket closed\n");
     exit(42);
   }
@@ -103,6 +105,13 @@ int main(int argc, char *argv[]){
    }       
    //Begin standard operation
    while (1==1){
+     printf("Waiting for message size\n");
+     error=read(socket_id,&size,sizeof(size));
+     if (error == -1)
+       perror("Error getting size\n");
+     char buf_in[size];
+     read(socket_id,buf_in,size);
+     printf("Your messages: \n%s",buf_in);
      //read(socket_id,stdin,
      //write(socket_id,msg,MSG_LEN);
      //printf("Message sent: %s\n",buf);

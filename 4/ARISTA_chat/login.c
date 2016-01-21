@@ -28,7 +28,6 @@ int newuser() {
   printf("Type in your 4-digit ID for the username.\n");
   int username = 0;
   scanf("%i",&username);
-/*
   printf("\n Type in a  password: ");
   char pwd[25],ch='a';
   int i=0;
@@ -47,12 +46,12 @@ int newuser() {
 	continue;
       }
     } else {
-      putchar('*');/* char - '*' will be printed instead of the character 
+      putchar('*'); //char - '*' will be printed instead of the character 
       pwd[i]=ch;
       i++;
     }
   }
-*/
+
   return username;
 }
 

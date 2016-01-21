@@ -52,7 +52,6 @@ struct card* makedeck(char* type){
   card* deck;
   int descriptor;
   char buffer[20000];
-  char* maketype = (char*)malloc(sizeof("green"));
   if(type == "red"){
     descriptor = open("reddeck",O_RDONLY);
     deck = (card*)malloc(sizeof(card)*746);
@@ -69,7 +68,7 @@ struct card* makedeck(char* type){
   int i = 0;
   while(cards){
     temp = strsep(&cards,"\n");
-    deck[i] = *makecard(temp,maketype);
+    deck[i] = *makecard(temp,type);
     i ++;
   }
   return deck;

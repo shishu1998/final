@@ -17,7 +17,7 @@ int read_top_level(char *path, int map_file, int level){
   struct dirent *dir_file;
   dir_file = readdir(dir);
   
-  //  dup2(map_file, 1);
+  dup2(map_file, 1);
   
   char name[256];
   char *temp;
@@ -32,8 +32,7 @@ int read_top_level(char *path, int map_file, int level){
     if (strcmp(temp,"/..")!=0 && strcmp(temp,"/.")!=0){
       int i;
       for (i=0;i<level;i++)
-	printf("  ");
-   
+	printf("  "); 
       if (dir_file->d_type == DT_DIR){
 	printf("%s\n",name);
 	read_top_level(name, map_file, level+1);

@@ -13,6 +13,7 @@ int playsong(char * song){
   #endif
   #else
   pointers[0] = "afplay";
+  #endelse
   pointers[1] = song;
   pointers[2] = NULL;
   execvp(pointers[0], pointers);

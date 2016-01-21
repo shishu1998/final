@@ -16,10 +16,18 @@
 
 int running = 1;
 
-int main() {
+int main(int argc, char * argv[]) {
   int socket_id, e;
+  char * hostname;
 
-  socket_id = connect_to_server(HOSTNAME, PORT);
+  if (argc < 1) {
+    printf("Usage: client <hostname>\n");
+    exit(1);
+  } else {
+    hostname = argv[1];
+  }
+
+  socket_id = connect_to_server(hostname, PORT);
 
   while (running) {
     int bytes_read;

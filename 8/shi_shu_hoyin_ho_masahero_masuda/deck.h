@@ -17,7 +17,7 @@ struct card* makecard(char* content,char* type){
 
 void printdeck(card* deck){
   int i = 0;
-  while(deck[i].content){
+  while(i<100){
     printf("%s\n",deck[i].content);
     i++;
   }
@@ -55,7 +55,6 @@ void shuffle(card* deck){
     deck[rand2] = *temp;
     counter ++;
   }
-  printf("%d\n",len);
 }
 
 struct card* makedeck(char* type){

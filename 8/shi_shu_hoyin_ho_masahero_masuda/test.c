@@ -5,10 +5,9 @@
 int main(){
   card* red = makedeck("red");
   card* green = makedeck("green");
-  printdeck(red);
   //printdeck(green);
   shuffle(red);
-  //  printdeck(red);
+  printdeck(red);
   //  shuffle(green);
   //printdeck(red);
   //shuffle(&green);

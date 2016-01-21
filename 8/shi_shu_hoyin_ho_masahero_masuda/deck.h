@@ -41,13 +41,11 @@ void shuffle(card* deck){
   while(counter < 20){
     rand1 = randNum() % len;
     rand2 = randNum() % len;
-    printf("%s SWAP %s\n",deck[rand1].content,deck[rand2].content);
     temp = &deck[rand1];
     deck[rand1] = deck[rand2];
     deck[rand2] = *temp;
     counter ++;
   }
-  printf("%d\n",len);
 }
 
 struct card* makedeck(char* type){

@@ -38,3 +38,7 @@ We want to make something like iTunes that can be run in the terminal and access
 		Next Friday - Make a jazzy jukebox logo (key step)
 
 
+##TO RUN
+     if using a linux machine:
+     in terminal run$ sudo apt-get install mpg321
+     to install mpg321 which plays mp3 files on linux machines

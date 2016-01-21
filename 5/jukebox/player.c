@@ -3,17 +3,18 @@
 #include <string.h>
 #include <unistd.h>
 
+//must run$ sudo apt-get install mpg321
+
 #ifdef LINUX
 
 int playsong(char * song){
   char * pointers[3];
   
   #ifdef LINUX
-  pointers[0] = "aplay";
-  #endif
+  pointers[0] = "mpg321";
   #else
   pointers[0] = "afplay";
-  #endelse
+  #endif
   pointers[1] = song;
   pointers[2] = NULL;
   execvp(pointers[0], pointers);

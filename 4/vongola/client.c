@@ -10,18 +10,18 @@
 #include <errno.h>
 
 void process(int fd, int sockfd){
-  char send[256];
-  char recv[256];
+  char sen[256];
+  char rec[256];
   int num_bytes;
 
-  if (i==0){//send
-    fgets(send, sizeof(send), stdin);
-    send(sockfd, send, sizeof(send));
+  if (fd==0){//send
+    fgets(sen, sizeof(sen), stdin);
+    send(sockfd, sen, sizeof(sen), 0);
 
   }else{//receive
-    num_bytes=recv(sockfd,recv,sizeof(recv));
-    recv[num_bytes]='\0';
-    printf("%s\n", recv);
+    num_bytes=recv(sockfd,rec,sizeof(rec),0);
+    rec[num_bytes]='\0';
+    printf("%s\n", rec);
     fflush(stdout);
     
   }
@@ -70,12 +70,13 @@ int main(int argc, char **argv) {
     }
   }
   //attempt a connection
-  
+  /*
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
 
   read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
+  */
+  //printf("<client> received: [%s]\n", buffer );
   
   return 0;
 }

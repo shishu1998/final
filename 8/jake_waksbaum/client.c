@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -16,11 +17,29 @@
 
 int running = 1;
 
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    running = 0;
+  } else if (signo == SIGUSR1) {
+    printf("\nThe server has shutdown.\n");
+    running = 0;
+  }
+}
+
 int main(int argc, char * argv[]) {
   int socket_id, e;
   char * hostname;
 
-  if (argc < 1) {
+  struct sigaction action = {
+    .sa_handler = sighandler,
+    .sa_flags = 0
+  };
+  sigemptyset(&action.sa_mask);
+
+  sigaction(SIGINT, &action, NULL);
+  sigaction(SIGUSR1, &action, NULL);
+
+  if (argc < 2) {
     printf("Usage: client <hostname>\n");
     exit(1);
   } else {

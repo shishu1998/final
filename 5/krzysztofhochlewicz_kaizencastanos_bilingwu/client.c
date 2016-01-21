@@ -44,9 +44,13 @@ int main(){
 	current_word = strsep(&rwp, delim); //get the first word
 	//strcat(current_word, " ");
 	//printf("%s\n", rwp);
+	int check_1 = 0; //Used to fix a bug where a backspace kept appearing after you typed a word
+	int check_2 = 1; //To keep the first check from affecting the first word
 	while(current_word != NULL){ 				 //loop over words until there are no more words
 		entered_chars = 0;
 		current_typed[0] = 0;
+		if(check_2 != 1)
+			check_1 = 1;
 		while(strcmp(current_word, current_typed)){ //loop until the user enters the current word correctly
 			current_char = get_letter(); //wait for a key to be pressed
 			if (current_char ==  127){   //if backspace pressed
@@ -64,11 +68,15 @@ int main(){
 			}
 			printf("\033[2J\033[1;1H"); //clear the screen
 			update_screen(); //update status
+			
+			if(check_1)
+				current_typed[0] = 0;
+			check_1 = 0;
 		}
 		strcat(completed_words, current_word);
 		strcat(completed_words, " ");
 		current_word = strsep(&rwp, delim);
-		
+		check_2 = 0;
 		//strcat(current_word, " ");
 	}
 

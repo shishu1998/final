@@ -6,5 +6,7 @@ jukebox: jukebox.c jukebox.h
 client: client.c client.h
 	gcc client.c -o client
 
-
-	
+clean:
+	rm *.out
+	rm *~
+	rm *#

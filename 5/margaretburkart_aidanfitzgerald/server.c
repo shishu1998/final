@@ -62,7 +62,7 @@ int main() {
 
 void server_talk(int socket_client) {
   char *buffer;
-  int size;
+  unsigned int size;
 
   // Session
   user *session;
@@ -81,7 +81,7 @@ void server_talk(int socket_client) {
       exit(1);
     }
     else {
-      size = ntohi(size);
+      size = ntohl(size);
       printf("Reading up to %d bytes\n", size);
     }
 
@@ -100,6 +100,9 @@ void server_talk(int socket_client) {
     // TODO: parse input
     if (strstart(buffer, "LOGIN")) {
       session = server_login(buffer);
+      if (session) {
+	
+      }
     }
 
     else if (strstart(buffer, "SETUP")) {
@@ -133,10 +136,15 @@ void server_talk(int socket_client) {
   user_freemem(session);
 }
 
-user *server_login(char *buffer) {
+user *scan_userinfo(char *buffer) {
   user *u = malloc(sizeof(user));
   sscanf(buffer, "Username: %ms", &(u->name));
   sscanf(buffer, "Password: %ms", &(u->passwd));
+  return u;
+}
+
+user *server_login(char *buffer) {
+  user *u = scan_userinfo(buffer);
 
   // Validate login
   FILE *userfile = fopen("mail.d/users.csv", "r+");
@@ -167,4 +175,32 @@ user *server_login(char *buffer) {
   }
   
   return u;
+}
+
+user *server_acct_setup(char *buffer) {
+  user *u = scan_userinfo(buffer);
+
+  // Create user in userfile
+  FILE *userfile = fopen("mail.d/users.csv", "r+");
+  user *clone = user_create(u->name, u->passwd, userfile);
+  fclose(userfile);
+
+  if (clone) {
+    // Only free the struct, don't free the strings inside
+    free(clone);
+
+    // Make new folder for user
+    char *folder = server_dir(u->name);
+    if (mkdir(folder, 0744)) {
+      perror("Error creating user directory");
+      exit(1);
+    }
+    free(folder);
+
+    return u;
+  }
+
+  free(u);
+
+  return NULL;
 }

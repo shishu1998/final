@@ -8,7 +8,9 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
-char *fname = "bids.txt"; // will have to make one bid file per item later on
+//char *fname = "bids.txt"; // will have to make one bid file per item later on
+char *bidfile = "curr_bid.txt";
+int fd;
 
 char entered_bid[256];
 
@@ -18,6 +20,16 @@ union semun {
 	unsigned short *array;
 	struct seminfo *_buf;
 };
+
+void clean_stdin(void)
+{
+    int c;
+    do {
+        c = getchar();
+	printf("w:getchar hang?\n");
+    } while (c != '\n' && c != EOF);
+	printf("w:out of getchar\n");
+}
 
 char *del_newline(char *in) {
 	char *c;
@@ -39,10 +51,10 @@ int file_write(char *to_write) {
 	sb.sem_op = -1;
 	semop(semid, &sb, 1);
 
-	int shid = shmget(shmkey, sizeof(int), 0644);
+	int shid = shmget(shmkey, sizeof(int), 0644);//IPC_CREAT|0644); 
 	printf("shid = %d\n", shid);
 
-	int fd = open(fname, O_RDONLY);
+	fd = open(bidfile, O_CREAT|O_RDONLY);
 	int* shnum = shmat(shid, 0, 0);
 
 	lseek(fd, -1 * (*shnum), SEEK_END);
@@ -51,19 +63,15 @@ int file_write(char *to_write) {
 	read(fd, &prev_bid, *shnum);
 	close(fd);
 
-	fd = open(fname, O_WRONLY|O_APPEND);
+	printf("random print in the middle\n");
 	char line[256];
 	strcpy(line, to_write); //this might be necessary...
-	getchar();
-	fgets(line, sizeof(line), stdin);
-	printf("fgets received %s\n", line);
 
 	// find out if this new bid is higher than the old bid
 	printf("previous bid = %s\n", prev_bid);
 	printf("This is entered bid: %s\n", line);
 	
 	printf("tried to print1\n");
-	printf("tried to print2\n");
 
 	*shnum = strlen(line);
 	char *tmp = line;
@@ -74,15 +82,14 @@ int file_write(char *to_write) {
 	printf("p_d_n = %s, l_d_n = %s\n", prev_del_newline, line_del_newline);
 	write(fd, tmp, *shnum);
 	strcpy(entered_bid, tmp);
+
 	close(fd);
-	//	printf("atof(line) %s\n", atof(line));
-	//	printf("atof(prev_bid) %s\n", atof(prev_bid));
 	printf("Bid successful\n");
-	
-	//close(fd);
+
 	shmdt(shnum);
 	sb.sem_op = 1;
 	semop(semid, &sb, 1);
 
+	printf("got out of here??\n"); //ah, so it never gets here....why is that?  
 	return 0;
 }

@@ -6,8 +6,11 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+//semaphore will control who's turn it is
+//player will have to wait for sempahore access to be given to program before being prompted by program
 
-//function to process clients messages                                                                                                                                               
+//performs game functions
+//will recieve info on own/player 2 attacks and adjust board accordingly
 void client_connect (int to_client, int from_client) {
   char comms[100];
 
@@ -26,7 +29,7 @@ int server_handshake(int *from_client){
   char buff[100];
 
   mkfifo( "popeye", 0644 );
-  from_client = open( "popeye", O_RDONLY );
+  *from_client = open( "popeye", O_RDONLY );
   printf("At Last! My Client in shining armor\n");
 
   remove("popeye");
@@ -35,7 +38,7 @@ int server_handshake(int *from_client){
   printf("My Client in Shining armor is Client %s, has arrived!\n", buff);
   to_client = open( buff, O_WRONLY );
   
-  strncpy( buff, "Subserver Loves You!", sizeof(buff) );
+  strncpy( buff, "Server Loves You!", sizeof(buff) );
   write(to_client, buff, sizeof(buff));
    
   return to_client;
@@ -52,24 +55,21 @@ static void sighandler(int signo){
 int main(){
   signal( SIGINT, sighandler );
   
+  //establish game parameters
+  //function for choosing player setting (ship placements, etc.)
+  //handshake to establish connection with Player 2
+  
   int to_client;
   int from_client;
-
-  printf("Will a Client in shining armor complete me?\n");
-  //server creates wkp
-  mkfifo( "popeye", 0644 );
-  //server waits for connection
-  from_client = open( "popeye", O_RDONLY );
-  printf("At Last! My Client in shining armor\n");
-  //client does their their side of handshake
-  //server recieves private pipe name
-  //server removes wpk
-  remove("popeye");
-  
   while(1){
-    //does rest of handshake: handles subservers and create new wkp's 
-    to_client = server_handshake(&from_client);
+    printf("Will a Client in shining armor complete me?\n");
+    to_client  = server_handshake(&from_client);
+
+    client_connect( to_client, from_client);
+
+    close( to_client);
   }
+
   return 0;
 }
     

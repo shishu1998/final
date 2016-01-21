@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 #include "len_prefix.h"
 #include "shared.h"
@@ -18,7 +19,7 @@ int running = 1;
 int main() {
   int socket_id, e;
 
-  socket_id = connect_to_server(IP, PORT);
+  socket_id = connect_to_server(HOSTNAME, PORT);
 
   while (running) {
     int bytes_read;
@@ -46,18 +47,22 @@ int main() {
   close(socket_id);
 }
 
-int connect_to_server(char * ip, int port) {
+int connect_to_server(char * hostname, int port) {
   int socket_id, e;
 
   // create socket
   socket_id = socket(AF_INET, SOCK_STREAM, 0);
 
+  struct in_addr *addr;
+  e = hostname_to_ip(hostname, &addr);
+  printf("%s\n", inet_ntoa(*addr));
+
   // bind to port/address
   struct sockaddr_in sock = {
     .sin_family = AF_INET,
-    .sin_port = htons(port)
+    .sin_port = htons(port),
+    .sin_addr = *addr
   };
-  inet_aton(ip, &(sock.sin_addr) );
 
   bind(socket_id, (struct sockaddr *)&sock, sizeof(sock));
 
@@ -88,4 +93,20 @@ int handle_response(int socket_id) {
   free(buf);
 
   return e;
+}
+
+/*
+ * Credit http://www.binarytides.com/hostname-to-ip-address-c-sockets-linux/
+ */
+int hostname_to_ip(char * hostname, struct in_addr** addr) {
+  struct hostent *he = (void *)123456789;
+
+  he = gethostbyname(hostname);
+  if (he == NULL) {
+    return -1;
+  }
+
+  *addr = (struct in_addr *) he->h_addr;
+
+  return 0;
 }

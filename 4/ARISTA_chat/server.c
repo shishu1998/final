@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <string.h>
 #include <unistd.h>
 
@@ -29,12 +30,17 @@ int main() {
     socket_client = accept( socket_id, NULL, NULL );
     printf("<server> connected: %d\n", socket_client );
 
-    if (fork() ==0){
-      char s[100] = "hello";
+    if (fork() == 0){
+      
+      printf("Enter text to write:\n");
+      char s[100];
+      fgets(s, sizeof(s), stdin);
       write(socket_client, s, sizeof(s));
-      sleep(1);
+      printf("<server> waiting\n");
+      sleep(2);
       read(socket_client, s, sizeof(s));
-      printf("%s", s);
+      printf("<server> received: %s\n", s);
+
     }else{
       close(socket_client);
     }

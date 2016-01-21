@@ -25,8 +25,17 @@ void client_talk(int);
 // Server code
 void server_talk(int);
 user *server_login(char*);
+user *server_acct_setup(char*);
 
 // User operations
 user *user_find(char*, FILE*);
 user *user_create(char*, char*, FILE*);
 void user_freemem(user*);
+
+// Common network stuff
+int sock_write_n(int, char*, int);
+int sock_write(int, char*);
+
+// Common filename stuff
+char *client_dir(char*);
+char *server_dir(char*);

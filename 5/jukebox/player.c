@@ -13,13 +13,9 @@ int playsong(char * song){
   #endif
   #else
   pointers[0] = "afplay";
+  #endelse
   pointers[1] = song;
   pointers[2] = NULL;
   execvp(pointers[0], pointers);
-  return 0;
-}
-
-int main(){
-  playsong("State_of_Grace.mp3");
   return 0;
 }

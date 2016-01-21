@@ -23,8 +23,10 @@ void sign_in(int socket_id){
 
 void choose_username(char* final, char* buffer){
   printf("Enter your new username: ");
-  fgets(buffer,sizeof(stdin)+1,stdin);
-  strcat(final,buffer);
+  fgets(buffer,sizeof(stdin)-1,stdin);
+  printf("Successfully read from stdin\n");
+  strncat(final,buffer,12);
+  printf("Successfully used strcat\n");
   
   char *sep = "\nPassword: ";
   strcat(final,sep);
@@ -32,9 +34,9 @@ void choose_username(char* final, char* buffer){
 
 void choose_password(char* final, char* buffer1, char* buffer2, int socket_id){
   printf("Enter your new password: ");
-  fgets(buffer1,sizeof(stdin)+1,stdin);
+  fgets(buffer1,sizeof(stdin)-1,stdin);
   printf("Re-enter your new password: ");
-  fgets(buffer2,sizeof(stdin)+1,stdin);
+  fgets(buffer2,sizeof(stdin)-1,stdin);
 
   if(strcmp(buffer1,buffer2)==0){
     strcat(final,buffer2);
@@ -62,19 +64,20 @@ void sign_up(int socket_id){
     execl("mkdir","mkdir","mail");
     //return 0;
   }else{
-    int exit;
-    int pid = wait(&exit);
+    //int exit;
+    //int pid = wait(&exit);
     //return WEXITSTATUS(exit);
+    //choose_username(final, buffer);
+    //choose_password(final, buffer1, buffer2, socket_id);
+    choose_username(final, buffer);
+    choose_password(final, buffer1, buffer2, socket_id);
   }
-
-  choose_username(final, buffer);
-  choose_password(final, buffer1, buffer2, socket_id);
 }
 
 void check_for_account(char *buffer, int socket_id){
-  if(strcmp(buffer,"y")==0){
+  if(strncmp(buffer,"y\n",2)==0){
     sign_in(socket_id);
-  }else if(strcmp(buffer,"n")==0){
+  }else if(strncmp(buffer,"n\n",2)==0){
     sign_up(socket_id);
   }else{
     printf("Not a valid response.");
@@ -100,15 +103,15 @@ int main() {
   printf("<client> connect returned: %d\n", i);
 
   // Step 4. Do network stuff
-  char buff[256];
-  char *buffer = buffer;
+  char buffer[256];
   //read(socket_id, buffer, sizeof(buffer) - 1);
   
   //Request info from user
 
   printf("Do you already have an account? (y/n)\n");
   //read info
-  fgets(buffer,sizeof(stdin)+1,stdin);
+  fgets(buffer,sizeof(stdin)-1,stdin);
+  printf("Successfully read from stdin\n");
   //buffer = strsep(&pin, args);
   check_for_account(buffer, socket_id);
   

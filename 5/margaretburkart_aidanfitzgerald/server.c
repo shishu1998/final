@@ -62,8 +62,10 @@ int main() {
 
 void server_talk(int socket_client) {
   char *buffer;
-  int size;
-  user *u;
+  unsigned int size;
+
+  // Session
+  user *session;
 
   int r;
 
@@ -79,6 +81,7 @@ void server_talk(int socket_client) {
       exit(1);
     }
     else {
+      size = ntohl(size);
       printf("Reading up to %d bytes\n", size);
     }
 
@@ -96,7 +99,14 @@ void server_talk(int socket_client) {
 
     // TODO: parse input
     if (strstart(buffer, "LOGIN")) {
-      u = server_login(buffer);
+      session = server_login(buffer);
+      if (session) {
+	
+      }
+    }
+
+    else if (strstart(buffer, "SETUP")) {
+      session = server_acct_setup(buffer);
     }
 
     else if (strstart(buffer, "GET")) {
@@ -104,13 +114,13 @@ void server_talk(int socket_client) {
       
     }
 
-    else if (strstart(buffer, "POST")) {
+    else if (strstart(buffer, "SEND")) {
       // Upload one email
       
     }
 
     else if (strstart(buffer, "LOGOUT")) {
-      user_freemem(u);
+      user_freemem(session);
       close(socket_client);
       free(buffer);
       exit(0);
@@ -123,16 +133,21 @@ void server_talk(int socket_client) {
   // END LOOP
 
   // Done with session
-  user_freemem(u);
+  user_freemem(session);
 }
 
-user *server_login(char *buffer) {
+user *scan_userinfo(char *buffer) {
   user *u = malloc(sizeof(user));
   sscanf(buffer, "Username: %ms", &(u->name));
   sscanf(buffer, "Password: %ms", &(u->passwd));
+  return u;
+}
+
+user *server_login(char *buffer) {
+  user *u = scan_userinfo(buffer);
 
   // Validate login
-  FILE *userfile = fopen("users.csv", "r+");
+  FILE *userfile = fopen("mail.d/users.csv", "r+");
   user *account = user_find(u->name, userfile);
   fclose(userfile);
 
@@ -160,4 +175,32 @@ user *server_login(char *buffer) {
   }
   
   return u;
+}
+
+user *server_acct_setup(char *buffer) {
+  user *u = scan_userinfo(buffer);
+
+  // Create user in userfile
+  FILE *userfile = fopen("mail.d/users.csv", "r+");
+  user *clone = user_create(u->name, u->passwd, userfile);
+  fclose(userfile);
+
+  if (clone) {
+    // Only free the struct, don't free the strings inside
+    free(clone);
+
+    // Make new folder for user
+    char *folder = server_dir(u->name);
+    if (mkdir(folder, 0744)) {
+      perror("Error creating user directory");
+      exit(1);
+    }
+    free(folder);
+
+    return u;
+  }
+
+  free(u);
+
+  return NULL;
 }

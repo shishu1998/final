@@ -33,7 +33,10 @@ user *user_create(char *name, char *passwd, FILE *userfile) {
 
   // Return if user already exists
   if ( (u = user_find(name, userfile)) ) {
-    user_freemem(u);
+    // Don't free u->name
+    free(u->passwd);
+    free(u);
+    
     errno = EEXIST;
     return NULL;
   }

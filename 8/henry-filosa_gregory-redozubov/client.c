@@ -17,9 +17,18 @@
 int socket_id;
 
 static void sighandler(int signo){
+  if (signo==SIGPIPE){
+    error=close(socket_client);
+    if (error == -1)
+	perror("Error closing client socket\n");
+    printf("Server disconnected, client exiting\n");
+    exit(42);
+  }
   if (signo==SIGINT){
     printf("Closing socket\n");
-    close(socket_id);
+    error=close(socket_id);
+    if (error == -1)
+      perror("Error closing socket\n");
     printf("Socket closed\n");
     exit(42);
   }
@@ -63,9 +72,11 @@ void send_user(char * ans,char name[], char pass[], int socket_id){
 
 int main(int argc, char *argv[]){
   signal(SIGINT,sighandler);
+  char ans;
   char name[NAME_LEN];
   char password[PASS_LEN];
-  char ans;
+  char msg[MSG_LEN];
+  int size;
    while (ans!='1' && ans!='2'){
      printf("Welcome to DW-NET\nAre you:\n1-Logging in\n2-Creating a new account\n");
      fgets(&ans,3,stdin);
@@ -93,17 +104,16 @@ int main(int argc, char *argv[]){
      //If not available, ask user to create a different name. Resend that
    }       
    //Begin standard operation
-   //Create socket
-   char buf[6];
-   read(socket_id,&buf,6);
-   printf("Message recieved: %s\n",buf);
-   close(socket_id);
-   /*
-   len = recv(mysocket, buffer, MAXRCVLEN, 0);
-   // We have to null terminate the received data ourselves 
-   buffer[len] = '\0';
-   printf("Received %s (%d bytes).\n", buffer, len);
-   close(mysocket);
-   return EXIT_SUCCESS;
-   */
+   while (1==1){
+     printf("Waiting for message size\n");
+     error=read(socket_id,&size,sizeof(size));
+     if (error == -1)
+       perror("Error getting size\n");
+     char buf_in[size];
+     read(socket_id,buf_in,size);
+     printf("Your messages: \n%s",buf_in);
+     //read(socket_id,stdin,
+     //write(socket_id,msg,MSG_LEN);
+     //printf("Message sent: %s\n",buf);
+   }
 }

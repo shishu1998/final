@@ -5,13 +5,13 @@ void sign_in(){
   char *buffer = buff;
   char buff1[256];
   char *buffer1 = buff;
-  char *final = "LOGIN\n";
+  char *final = "LOGIN\nUsername: ";
 
   printf("Enter username: ");
   fgets(buffer,sizeof(stdin)+1,stdin);
   strcat(final,buffer);
   
-  char *sep = ",";
+  char *sep = "\nPassword: ";
   strcat(final,sep);
 
   printf("Enter password: ");
@@ -26,7 +26,7 @@ void choose_username(char* final, char* buffer){
   fgets(buffer,sizeof(stdin)+1,stdin);
   strcat(final,buffer);
   
-  char *sep = ",";
+  char *sep = "\nPassword: ";
   strcat(final,sep);
 }
 
@@ -52,7 +52,7 @@ void sign_up(){
   char *buffer1 = buff;
   char buff2[256];
   char *buffer2 = buff;
-  char *final;
+  char *final = "SETUP\nUsername: ";
 
   int i;
   i = fork();

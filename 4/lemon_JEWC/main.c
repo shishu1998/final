@@ -19,7 +19,18 @@ int main(){
   else{
     printf("\e[7m%s\e[27m does not exist. Now creating.\n",response);
   }
-
+  //MAKE IT FORK AT EVERY COMMAND EXECUTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  printf("DEEEEEEEBUGGGGGGGG");
+  execlp("stty","stty","raw",NULL);
+  printf("RAW MODE INITIATED\n\n");
+  char buf[1000];
+  while(fgets(buf, sizeof(buf), stdin)){
+    printf("I got: %s",buf);
+    if(buf[0] == 'x'){
+      execlp("stty","stty","-raw",NULL);
+      printf("\nRAW MODE TERMINATED\n");
+    }
+  }
 
   return 0;
 }

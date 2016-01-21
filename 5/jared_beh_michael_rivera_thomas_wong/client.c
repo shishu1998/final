@@ -8,24 +8,36 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "game.c"
-
+//#include "game.c"
 
 int main(){
-int socket_id;
-board buffer[81];
-int i;
-int addrs;
-char *server_ip;
-
-struct sockaddr_in sock;
-sock.sin_family = AF_INET;
-sock.sin_port = htons(24600);
-inet_aton(server_ip,&(sock.sin_addr));
-bind(socket_id,(struct sockaddr*)&sock,sizeof(sock));
-i=connect(socket_id,(struct sockaddr*)&sock,sizeof(sock));
-printf("Connected to socket:%d",i);
-read(socket_id,buffer,sizeof(buffer);
-
-return 0;
+  char* clear = "\x1b[2J";
+  char* hide =  "\x1b[?25l";
+  char* show =  "\x1b[?25h";
+  char* go = "\x1b[0;0H";
+  /*int socket_id;
+  board buffer[81];
+  int i;
+  int addrs;
+  char *server_ip;
+  
+  struct sockaddr_in sock;
+  sock.sin_family = AF_INET;
+  sock.sin_port = htons(24600);
+  inet_aton(server_ip,&(sock.sin_addr));
+  bind(socket_id,(struct sockaddr*)&sock,sizeof(sock));
+  i=connect(socket_id,(struct sockaddr*)&sock,sizeof(sock));
+  printf("Connected to socket:%d",i);
+  while(1){
+    read(socket_id,buffer,sizeof(buffer));
+    int i = 0;
+    while(i < 81){
+    }
+  }
+  */
+  printf("%s",clear);
+  printf("%s",hide);
+  printf("%s",show);
+  printf("%s",go);
+  return 0;
 }

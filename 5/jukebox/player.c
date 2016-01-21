@@ -3,8 +3,6 @@
 #include <string.h>
 #include <unistd.h>
 
-//must run$ sudo apt-get install mpg321
-
 #ifdef LINUX
 
 int playsong(char * song){

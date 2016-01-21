@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <termios.h>
+#include <ncurses.h>
 
 #define CURSOR_UP "\033[1A"
 #define CURSOR_DOWN "\033[1B"
@@ -27,7 +29,6 @@ int open_preserved_screen();
 
 int main(){
   int cursor_row, cursor_col, read_line;
-
   struct winsize window;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
 
@@ -44,11 +45,13 @@ int main(){
   print_buffers(first_line);
   
   while (1){
-    fflush(stdout);
-    sleep(1);
+    scanw("A");
+    printf("%d\n",in);
+    //fflush(stdout);
+    //    sleep(1);
   }
-  
-  open_preserved_screen();
+
+  //open_preserved_screen();
   
   cleanup(first_line);
   close(map);

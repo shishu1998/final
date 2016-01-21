@@ -15,9 +15,9 @@
 #include <sys/sem.h>
 #include <sys/types.h>
 
-char uboard [11][11]; //your board
-char oboard [11][11]; //your opponent's board
-int shippies[10]; //the placement of your ships
+char uboard [6][6]; //your board
+char oboard [6][6]; //your opponent's board
+int shippies[5]; //the placement of your ships
 
 
 
@@ -42,20 +42,6 @@ void makeBoards(){
     oboard [d][a] = a;
     a++;
   }
-}
-
-/*======== void makeFleet() ==========
-Inputs: 
-int place: user's inputted placement of a ship
-int places[]: array holding all ship places
-
-Result:
-fills up places[] with user's inputs
-
-====================*/
-int makeFleet(int place, int places[]){
-  printf("Input where you want your first ship! Each ship is one unit./nDon't use any spaces between the numbers.");
-  scanf("%s", &pos);
 }
 
 
@@ -86,11 +72,12 @@ int play(){
 
   int pos;
   
-  printf("Ahoy, matey! Welcome to Battleship Bash Bros.");
+  printf("Ahoy, matey! Welcome to Battleship Bash Bros.\n");
   //insert grid setup
-  printf("It's time to arrange your fleet.");
+  printf("It's time to arrange your fleet.\n");
   //printf("Input where you want the leftmost or topmost part of your ship: ");
-  makefleet();
+  makefleet(shippies);
+  
   
   
   //a bunch of stuff

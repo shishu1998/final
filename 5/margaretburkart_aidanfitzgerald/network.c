@@ -16,3 +16,7 @@ int sock_write_n(int sock, char *str, int n) {
   status = write(sock, str, n);
   return status;
 }
+
+int sock_write(int sock, char *str) {
+  return sock_write_n(sock, str, strlen(str));
+}

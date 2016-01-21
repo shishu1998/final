@@ -28,27 +28,33 @@ printf("\nNew command name: %s\n" , name);
 
  
 }
-
-int canCommand(char * name ){//return non zero of successful and prints contents of the file
+//works now
+//serves as the boolean that prevents moved from repeating
+int canCommand(char * name ){//return non zero if successful and prints contents of the file
   // that stores all the commands
-  char *file_contents;
-  long input_file_size;
-  FILE *input_file = fopen("a.txt", "rb");
-  fseek(input_file, 0, SEEK_END);
-  input_file_size = ftell(input_file);
-  rewind(input_file);
-  file_contents = malloc(input_file_size * (sizeof(char)));
-  fread(file_contents, sizeof(char), input_file_size, input_file);
-  fclose(input_file);
-  //sets last char to zero
   
-  file_contents = malloc((input_file_size + 1) * (sizeof(char)));
-  fread(file_contents, sizeof(char), input_file_size, input_file);
-  fclose(input_file);
-  file_contents[input_file_size] = 0;
-  return strstr(file_contents, name);
-}
+  char * buffer = 0;
+  long length;
+  FILE * f = fopen ("a.txt", "rb");
+  
+  if (f)
+    {
+      fseek (f, 0, SEEK_END);
+      length = ftell (f);
+      fseek (f, 0, SEEK_SET);
+      buffer = malloc (length);
+      if (buffer)
+	{
+	  fread (buffer, 1, length, f);
+	}
+      fclose (f);
+    }
 
+  printf("%s" , buffer);
+  //returns a non zero if true. this means that the command can be carried on
+  return strstr(buffer, name);
+}
+//prints the current board
 void printAll() { //works fine
 int character;
 FILE * filepointer = fopen("grid.txt",  "r" ) ;
@@ -57,12 +63,24 @@ while ((character=fgetc(filepointer)) != EOF) {
 putchar(character); /* print the character */
  }
 }
+//writes inputed commands to a file
+//serves as a  sort of "history keeper"
+ void write(char * command) {
+   int fp;
+   
+ fp = open("a.txt", O_WRONLY | O_APPEND);
+  write(fp, command, 256);
+  close(fp);
+  print(sterror(errno));
+}
 int main() {
   //testin to see if it writes
   //int x = storeCommand("A1") ; 
 //printf( "\n %d " , x);
 printAll();
  printf("\n\n\n");
- char* p="that";
+ char* p="baloney";
  printf("%d ", canCommand(p));
+ printf("\n\n\n");
+ write(p);
 }

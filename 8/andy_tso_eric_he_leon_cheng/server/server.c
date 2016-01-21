@@ -11,7 +11,7 @@
 
 int desired_total;
 int player_count;
-char player_ids[100];
+int player_ids[1000];
 
 void ask_for_total(){
   player_count = 0;
@@ -77,8 +77,16 @@ void client_connection( int to_client, int from_client ) {
   printf("before client_connection while loop\n");
   printf("to_client: %d\n", to_client);
   printf("from_client: %d\n", from_client);
-  player_ids[from_client/3]=(char *)from_client;
-  printf("player_ids: %s\n", player_ids);
+  printf("player_count: %d\n", player_count);
+  player_ids[player_count-1] = from_client;
+  int i = 0;
+  while(player_ids[i]){
+    printf("player_ids[%d]: %d, ", i, player_ids[i]);
+    i++;
+  }
+  printf("\n");
+  //player_ids[from_client/3]=(char *)from_client;
+  //printf("player_ids: %s\n", player_ids);
   while( read( from_client, buffer, sizeof(buffer) ) ) {
     printf( "<server> received [%s]\n", buffer );
     process( buffer );
@@ -98,13 +106,18 @@ int main() {
   while (1) {
     if(player_count<desired_total){ //stops connecting to more clients once desired_total has been reached
       printf("<server> waiting for connection\n");
-      
+
       to_client = server_handshake(&from_client);
-      
+
       if (to_client != 0) {
-	client_connection(to_client, from_client);
-	close(to_client);
+        client_connection(to_client, from_client);
+        close(to_client);
       }
+
+    }
+    else{
+      // printf("Game start!\n");
+
     }
   }
 

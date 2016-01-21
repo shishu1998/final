@@ -6,11 +6,6 @@
 #include <signal.h>
 #include "deck.h"
 
-card* red;
-card* green;
-int playerturn;
-int playernum = 0;
-
 static void sighandler(int signo){
   if(signo == SIGINT){
     printf("Server crash, oopsies doops\n");
@@ -66,6 +61,11 @@ int main(){
   int to_player;
   int from_player;
   char buffer[100];
+
+  card* red = makedeck("red");
+  card* green = makedeck("green");
+  int playerturn;
+  int playernum = 0;
   
   while(1){
     printf("waiting for players to connect\n");

@@ -33,6 +33,7 @@ union semun {
 char * file_path="root";
 int sem_id = 42;
 char * help="You have the following commands:\n\t1 - Send a message\n\t2 - Send a file\n\t3- Send a command";
+int kill_num=10000000;
 
 #define MAXRCVLEN 500
 #define PORTNUM 2300

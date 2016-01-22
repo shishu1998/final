@@ -139,8 +139,6 @@ void send_mail(char name[], int socket_client){
     perror("Error reading %s's messages\n");
     return;
   }
-  printf("Content: %s \n",buf_out);
-  printf("size: %d \n",size);
   error=write(socket_client,&size,4);
   if (error == -1){
     perror("Error sending %s's message size\n");
@@ -156,6 +154,39 @@ void send_mail(char name[], int socket_client){
     perror("Error closing %s's messages\n");
     return;
   }
+  //delete file
+}
+
+void recieve_mail(char name[], int socket_client){
+  printf("Starting to listen\n");
+  int error,size;
+  char target[NAME_LEN];
+  error=read(socket_client,&size,4);
+  if (error == -1){
+    perror("Error getting target size:\n");
+    return;
+  }
+  //check for exit
+  if (size == kill_num)
+    raise(SIGPIPE);
+  printf("kill pass\n");
+  error=read(socket_client,target,size);
+  if (error == -1){
+    perror("Error getting target:\n");
+    return;
+  }
+  error=read(socket_client,&size,4);
+  if (error == -1){
+    perror("Error getting message size:\n");
+    return;
+  }
+  char buf_in[size];
+  error=read(socket_client,buf_in,size);
+  if (error == -1){
+    perror("Error getting target:\n");
+    return;
+  }
+  //Put message in file
 }
 
 int main(int argc, char *argv[]){
@@ -199,7 +230,7 @@ int main(int argc, char *argv[]){
       while(1==1){
 	//do child stuff
 	send_mail(name,socket_client);
-	sleep(10);
+	recieve_mail(name,socket_client);
       }
       close(socket_client);
       printf("Connection closed\n");

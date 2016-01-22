@@ -10,65 +10,68 @@
 
 #include "game.h"
 
-static void sighandler( int signo ) {
+  int socket_id, socket_client;
+  int socket_id_2, socket_client_2;
+  char line[100];
 
+static void sighandler( int signo ) {
+  int *addr_socket_id, *addr_socket_client;
+  int *addr_socket_id_2, *addr_socket_client_2;
+  char *addr_line[100];
   if ( signo == SIGINT ) {
     printf("Interrupted... how rude!\n");
-    line[0]='F';
-    line[1]='A';
-    line[2]='I';
-    line[3]='L';
-    write(socket_id,line,4);
-    close(socket_id);
-    write(socket_id_2,line,4);
-    close(socket_id_2);
+    *addr_line[0]='3';
+    write(socket_id,*addr_line,sizeof(*addr_line));
+    close(*addr_socket_id);
+    write(*addr_socket_id_2,*addr_line,sizeof(*addr_line));
+    close(*addr_socket_id_2);
     exit(0);
   }
 }
 int main() {
 
-  int socket_id, socket_client;
-  int socket_id_2, socket_client_2;
+  int *addr_socket_id, *addr_socket_client;
+  int *addr_socket_id_2, *addr_socket_client_2;
   int f=1;
-  char line[4]="0000";
+  char *addr_line[100];
 
   while(1){
     if(f){
       //create the socket
-      socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+      *addr_socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
       //bind to port/address
       struct sockaddr_in listener;
       listener.sin_family = AF_INET;  //socket type IPv4
       listener.sin_port = htons(24601); //port #
       listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-      bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+      bind(*addr_socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
-      listen( socket_id, 1 );
+      listen( *addr_socket_id, 1 );
       printf("<server> listening\n");
 
-      socket_client = accept( socket_id, NULL, NULL );
-      printf("<server> connected: %d\n", socket_client );
+      *addr_socket_client = accept( *addr_socket_id, NULL, NULL );
+      printf("<server> connected: %d\n", *addr_socket_client );
 
       //write( socket_client, "hello", 6 );
   
       ///////////////////////////////////////////////////
   
       //create the socket
-      socket_id_2 = socket( AF_INET, SOCK_STREAM, 0 );
+      *addr_socket_id_2 = socket( AF_INET, SOCK_STREAM, 0 );
   
       //bind to port/address
       struct sockaddr_in listener;
       listener.sin_family = AF_INET;  //socket type IPv4
       listener.sin_port = htons(24601); //port #
       listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-      bind(socket_id_2, (struct sockaddr *)&listener, sizeof(listener));
+      bind(*addr_socket_id_2, (struct sockaddr *)&listener, sizeof(listener));
   
-      listen( socket_id_2, 1 );
+      listen( *addr_socket_id_2, 1 );
       printf("<server> listening\n");
 
-      socket_client_2 = accept( socket_id_2, NULL, NULL );
-      printf("<server> connected: %d\n", socket_client_2 );
+      *addr_socket_client_2 = accept( *addr_socket_id_2, NULL, NULL );
+      printf("<server> connected: %d\n", *addr_socket_client_2 );
 
       //write( socket_client_2, "hello", 6 );
       f = fork();
@@ -80,17 +83,17 @@ int main() {
     }
     //instructions for child
     if(!f){
-      write( socket_client, line, 4 );
-      read( socket_client, line, 4 );
-      turn( line[0],line[1],line[2], line[3] );
-      write( socket_client_2, line, 4 );
-      read(socket_2, line, 4);
-      turn( line[0],line[1],line[2], line[3] );
+      write( *addr_socket_client, *addr_line, sizeof(*addr_line) );
+      read( *addr_socket_client, addr_line, 4 );
+      turn( *addr_line[0],*addr_line[1],*addr_line[2], *addr_line[3] );
+      write( *addr_socket_client_2, *addr_line, sizeof(*addr_line) );
+      read(*addr_socket_2, addr_line, 4);
+      turn( *addr_line[0],*addr_line[1],*addr_line[2], *addr_line[3] );
     }
     else{
       //close connections
-      close(socket_id);
-      close(socket_id_2);
+      close(*addr_socket_id);
+      close(*addr_socket_id_2);
     }
   }
   return 0;

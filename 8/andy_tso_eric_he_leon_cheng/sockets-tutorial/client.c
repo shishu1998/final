@@ -44,10 +44,12 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  while (1) {
 
   /* Now ask for a message from the user, this message
    * will be read by server
    */
+
 	
   printf("Please enter the message: ");
   bzero(buffer,256);
@@ -72,4 +74,6 @@ int main(int argc, char *argv[]) {
 	
   printf("%s\n",buffer);
   //return 0;
+  }
+  
 }

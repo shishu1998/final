@@ -41,20 +41,17 @@ void shuffle(card* deck){
   while(counter < 20){
     rand1 = randNum() % len;
     rand2 = randNum() % len;
-    printf("%s SWAP %s\n",deck[rand1].content,deck[rand2].content);
     temp = &deck[rand1];
     deck[rand1] = deck[rand2];
     deck[rand2] = *temp;
     counter ++;
   }
-  printf("%d\n",len);
 }
 
 struct card* makedeck(char* type){
   card* deck;
   int descriptor;
   char buffer[20000];
-  char* maketype = (char*)malloc(sizeof("green"));
   if(type == "red"){
     descriptor = open("reddeck",O_RDONLY);
     deck = (card*)malloc(sizeof(card)*746);
@@ -71,7 +68,7 @@ struct card* makedeck(char* type){
   int i = 0;
   while(cards){
     temp = strsep(&cards,"\n");
-    deck[i] = *makecard(temp,maketype);
+    deck[i] = *makecard(temp,type);
     i ++;
   }
   return deck;

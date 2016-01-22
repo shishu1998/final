@@ -26,7 +26,7 @@ printf("<server> listening\n");
 socket_client = accept( socket_id, NULL, NULL );
 printf("<server> connected: %d\n", socket_client );
 
-write( socket_client, "hello", 6 );
+ write( socket_client, "hello", 6 );
   
 return 0;
 }

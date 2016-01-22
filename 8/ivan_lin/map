@@ -1,9 +1,9 @@
-./map
-./a.out
 ./dirinfo.c
-./..
-./editor.c~
-./editor.c
 ./test.c
+./map
+./DESIGN.md
+./editor.c
+./a.out
+st.c
 ./DESIGN.md
 ./.

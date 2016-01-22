@@ -69,7 +69,11 @@ int main() {
     print_map(map);
     system("/bin/stty raw");
     c = getchar();
+    int curX = coord[0];
+    int curY = coord[1];
     if (c == 'w') {
-      if (map[coord[0] - 1][coord[1]] != '-' || 
+      char testChar = map[curX - 1][curY];
+      if (testChar != '-' || testChar != 'x') {
+	
   return 0;
 }

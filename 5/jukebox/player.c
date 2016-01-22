@@ -4,6 +4,9 @@
 #include <unistd.h>
 
 int playsong(){
+
+//char * command1[3];
+//char * command2[3];
   char * pointers[3];
   
   #ifdef __linux__

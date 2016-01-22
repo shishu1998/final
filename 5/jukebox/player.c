@@ -3,17 +3,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef LINUX
-
-int playsong(char * song){
+int playsong(){
   char * pointers[3];
   
-  #ifdef LINUX
+  #ifdef __linux__
   pointers[0] = "mpg321";
   #else
   pointers[0] = "afplay";
   #endif
-  pointers[1] = song;
+  pointers[1] = "temp.mp3";
   pointers[2] = NULL;
   execvp(pointers[0], pointers);
   return 0;

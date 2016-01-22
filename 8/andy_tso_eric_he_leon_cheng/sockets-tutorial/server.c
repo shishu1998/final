@@ -27,6 +27,9 @@ void doprocessing (int sock) {
 }
 
 int main( int argc, char *argv[] ) {
+
+  ask_for_total();
+  
   int sockfd, newsockfd, portno, clilen;
   char buffer[256];
   struct sockaddr_in serv_addr, cli_addr;
@@ -64,6 +67,19 @@ int main( int argc, char *argv[] ) {
    
   while (1) {
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+
+    players_connect();
+    printf("one\n");
+    player_ids[player_count-1] = sockfd;
+    printf("two\n");
+    int i=0;
+    printf("three\n");
+    while(i<player_count){
+      printf("four\n");
+      printf("player_ids[%d] = %d\n", i, player_ids[i]);
+      printf("five\n");
+      i++;
+    }
 		
     if (newsockfd < 0) {
       perror("ERROR on accept");

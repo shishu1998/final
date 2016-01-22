@@ -39,7 +39,6 @@ int player_count;
 //char player_ids[100][100];
 int player_ids[100];
 
-
 void ask_for_total(){
   player_count = 0;
   printf("<server> How many players? ");

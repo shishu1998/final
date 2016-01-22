@@ -18,29 +18,36 @@ void sign_in(int socket_id){
   fgets(buffer1,sizeof(stdin)+1,stdin);
   strcat(final,buffer);
 
-  write(socket_id, final, sizeof(final) -1);
+  //write(socket_id, final, sizeof(final) -1);
+  sock_write(socket_id,final);
 }
 
 void choose_username(char* final, char* buffer){
+  printf("[%s] %lu\n",final,strlen(final));
   printf("Enter your new username: ");
   fgets(buffer,sizeof(stdin)-1,stdin);
   printf("Successfully read from stdin\n");
   strncat(final,buffer,12);
+  printf("[%s] %lu\n",final,strlen(final));
   printf("Successfully used strcat\n");
   
   char *sep = "\nPassword: ";
   strcat(final,sep);
+  printf("[%s] %lu\n",final,strlen(final));
 }
 
 void choose_password(char* final, char* buffer1, char* buffer2, int socket_id){
   printf("Enter your new password: ");
   fgets(buffer1,sizeof(stdin)-1,stdin);
+  printf("\n[%s] %lu\n",final,strlen(final));
   printf("Re-enter your new password: ");
   fgets(buffer2,sizeof(stdin)-1,stdin);
+  printf("\n[%s] %lu\n",final,strlen(final));
 
   if(strcmp(buffer1,buffer2)==0){
-    strcat(final,buffer2);
-    write(socket_id, final, sizeof(final) -1);
+    strncat(final,buffer2,12);
+    //write(socket_id, final, sizeof(final) -1);
+    sock_write(socket_id,final);
   }else{
     printf("Passwords did not match. Try again:\n");
     choose_password(final, buffer1, buffer2, socket_id);
@@ -48,13 +55,15 @@ void choose_password(char* final, char* buffer1, char* buffer2, int socket_id){
 }
 
 void sign_up(int socket_id){
-  char buff[256];
+  char buff[512];
   char *buffer = buff;
-  char buff1[256];
+  char buff1[512];
   char *buffer1 = buff;
-  char buff2[256];
+  char buff2[512];
   char *buffer2 = buff;
-  char *final = "SETUP\nUsername: ";
+  char fin[2048] = "SETUP\nUsername: ";
+  char *final;
+  final = fin;
 
   int i;
   i = fork();

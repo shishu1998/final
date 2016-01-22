@@ -33,9 +33,9 @@ int newuser() {
   int i=0;
   while(1) {
     ch=getch();
-    if(ch==13) {
+    if(ch==13) { //13 is ascii for return
       break;
-    } else if(ch==8) {
+    } else if(ch==8) { //8 is ascii for backspace
       if(i!=0) { //this is for avoiding the ENTER instructions getting deleted 
 	printf("\b");  //printing backspace to move cursor 1 pos back
 	printf("%c",32);//making the char invisible which is already on console

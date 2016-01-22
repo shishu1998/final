@@ -77,7 +77,7 @@ int list_songs(int socket_client){
   //printf("orig song_listL [%s]\n", song_list);
   int i = 0;
   while((file = readdir(music_dir)) && strlen(song_list) < 1024){
-    if (i > 2){ //skip the . and .. and the readme 
+    if (i > 2){ //skip the . and .. and the readme [FIX BETTER LATEER] 
       //printf("filename : [%s]\n", file->d_name);
       strcat(song_list, file->d_name);
       strcat(song_list, "\n");

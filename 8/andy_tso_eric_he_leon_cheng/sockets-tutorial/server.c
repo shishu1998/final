@@ -60,6 +60,7 @@ void doprocessing (int sock) {
 int main( int argc, char *argv[] ) {
   
   ask_for_total();
+  int turns;
   
   int sockfd, newsockfd, portno, clilen;
   char buffer[256];
@@ -99,8 +100,8 @@ int main( int argc, char *argv[] ) {
   while (1) {
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
-    if ( newsockfd == 4 ) 
-      sendpos( 4 );
+    //if ( newsockfd == 4 ) 
+    //  sendpos( 4 );
     
     players_connect();
     player_ids[player_count-1] = newsockfd;

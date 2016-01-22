@@ -2,7 +2,10 @@ Project member(s):
 	Ying-ke Chin-Lee
 
 Compile:
-	So far, just make and run "./client_socket"
+	make
+	run "./server_socket socket#"
+	run "./client_socket localhost socket#"
+	
 
 List of files in repo:
 	BUGS
@@ -14,20 +17,25 @@ List of files in repo:
 
 	old_main.h
 		- void init_lots(Lot *lots)
-		- int main()
+		- int old_main() -> just deal with client-side input
 
 	server_socket.c
-		- NO LONGER HAS void sighandler(int signo)
-		- int main()
-		- dostuff() -> get info from client
-		- void write_bid(char *)
-	client.c
-		- runs old_main()
+		- includes "writing.h"
+		- void sighandler(int signo) -> exits upon Ctrl-C
+		- int main() -> opens server
+		- dostuff() -> get info from client (can it be made to speak to the client??)
+		- void write_bid(char *) -> tries to write bid, uses shared memory
+	client_socket.c
+		- includes/runs old_main()
+		- void clean_stdin() -> flushes buffer
+		- int main() -> assigns paddle number, opens connection to server
 
 	writing.h -> now is accessed by the server side
 		- union semun
-		- void prev_line()
-		- int main()
+		- void reverse(char s[]) -> reverses a string
+		- void clean_stdin() -> also to clean buffer
+		- void del_newline() -> deletes newline from a string
+		- int file_write() -> uses shared memory, checks if new bid is a valid one (by checking against old bid), writes, etc.
 	control.c -> now is accessed by the server side
 		- union semun
 		- void print_story()
@@ -37,7 +45,7 @@ List of files in repo:
 
 	display.h
 		- void display(Lot l)
-		- void bid() -> UNDER CONSTRUCTION
-	lot_struct.h
+		- void bid() -> UNDER CONSTRUCTION/no longer desired
+	lot_struct.h -> may delete hi_bid property soon
 		- typedef struct Lot
 		- void print(Lot l)

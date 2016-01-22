@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
 		error("ERROR connecting");
 	
 	while (1) {
-		printf("Hello?\n");
 		old_main();
 
 		if (BID_MODE != 0) {

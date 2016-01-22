@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 /******** DOSTUFF() *********************
  There is a separate instance of this function 
  for each connection.  It handles all communication
- once a connnection has been established.
+ once a connection has been established.
  *****************************************/
 void dostuff (int sock)
 {
@@ -109,9 +109,7 @@ void write_bid(char *offer) {
 	int fd;
 	char old_bid[256]; // should be ample space
 	read(fd, old_bid, sizeof(old_bid));
-	printf("(SS: ensuring atoi works) %d, %d\n", atoi(offer), atoi(old_bid));
 	if (atoi(offer) > atoi(old_bid)) {
-		printf("SS: trying to input bid...\n");
 		// now start writing.
 		//open bid
 		int f = fork();

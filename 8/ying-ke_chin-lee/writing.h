@@ -21,7 +21,7 @@ union semun {
 	struct seminfo *_buf;
 };
 
-/* courtesy of le K&R */
+/* adapted from le K&R */
 void reverse(char s[]) {
 	int length = strlen(s);
 	int c, i, j;

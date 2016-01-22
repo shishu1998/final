@@ -38,8 +38,13 @@ JAN 16:
 - fixed fgets hang (was a typo left over from reorganizing the code)
 - need to figure out why client code suddenly decides to quit on its own.
 
-more bugs
-doesn't run yet lololol
+JAN 21:
+- fixed issues with receiving new bid, now updates bids appropriately
+- still need to make use of paddle numbers
+- need to check whether client code will suddenly quit on its own
+- need to make display update with new bidding price
 
 Possible changes to make?
 	- browser defaults to Chromium, add Firefox option later?
+	- put in login
+

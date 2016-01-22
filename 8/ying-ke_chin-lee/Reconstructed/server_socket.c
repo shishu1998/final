@@ -14,9 +14,13 @@
 
 #include "writing.h"
 
+int old_bid = 0; //simple initialization value
+
 /*
 	CODE ADAPTED FROM http://www.linuxhowtos.org/C_C++/socket.htm
 */
+
+// NOTE: Move the write-conditional-part back into writing.h
 
 int paddles[5]; //currently allow only 5 bidders at a time
 int num_paddles;
@@ -107,12 +111,12 @@ void dostuff (int sock)
 void write_bid(char *offer) {
 	int status;
 	int fd;
-	char old_bid[256]; // should be ample space
-	read(fd, old_bid, sizeof(old_bid));
-	printf("(SS: ensuring atoi works) %d, %d\n", atoi(offer), atoi(old_bid));
-	if (atoi(offer) > atoi(old_bid)) {
+//	char old_bid[256]; // should be ample space
+//	read(fd, old_bid, sizeof(old_bid));
+	printf("(SS: ensuring atoi works) %d, %d\n", atoi(offer), old_bid);
+	if (atoi(offer) > old_bid) {
+		old_bid = atoi(offer);
 		printf("SS: trying to input bid...\n");
-		// now start writing.
 		//open bid
 		int f = fork();
 		if (f == 0) {
@@ -132,6 +136,7 @@ void write_bid(char *offer) {
 			char *remv[3] = {"./control", "-r", NULL};
 			int f2 = fork();
 			if (f2 == 0) {
+				printf("removes shared memory\n");
 				execvp(remv[0], remv);
 				exit(0);
 			} else {

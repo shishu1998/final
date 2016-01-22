@@ -80,7 +80,11 @@ int file_write(char *to_write) {
 	printf("check_read = %d\n", check_read);
 	printf("does fp work? %c\n", fp);
 	while (new_char != '\n') {
+<<<<<<< HEAD
 		printf("I am inside the loop\n");
+=======
+		printf("I am inside the loop, new_char = %c\n", new_char);
+>>>>>>> 249c51afae157ba1676a4371e31c94f047ddfa4d
 		last_bid[index] = new_char;
 		index++;
 

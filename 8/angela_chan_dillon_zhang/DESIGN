@@ -27,3 +27,16 @@ Locking Manuals - Keeping certain parts of the manual locked until certain parts
 Timeline:
 12/27/15 - Get project approval
 12/27/15 - Upon approval: Map out full project.
+01/22/16 - Revised Initial Plan
+-> After tinkering with SDL and reading through tutorials, SDL proved to be a completely different tool set. First off, it uses c++ rather than c. Second, the installation process was confusing and contradictory. Lastly, it was not the type of program we were expecting.
+-> After studying the game itself, we realized the game only consists of the the manual and the bomb, no chat service is provided. Staying true to the original game and unraveling the complexity of a thorough chat system, we decided to abandon our chat program and focus on the game itself.
+-> GAME PLAN
+--->One main file that will split into the two seperate component (exec bomb.o; exec manual.o)
+--->Manual will read text files and display them to the user (Probably one topic per page with some ascii styling on the border)
+--->Bomb will create a bomb and react based on user inputs
+----->Wires: 5 wires & 3 colors with actions based in manual
+----->Symbols: 4 symbol buttons with 5 list of 8 symbols in the manual showing the order to be pressed
+----->Word: 6 word buttons & 4 words to be displayed with actions depending on word in display
+----->Button: 2 words & 2 color with actions depending on words and colors
+----->Number: 4 numbers with 5 stages that need to be pressed in a certain order
+----->Timer: Press enter to refresh the time, unless there is a way to update the timer live while taking in user inputs

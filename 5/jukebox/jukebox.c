@@ -74,14 +74,14 @@ int list_songs(int socket_client){
   DIR * music_dir = opendir("music");
   struct dirent *file;
   char song_list[1024] = "";
-  printf("orig song_listL [%s]\n", song_list);
+  //printf("orig song_listL [%s]\n", song_list);
   int i = 0;
   while((file = readdir(music_dir)) && strlen(song_list) < 1024){
-    if (i > 1){ //skip the . and .. 
-      printf("filename : [%s]\n", file->d_name);
+    if (i > 2){ //skip the . and .. and the readme 
+      //printf("filename : [%s]\n", file->d_name);
       strcat(song_list, file->d_name);
       strcat(song_list, "\n");
-      printf("new list: [%s]\n", song_list);
+      //printf("new list: [%s]\n", song_list);
     }
     i ++;
   }
@@ -108,7 +108,7 @@ int main() {
   
   listen( socket_id, 1 );
   printf("The jukebox server is up and running and waiting for clients to connect.\n");
-
+  list_songs();
    while (1) {
     socket_client = accept( socket_id, NULL, NULL );
     printf("<server> connected: %d\n", socket_client );
@@ -118,6 +118,6 @@ int main() {
       handle_client(socket_client);
     }
    }
- 
+  
   return 0;
 }

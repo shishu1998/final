@@ -117,14 +117,13 @@ int main() {
   int to_client;
   int from_client;
 
-  while (1) {
+  int i = 0;
+  while(i<desired_total){
+    printf("player_ids[%d]: %d, ", i, player_ids[i]);
+    i++;
+  }
 
-    int i = 0;
-    while(i<desired_total){
-      printf("player_ids[%d]: %d, ", i, player_ids[i]);
-      i++;
-    }
-
+  while (1) {   
 
     if(player_count<desired_total){ //stops connecting to more clients once desired_total has been reached
       printf("<server> waiting for connection\n");
@@ -140,6 +139,11 @@ int main() {
       // printf("Game start!\n");
 
     }
+    
+    char buffer[100] = "helllo!\n\n";
+    write( 4, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO CLIENT
+    printf("just wrote to client\n");
+
   }
 
   return 0;

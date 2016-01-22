@@ -101,7 +101,13 @@ void server_talk(int socket_client) {
     if (strstart(buffer, "LOGIN")) {
       session = server_login(buffer);
       if (session) {
-	
+	sock_write("OK");
+      }
+      else if (errno == EACCES) {
+	sock_write("FAIL\nIncorrect password");
+      }
+      else if (errno == ENOENT) {
+	sock_write("FAIL\nNo such user");
       }
     }
 

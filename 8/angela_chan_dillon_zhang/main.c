@@ -10,7 +10,7 @@
 
 int main() {
   textcolor(BRIGHT, RED, BLACK);
-  printf("Welcome to 'KEEP TALKING and NOBODY EXPLODES' in C, by Angela Chan and Dillon Zhang\n");
+  printf("Welcome to Attempting Defusal, 'KEEP TALKING and NOBODY EXPLODES' in C, by Angela Chan and Dillon Zhang\n");
   textcolor(RESET, WHITE, BLACK);
   
   printf("Please select 'manual' (m) or 'bomb' (b) to start.\n");

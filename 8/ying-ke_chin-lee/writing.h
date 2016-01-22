@@ -11,6 +11,7 @@
 //char *fname = "bids.txt"; // will have to make one bid file per item later on
 char *bidfile = "curr_bid.txt";
 int fd;
+int success_write = 1;
 
 char entered_bid[256];
 
@@ -78,7 +79,7 @@ int file_write(char *to_write) {
 	int check_read = 0;
 	new_char = fgetc(fp);
 	printf("check_read = %d\n", check_read);
-	printf("does fp work? %c\n", fp);
+//	printf("does fp work? %c\n", fp);
 	while (new_char != '\n') {
 		printf("I am inside the loop, new_char = %c\n", new_char);
 		last_bid[index] = new_char;
@@ -101,6 +102,7 @@ int file_write(char *to_write) {
 
 	if (atoi(last_bid) >= atoi(to_write)) {
 		printf("bid unsuccessful...\n");
+		success_write = 0;
 		return;
 	}
 

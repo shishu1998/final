@@ -19,6 +19,16 @@ void error(const char *msg)
 	exit(0);
 }
 
+void clean_stdin(void)
+{
+    int c;
+    do {
+        c = getchar();
+	printf("cl:getchar hang?\n");
+    } while (c != '\n' && c != EOF);
+	printf("cl:out of getchar\n");
+}
+
 int main(int argc, char *argv[])
 {
 	printf("Your paddle number is: %d\n", getpid());
@@ -48,37 +58,34 @@ int main(int argc, char *argv[])
 	serv_addr.sin_port = htons(portno);
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
 		error("ERROR connecting");
+	
+	while (1) {
+		printf("Hello?\n");
+		old_main();
 
-	old_main();
+		if (BID_MODE != 0) {
+			memset(buffer, 0, sizeof(buffer));
+			printf("Your bid: ");
+			bzero(buffer,256);
+			
+			clean_stdin();//getchar();
+			fgets(buffer, sizeof(buffer)-1, stdin);
 
-	// for some reason prints "Pls enter the msg" twice...??!
-//	printf("Your bid: "); // this is going to be a problem, need to reformulate code so that I can just access the entered bid from the writing program.  Maybe through global (local) var?
-	strcpy(buffer, entered_bid);
-//	bzero(buffer,256);
-//	fgets(buffer,255,stdin);
-	n = write(sockfd,buffer,strlen(buffer));
-	if (n < 0) 
-		 error("ERROR writing to socket");
-	bzero(buffer,256);
-	n = read(sockfd,buffer,255);
-	if (n < 0) 
-		 error("ERROR reading from socket");
-	printf("%s\n",buffer);
+			n = write(sockfd,buffer,strlen(buffer));
+			printf("buffer is %s\n", buffer);
+			if (n < 0) 
+				 error("ERROR writing to socket");
+			bzero(buffer,256);
+			n = read(sockfd,buffer,255);
+			if (n < 0) 
+				 error("ERROR reading from socket");
+			printf("%s\n",buffer);
+		}
+	}
 	close(sockfd);
-
-/*	
-	printf("Please enter the message: ");
-	bzero(buffer,256);
-	fgets(buffer,255,stdin);
-	n = write(sockfd,buffer,strlen(buffer));
-	if (n < 0) 
-		 error("ERROR writing to socket");
-	bzero(buffer,256);
-	n = read(sockfd,buffer,255);
-	if (n < 0) 
-		 error("ERROR reading from socket");
-	printf("%s\n",buffer);
-	close(sockfd);
-*/
 	return 0;
+}
+
+void communicate() {
+	
 }

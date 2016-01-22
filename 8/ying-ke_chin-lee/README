@@ -2,7 +2,7 @@ Project member(s):
 	Ying-ke Chin-Lee
 
 Compile:
-	So far, just make and run "./main"
+	So far, just make and run "./client_socket"
 
 List of files in repo:
 	BUGS
@@ -12,29 +12,27 @@ List of files in repo:
 
 	makefile
 
-	main.c
+	old_main.h
 		- void init_lots(Lot *lots)
 		- int main()
 
-	server.c
-		- void process(char *s) -> should be DELETED
-		- void sighandler(int signo)
-		- server_handshake(int *from_client)
-		- void client_connection(int to_client, int from_client)
+	server_socket.c
+		- NO LONGER HAS void sighandler(int signo)
 		- int main()
+		- dostuff() -> get info from client
+		- void write_bid(char *)
 	client.c
-		- int client_handshake(int *from_server)
-		int main()
+		- runs old_main()
 
-	writing.c
+	writing.h -> now is accessed by the server side
 		- union semun
 		- void prev_line()
 		- int main()
-	control.c
+	control.c -> now is accessed by the server side
 		- union semun
 		- void print_story()
 		- void create()
-		- void remv() -> temporarily COMMENTED OUT
+		- void remv() 
 		- int main()
 
 	display.h

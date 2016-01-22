@@ -8,7 +8,6 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <termios.h>
-#include <ncurses.h>
 
 #define CURSOR_UP "\033[1A"
 #define CURSOR_DOWN "\033[1B"
@@ -18,17 +17,20 @@
 #define PRESERVED_SCREEN "\033[?1049l"
 
 typedef struct line {int term_line; int file_line; char* text; struct line* next;} line;
+typedef struct termios termios;
 typedef struct winsize winsize;
 
 int init(line*, winsize*);
 int cleanup(line*);
 int fill_buffers(int, int, line*);
 int print_buffers(line*);
-int open_screen_buffer();
-int open_preserved_screen();
+int open_screen_buffer(termios*);
+int open_preserved_screen(termios*);
+int detectKeyPress();
 
 int main(){
   int cursor_row, cursor_col, read_line;
+  struct termios term;
   struct winsize window;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
 
@@ -41,20 +43,49 @@ int main(){
   
   print_buffers(first_line);
 
-  open_screen_buffer();
+  open_screen_buffer(&term);
   print_buffers(first_line);
-  
-  while (1){
-    scanw("A");
-    printf("%d\n",in);
-    //fflush(stdout);
-    //    sleep(1);
-  }
 
-  //open_preserved_screen();
-  
+  int i;
+  while (detectKeyPress()){
+    //detectKeyPress();
+    //fflush(stdout);
+    //sleep(1);
+  }
+  open_preserved_screen(&term);
+
   cleanup(first_line);
   close(map);
+}
+
+int detectKeyPress(){
+  //UP:27,91,65
+  //DOWN:27,91,66
+  //LEFT:27,91,68
+  //RIGHT:27,91,67
+  int key;
+  key = getchar();
+  if (key == '\033'){
+    if (getchar() == '['){
+      key = getchar();
+      if (key == 65){
+	//UP
+      }
+      if (key == 66){
+	//DOWN
+      }
+      if (key == 67){
+	//RIGHT
+      }
+      if (key == 68){
+	//LEFT
+      }
+    }
+  }
+  else if (key == 17){//ctrl+q
+    return 0;
+  }
+  return 1;
 }
 
 int fill_buffers(int file, int start_read, line* first_line){
@@ -75,12 +106,17 @@ int print_buffers(line* first_line){
   }
 }
 
-int open_screen_buffer(){
+int open_screen_buffer(termios* term){
   printf(ALT_BUFFER);
+  tcgetattr(STDIN_FILENO,term);
+  term->c_lflag = ~(ICANON|ECHO);
+  tcsetattr(STDIN_FILENO,TCSANOW,term);
 }
 
-int open_preserved_screen(){
+int open_preserved_screen(termios* term){
   printf(PRESERVED_SCREEN);
+  term->c_lflag = (ICANON|ECHO);
+  tcsetattr(STDIN_FILENO,TCSANOW,term);
 }
 
 int init(line* line_node, winsize* window){

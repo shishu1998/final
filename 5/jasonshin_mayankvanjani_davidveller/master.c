@@ -45,8 +45,10 @@ void print_map(char ** maparray) {
   int x, y = 0;
   for (x = 0; x < 12; x++) {
     for (y = 0; y < 12; y++) {
-      printf("maparray[%d][%d]:%c\n", x, y, maparray[x][y]);
+      printf("%c ", maparray[x][y]);
+      //printf("maparray[%d][%d]:%c\n", x, y, maparray[x][y]);
     }
+    printf("\n");
   }
 
   /*
@@ -60,7 +62,18 @@ void print_map(char ** maparray) {
 }
 
 int main() {
-  print_map( map_maker("map.txt") );
-
+  char ** map = map_maker("map.txt");
+  int coord[2] = {1, 1}
+  while (1) {
+    char c;
+    print_map(map);
+    system("/bin/stty raw");
+    c = getchar();
+    int curX = coord[0];
+    int curY = coord[1];
+    if (c == 'w') {
+      char testChar = map[curX - 1][curY];
+      if (testChar != '-' || testChar != 'x') {
+	
   return 0;
 }

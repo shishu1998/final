@@ -9,28 +9,6 @@
 #include <errno.h>
 #include "players.c"
 
-int desired_total;
-int player_count;
-//char player_ids[100][100];
-int player_ids[100];
-
-void ask_for_total(){
-  player_count = 0;
-
-  printf("<server> How many players? ");
-  scanf ("%d",&desired_total);
-  printf("desired_total: %d\n", desired_total);
-}
-
-void players_connect(){
-  player_count++;
-  if (player_count==desired_total){
-    printf("Desired total has been reached!\n\n");
-  }
-  printf("a player has joined\n");
-  printf("players connected: %d\n", player_count);
-}
-
 
 void process( char *s ) {
   while ( *s ) {
@@ -105,6 +83,12 @@ void client_connection( int to_client, int from_client ) {
     printf( "<server> received [%s]\n", buffer );
     process( buffer );
     write( to_client, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO CLIENT
+    
+    /*********************************************************************/
+    /* char foo[100] = "helllo!\n\n";					 */
+    /* write( 4, foo, sizeof(foo) ); //HERE IS WHERE YOU WRITE TO CLIENT */
+    /*********************************************************************/
+
     strncpy( buffer, "", sizeof(buffer) );
   }
 }
@@ -140,10 +124,6 @@ int main() {
 
     }
     
-    char buffer[100] = "helllo!\n\n";
-    write( 4, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO CLIENT
-    printf("just wrote to client\n");
-
   }
 
   return 0;

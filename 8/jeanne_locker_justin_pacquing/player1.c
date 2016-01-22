@@ -71,19 +71,63 @@ int makeFleet(){
   
   printf("Input where you want your first ship! Each ship is one unit.\nDon't use any spaces between the numbers: ");
   scanf("%d", &pos);
-  ships[0] = pos;
+  if (dontBreak(pos) == 1)
+    ships[0] = pos;
+  else{
+    while (dontBreak(pos) != 1){
+      printf("Please enter a valid location: ");
+      scanf("%d", &pos);
+    }
+    ships[0] = pos;
+  }
+  
   printf("Input your second location: ");
   scanf("%d", &pos);
-  ships[1] = pos;
+  if (dontBreak(pos) == 1)
+    ships[1] = pos;
+  else{
+    while (dontBreak(pos) != 1){
+      printf("Please enter a valid location: ");
+      scanf("%d", &pos);
+    }
+    ships[1] = pos;
+  }
+
   printf("Your third: ");
   scanf("%d", &pos);
-  ships[2] = pos;
+  if (dontBreak(pos) == 1)
+    ships[2] = pos;
+  else{
+    while (dontBreak(pos) != 1){
+      printf("Please enter a valid location: ");
+      scanf("%d", &pos);
+    }
+    ships[2] = pos;
+  }
+  
   printf("Your fourth: ");
   scanf("%d", &pos);
-  ships[3] = pos;
+  if (dontBreak(pos) == 1)
+    ships[3] = pos;
+  else{
+    while (dontBreak(pos) != 1){
+      printf("Please enter a valid location: ");
+      scanf("%d", &pos);
+    }
+    ships[3] = pos;
+  }
+  
   printf("And your fifth: ");
   scanf("%d", &pos);
-  ships[4] = pos;
+  if (dontBreak(pos) == 1)
+    ships[4] = pos;
+  else{
+    while (dontBreak(pos) != 1){
+      printf("Arrrr! Please enter a valid location, matey: ");
+      scanf("%d", &pos);
+    }
+    ships[4] = pos;
+  }
 }
 
 /*======== int dontBreak()  ==========

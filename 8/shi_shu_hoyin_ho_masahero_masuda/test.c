@@ -3,8 +3,9 @@
 #include "deck.h"
 
 int main(){
-  card* red = makedeck("red");
-  // card* green = makedeck("green");
+  card* red = (card *)malloc(sizeof(card)*746);
+  red =  makedeck("red");
+  card* green = makedeck("green");
   // printf("content: %s\n",red[80].content);
   printdeck(red);
   //printdeck(green);

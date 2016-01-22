@@ -63,7 +63,7 @@ struct card* makedeck(char* type){
   char buffer[20000];
   if(type == "red"){
     descriptor = open("reddeck",O_RDONLY);
-    deck = (card*)malloc(sizeof(card)*747);
+    deck = (card*)malloc(sizeof(card)*746);
   }
   if(type == "green"){
     descriptor = open("greendeck",O_RDONLY);

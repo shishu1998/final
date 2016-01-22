@@ -15,7 +15,7 @@ int client_handshake( int *from_server ) {
   mkfifo( buffer, 0644 );
 
   to_server = open( "mario", O_WRONLY);
-  write( to_server, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO SERVER
+  write( to_server, buffer, sizeof(buffer) ); 
 
   //printf("toserver = %d\n", to_server);
   printf("buffer = %s\n", buffer); // line below has issue
@@ -48,7 +48,7 @@ int main() {
       return 0;
     }
 
-    write( to_server, buffer, sizeof(buffer) );
+    write( to_server, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO SERVER
     read( from_server, buffer, sizeof(buffer) );
     printf("<client> received: [%s]\n", buffer );
   }

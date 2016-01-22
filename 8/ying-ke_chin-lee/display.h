@@ -6,6 +6,7 @@
 #define browser "chromium-browser"
 
 void bid();
+void query();
 
 void display(Lot l) {
 	char *cmds[3] = {browser, l.url, NULL};
@@ -35,9 +36,18 @@ void display(Lot l) {
 		int status;
 		wait(&status);
 	}
-	bid();
+//	bid();
 }
 
+/*
+	Find out what user wants to do (?/b/x)
+*/
+void query() {
+	printf("Enter an action\n");// I MAY NOT USE THIS FUNCTION AFTER ALL
+}
+
+/*
+// NOW TRYING TO GIVE THIS OVER ENTIRELY TO CLIENT.C SINCE THAT CAN TRANSMIT BID TO SERVER
 void bid() {
 	int status;
 	char ans[1];
@@ -49,7 +59,6 @@ void bid() {
 		exit(0);
 	} else {
 		//open bid
-		printf("why does nothing happen\n");
 		int f = fork();
 		if (f == 0) {
 			char *creat[3] = {"./control", "-c", NULL};
@@ -64,16 +73,6 @@ void bid() {
 			
 			printf("got to begin of writing program\n");
 			// start the writing program, which will write bids
-/*
-			char *cmds[2] = {"./writing", NULL};
-			int f1 = fork();
-			if (f1 == 0) {
-				execvp(cmds[0], cmds);
-				exit(0);
-			} else {
-				wait(&status);
-			}
-*/
 			main_w();
 
 			// close bid info
@@ -90,6 +89,8 @@ void bid() {
 		}
 	}
 }
+
+*/
 
 /*
 void display(char *link) {

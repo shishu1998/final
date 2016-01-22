@@ -15,8 +15,8 @@ int main(){
   char* hide =  "\x1b[?25l";
   char* show =  "\x1b[?25h";
   char* go = "\x1b[0;0H";
-  /*int socket_id;
-  board buffer[81];
+  int socket_id;
+  char buffer[82];
   int i;
   int addrs;
   char *server_ip;
@@ -30,14 +30,48 @@ int main(){
   printf("Connected to socket:%d",i);
   while(1){
     read(socket_id,buffer,sizeof(buffer));
-    int i = 0;
-    while(i < 81){
+    if(buffer[0]){
+      break;
+    }
+    int i = 1;
+    int c = 0;
+    char outpu[612];
+    while(i < 82){
+      int q = 0;
+      while(q < 17){
+	if((i % 2) == 0){
+	  if(((q + 1) % 4) == 0){
+	    if(((q + 1) % 12) == 0){
+	      outpu[c] = '=';
+	    }else{
+	      outpu[c] = '+';
+	    }
+	  }else{
+	    outpu[c] = '-';
+	  }
+	}else{
+	  if((q % 2) == 0){
+	    outpu[c] = ' ';
+	  }else{
+	    if(((q + 1) % 12) == 0){
+	      outpu[c] = '=';
+	    }else if(((q + 1) % 4) == 0){
+	      outpu[c] = '|';
+	    }else{
+	      outpu[c] = buffer[i];
+	      i++;
+	    }
+	  }
+	} 
+      }
     }
   }
-  */
+  /*
   printf("%s",clear);
   printf("%s",hide);
   printf("%s",show);
   printf("%s",go);
+  */
+  //hide,clear,go,stuff,\n,show
   return 0;
 }

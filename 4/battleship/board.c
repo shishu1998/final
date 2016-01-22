@@ -13,6 +13,7 @@
 #include <errno.h>
 
 
+
 int storeCommand(char * name) {//keeps a log of all entered commands , whether a correct input of not
   //needed so that a command isnt entered twice
   char * entry;
@@ -65,22 +66,42 @@ putchar(character); /* print the character */
 }
 //writes inputed commands to a file
 //serves as a  sort of "history keeper"
- void write(char * command) {
+ void writer(char * command) {
    int fp;
    
  fp = open("a.txt", O_WRONLY | O_APPEND);
-  write(fp, command, 256);
+ write(fp, command, sizeof(command));
   close(fp);
-  print(sterror(errno));
+  printf("%s" ,strerror(errno));
 }
+
+int realboard[12] = { 0 , -1,0,0,-1 ,-1 ,-1 ,0,0,0,0,-1};//for testing purposes
+//this is in the format of 1A,1B,1C,1D...4D and will be printed out 
+//in prettier form in another function
+//they will, however, be represented by digitsn in this simplified array
+//0 means ship not shot
+//1 means ship that is shot 
+//-1 means no ship there to begin with
+//makes it easy to randomly generate the nums
+void newPrint(){//still not finished yet
+   printf("\n\n	A	B	C\
+	D\n-------------------------------------\n\
+1     |  %d   |  %d  |  %d  |  %d    \n \
+-------------------------------------\n\"", 0);
+ }
+
+
+
+
 int main() {
   //testin to see if it writes
   //int x = storeCommand("A1") ; 
 //printf( "\n %d " , x);
-printAll();
+//printAll();
  printf("\n\n\n");
  char* p="baloney";
  printf("%d ", canCommand(p));
  printf("\n\n\n");
- write(p);
+ writer(p);
+ newPrint();
 }

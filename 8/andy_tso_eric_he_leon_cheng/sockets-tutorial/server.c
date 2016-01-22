@@ -5,6 +5,12 @@
 #include <string.h>
 #include "players.c"
 
+void sendpos( int fd ) {
+  char *buffer;
+  buffer = "init";
+  int n = write(fd, buffer, sizeof(buffer) );
+}
+
 char randColor( int p ) {
   char color;
   if ( p == 0 ) 
@@ -52,7 +58,7 @@ void doprocessing (int sock) {
 }
 
 int main( int argc, char *argv[] ) {
-
+  
   ask_for_total();
   
   int sockfd, newsockfd, portno, clilen;
@@ -93,6 +99,9 @@ int main( int argc, char *argv[] ) {
   while (1) {
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
+    if ( newsockfd == 4 ) 
+      sendpos( 4 );
+    
     players_connect();
     player_ids[player_count-1] = newsockfd;
     int i=0;

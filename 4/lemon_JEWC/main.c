@@ -14,23 +14,29 @@ int main(){
   strtok(response,"\n");
   if(access(response,F_OK)!=-1){
     printf("\e[7m%s\e[27m exists. Now opening.\n\n",response);
+    int pid1 = fork();
+    if(!pid1){ 
     execlp("cat","cat",response,NULL);
+    }
   }
   else{
     printf("\e[7m%s\e[27m does not exist. Now creating.\n",response);
   }
-  //MAKE IT FORK AT EVERY COMMAND EXECUTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  printf("DEEEEEEEBUGGGGGGGG");
-  execlp("stty","stty","raw",NULL);
-  printf("RAW MODE INITIATED\n\n");
-  char buf[1000];
-  while(fgets(buf, sizeof(buf), stdin)){
-    printf("I got: %s",buf);
-    if(buf[0] == 'x'){
-      execlp("stty","stty","-raw",NULL);
-      printf("\nRAW MODE TERMINATED\n");
-    }
+  int pid2 = fork();                                                          
+  if(!pid2){                                                                  
+    execlp("stty","stty","raw",NULL);                                          
   }
+  printf("RAW MODE INITIATED\n\n");
+  char *line = NULL;
+  size_t len;
+  //while(fgets(buf, sizeof(buf), stdin)){
+  //while(getline(&line, &len, stdin) >= 0){
+  //printf("I got: %s",line);
+  //if(line[0] == 'x'){
+      printf("\nRAW MODE TERMINATED\n");
+      execlp("stty","stty","-raw",NULL);
+      //}
+      //}
 
   return 0;
 }

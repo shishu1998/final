@@ -26,7 +26,7 @@ int fill_buffers(int, int, line*);
 int print_buffers(line*);
 int open_screen_buffer(termios*);
 int open_preserved_screen(termios*);
-int detectKeyPress();
+int detectKeyPress(int*, int*);
 
 int main(){
   int cursor_row, cursor_col, read_line;
@@ -37,7 +37,7 @@ int main(){
   line* first_line = (line*)malloc(sizeof(line));
   init(first_line, &window);
 
-  int map = open("./map",O_RDONLY);
+  int map = open("./map",O_RDWR);
 
   fill_buffers(map,0,first_line);
   
@@ -46,9 +46,8 @@ int main(){
   open_screen_buffer(&term);
   print_buffers(first_line);
 
-  int i;
-  while (detectKeyPress()){
-    //detectKeyPress();
+  //int i;
+  while (detectKeyPress(&cursor_row,&cursor_col)){
     //fflush(stdout);
     //sleep(1);
   }
@@ -58,11 +57,7 @@ int main(){
   close(map);
 }
 
-int detectKeyPress(){
-  //UP:27,91,65
-  //DOWN:27,91,66
-  //LEFT:27,91,68
-  //RIGHT:27,91,67
+int detectKeyPress(int* cursor_row, int* cursor_col){
   int key;
   key = getchar();
   if (key == '\033'){
@@ -70,22 +65,30 @@ int detectKeyPress(){
       key = getchar();
       if (key == 65){
 	//UP
+	printf(CURSOR_UP);
       }
       if (key == 66){
 	//DOWN
+	printf(CURSOR_DOWN);
       }
       if (key == 67){
 	//RIGHT
+	printf(CURSOR_RIGHT);
       }
       if (key == 68){
 	//LEFT
+	printf(CURSOR_LEFT);
       }
     }
   }
   else if (key == 17){//ctrl+q
     return 0;
   }
-  return 1;
+  //TODO: BACKSPACE,TAB
+  else{
+    printf("%c",key);
+    return key;
+  }
 }
 
 int fill_buffers(int file, int start_read, line* first_line){
@@ -101,7 +104,7 @@ int fill_buffers(int file, int start_read, line* first_line){
   
 int print_buffers(line* first_line){
   while (first_line->next){
-    printf("%s",first_line->text);
+    printf("%*s\r%s\n",sizeof(first_line->text),"HELLO",first_line->text);
     first_line = first_line->next;
   }
 }
@@ -127,6 +130,12 @@ int init(line* line_node, winsize* window){
     line_node = line_node->next;
   }
   return 0;
+}
+
+int edit_file(line* line){
+}
+
+int update_display(){
 }
 
 int cleanup(line* line_node){

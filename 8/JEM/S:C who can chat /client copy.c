@@ -11,6 +11,7 @@
 int main(int argc, char **argv) {
 
   int socket_id;
+  char input[256];
   char buffer[256];
   int i;
 
@@ -29,9 +30,14 @@ int main(int argc, char **argv) {
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
+  while (strcmp(buffer, "bye") != 0) {
+    read( socket_id, buffer, sizeof(buffer));
+    printf("<client> received: [%s]\n", buffer );
 
-  read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
+    printf("Talk to <server> : ");
+    fgets(input, sizeof(input), stdin);
+    write( socket_id, input, sizeof(input));
+  }
   
   return 0;
 }

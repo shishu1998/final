@@ -12,6 +12,7 @@
 int main() {
 
   char input[256];
+  char buffer[256];
   int socket_id, socket_client, con_id;
   
   //create the socket
@@ -24,23 +25,17 @@ int main() {
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
-  listen( socket_id, 1 );
-  
+  listen( socket_id, 100 );
+  printf("<server> listening\n");
+
   for ( ; ; ) {
 
     socket_client = accept(socket_id, NULL, NULL); // blocking call 
     int pid = fork();
 
     if ( pid == 0 ) { //check for child
-
-      close(socket_id);
       printf("<server> connected: %d\n", socket_client );
-      //now you can do things
-      while( strcmp(input, exit_sig) != 0 ) {
-	printf("enter a message for the client: ");
-	fgets(input, sizeof(input), stdin);
-	write( socket_client, input, sizeof(input));
-      }
+      write( socket_client, "success", 8 );
       close(socket_client);
       exit(0); 
     }

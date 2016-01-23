@@ -3,6 +3,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <errno.h>
 #include "players.c"
 
 void sendpos( int fd ) {
@@ -37,12 +38,26 @@ card * generateHand() {
 }
 
 void doprocessing (int sock) {
+
+  sleep(1);
+  printf("one (w)\n");
+  int p = write(4, "go", sizeof("go"));
+  sleep(1); //GO TO SLEEP and wait for read to happen first
+  if (p < 0) {
+    perror("ERROR writing");
+    printf("error: %s \n", strerror(errno));
+    exit(1);
+  }
+   
+	   
+  
   int n;
   char buffer[256];
   bzero(buffer,256);
   printf("two (r)\n");
   n = read(sock,buffer,255);
-   
+  printf("able to get pass two\n");
+
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(1);
@@ -127,11 +142,7 @@ int main( int argc, char *argv[] ) {
     }
       
     if (pid == 0) {
-      while( 1 ) {
-
-	printf("one (w)\n");
-	write(4, "go", sizeof("go"));
-		
+      while( 1 ) {		
 	/* This is the client process */
 	printf("hello\n");
 	//close(sockfd);

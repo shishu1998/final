@@ -72,8 +72,6 @@ int main(int argc, char **argv) {
       hostname = argv[1];
   }
   
-  int type = 0;  // 0 (tutor) or 1 (tutee)
-
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   

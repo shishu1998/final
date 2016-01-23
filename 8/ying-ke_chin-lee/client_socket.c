@@ -24,9 +24,9 @@ void clean_stdin(void)
     int c;
     do {
         c = getchar();
-	printf("cl:getchar hang?\n");
+//	printf("cl:getchar hang?\n");
     } while (c != '\n' && c != EOF);
-	printf("cl:out of getchar\n");
+//	printf("cl:out of getchar\n");
 }
 
 int main(int argc, char *argv[])
@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
 		old_main();
 
 		if (BID_MODE != 0) {
+			n = write(sockfd, "1", 1); //tbh does nothing but sync read/write in client/socket
+
 			memset(buffer, 0, sizeof(buffer));
 			printf("Your bid: ");
 			bzero(buffer,256);
@@ -75,16 +77,26 @@ int main(int argc, char *argv[])
 			if (n < 0) 
 				 error("ERROR writing to socket");
 			bzero(buffer,256);
+/*
 			n = read(sockfd,buffer,255);
 			if (n < 0) 
 				 error("ERROR reading from socket");
-			printf("%s\n",buffer);
+			printf("client buffer: %s\n",buffer);
+*/
+		} else if (REQ_MODE != 0) {
+			// request bid data from server
+			n = write(sockfd, "2", 1); // I'm just taking 2 to mean REQ_MODE for server
+			printf("attempting a request at info, n = %d\n", n);
+		} else if (QUIT_MODE != 0) {
+			// tell server that you've left
+			n = write(sockfd, "3", 1); // taking 3 to be QUIT_MODE for server
+			printf("attempting a quit from server end\n");
+			exit(0);
 		}
+		n = read(sockfd,buffer,255);
+		printf("client buffer: %s\n", buffer);
 	}
 	close(sockfd);
 	return 0;
 }
 
-void communicate() {
-	
-}

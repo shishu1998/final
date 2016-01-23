@@ -40,7 +40,7 @@ int player_handshake(int *from_server){
 }
 
 //Card methods//
-card* send_redcard(int to_server){
+void send_redcard(int to_server){
   char buffer[100];
   
   printf("Pick a red card (index)  to send to the server...");

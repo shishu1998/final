@@ -40,8 +40,8 @@ card * generateHand() {
 void doprocessing (int sock) {
 
   sleep(1);
-  printf("one (w)\n");
-  int p = write(4, "go", sizeof("go"));
+  //printf("one (w)\n");
+  int p = write(sock, "go", sizeof("go"));
   sleep(1); //GO TO SLEEP and wait for read to happen first
   if (p < 0) {
     perror("ERROR writing");
@@ -54,9 +54,9 @@ void doprocessing (int sock) {
   int n;
   char buffer[256];
   bzero(buffer,256);
-  printf("two (r)\n");
+  //printf("two (r)\n");
   n = read(sock,buffer,255);
-  printf("able to get pass two\n");
+  //printf("able to get pass two\n");
 
   if (n < 0) {
     perror("ERROR reading from socket");
@@ -64,7 +64,7 @@ void doprocessing (int sock) {
   }
    
   printf("Here is the message: %s\n",buffer);
-  printf("three (w)\n");
+  //printf("three (w)\n");
   n = write(sock,"I got your message",18);
    
   if (n < 0) {
@@ -110,47 +110,57 @@ int main( int argc, char *argv[] ) {
    * process will go in sleep mode and will wait
    * for the incoming connection
    */
-   
+
   listen(sockfd,5);
   clilen = sizeof(cli_addr);
+
+  printf("player_count: %d\n", player_count);
+  printf("desired_total: %d\n", desired_total);
    
   while (1) {
-    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-    
-    //if ( newsockfd == 4 ) 
-    //  sendpos( 4 );
-    
-    players_connect();
-    player_ids[player_count-1] = newsockfd;
-    int i=0;
-    while(i<player_count){
-      printf("player_ids[%d] = %d\n", i, player_ids[i]);
-      i++;
-    }
-		
-    if (newsockfd < 0) {
-      perror("ERROR on accept");
-      exit(1);
-    }
+    if(player_count <= desired_total){
       
-    /* Create child process */
-    pid = fork();
-		
-    if (pid < 0) {
-      perror("ERROR on fork");
-      exit(1);
-    }
+      newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
       
-    if (pid == 0) {
-      while( 1 ) {		
-	/* This is the client process */
-	printf("hello\n");
-	//close(sockfd);
-	doprocessing(newsockfd);
+      //if ( newsockfd == 4 ) 
+      //  sendpos( 4 );
+      
+      players_connect();
+      player_ids[player_count-1] = newsockfd;
+      int i=0;
+      while(i<player_count){
+	printf("player_ids[%d] = %d\n", i, player_ids[i]);
+	i++;
+      }
+      
+      if (newsockfd < 0) {
+	perror("ERROR on accept");
+	exit(1);
+      }
+      
+      /* Create child process */
+      pid = fork();
+    
+      if (pid < 0) {
+	perror("ERROR on fork");
+	exit(1);
+      }
+    
+      if (pid == 0) {
+	while( 1 ) {		
+	  /* This is the client process */
+	  printf("hello\n");
+	  //close(sockfd);
+	  doprocessing(newsockfd);
+	}
       }
     }
     else {
-      //close(newsockfd);
+      write(newsockfd, "terminate", sizeof("terminate"));
+      close(newsockfd);
+      if (pid ==0){
+	close(sockfd);
+      }
     }
 		
   } /* end of while */

@@ -39,3 +39,4 @@ int sock_write(int, char*);
 // Common filename stuff
 char *client_dir(char*);
 char *server_dir(char*);
+char *hash_code(char*);

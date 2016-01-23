@@ -66,7 +66,8 @@ void pick_winning_card(card* pile, int from_server, int to_server){
   printf("Pick what you think best fits the adjective...");
   read(from_server,buffer,sizeof(buffer));
   printf("Here is the list of cards received...");
-  int counter = 0;                                                                 while(pile[counter].content){                                                  
+  int counter = 0;                                                                
+  while(pile[counter].content){                                                  
     printf("%d.%s",counter,hand[counter].content);                               
     counter ++;                                                                  
   }

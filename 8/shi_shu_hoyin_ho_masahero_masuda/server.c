@@ -37,10 +37,6 @@ int handshake(int *from_player){
   }
 }
 
-char* process(char* string){
-  strncpy(string,"Gone",sizeof(string));
-}
-
 void player_connection(int to_player,int from_player){
   
   char buffer[100];

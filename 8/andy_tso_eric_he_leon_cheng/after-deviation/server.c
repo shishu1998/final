@@ -152,15 +152,25 @@ int main( int argc, char *argv[] ) {
       
       /* Create child process */
       pid = fork();
-    
-      if (pid < 0) {
-	perror("ERROR on fork");
-	exit(1);
+            
+      if ( pid > 0 ){
+	child_ids[player_count-2] = pid;
+	int i2=0;
+	while(i2<player_count){
+	  printf("child_ids[%d] = %d\n", i, child_ids[i]);
+	  i2++;
+	}
+	//printf("getpid: %d\n", getpid());
+	printf("pid: %d\n", pid);
+	
+	if (pid < 0) {
+	  perror("ERROR on fork");
+	  exit(1);
+	}
       }
-    
+
       if (pid == 0) {
 	
-	printf("pid: %d\n", getpid());
 	
 	while( 1 ) {		
 	  /* This is the client process */

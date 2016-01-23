@@ -5,7 +5,9 @@
 #include "lot_struct.h"
 #include "display.h"
 
-int BID_MODE = 0;
+int BID_MODE = 0; /* ya know, I probably should have done these three in binary... */
+int REQ_MODE = 0;
+int QUIT_MODE = 0;
 //#include "writing.h"
 
 /*
@@ -51,25 +53,25 @@ int old_main() {
 	scanf("%s", b);
 	if (strcmp(b, "?") == 0) {
 		BID_MODE = 0;
+		REQ_MODE = 1;
+		QUIT_MODE = 0;
 		print(*pcurr_lot);
 		display(lots[0]);
 		//free(pcurr_lot);
 	} else if (strcmp(b, "b") == 0) {
 		BID_MODE = 1;
+		REQ_MODE = 0;
+		QUIT_MODE = 0;
 		printf("Bidmode = %d\n", BID_MODE);
 	} else {
 		BID_MODE = 0;
+		REQ_MODE = 0;
+		QUIT_MODE = 1;
 		if (strcmp(b, "x") == 0) printf("You chose to exit, exiting!\n");
 		else printf("Invalid entry; exiting.\n");
 		
 		// tell server someone has left
-/*
-		// nah leave til later you have other problems lol
-		char *buffer = "gone";
-		portno = atoi(gettheportno);
-		sockfd
-*/
-		exit(0);
+	//	exit(0);
 	}
 //	} //okay once I comment out the while loop, it doesn't let me enter a new bid but it doesn't hang.
 	return 0;

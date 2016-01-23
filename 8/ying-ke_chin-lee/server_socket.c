@@ -93,18 +93,69 @@ int main(int argc, char *argv[])
 void dostuff (int sock)
 {
 	int n;
+	int has_msg = 0;
 	char buffer[256];
-	  
+	char msg_out[256]; //should be enough space...
+	 
 	bzero(buffer,256);
 	n = read(sock,buffer,255);
 	if (n < 0) error("ERROR reading from socket");
 	printf("Here is the message: %s\n",buffer);
+
+	if (strcmp(buffer, "2") == 0) {		// next three lines newly added
+		has_msg = 1;
+		printf("in req info mode\n");
+		// retrieve the necessary info
+		
+		// okay, this is yucky but is just the copy/paste of code from writing.h
+		char last_bid[256]; //hopefully enough space
+		char new_char;
+		int index = 0;
+
+		FILE *fp;
+		fp = fopen(bidfile, "r");
+		fseek(fp, 0, SEEK_END);
+		new_char = fgetc(fp);
+		while (new_char != '\n') {
+			printf("I am inside the loop, new_char = %c\n", new_char);
+			last_bid[index] = new_char;
+			index++;
+
+			fseek(fp, -1*index, SEEK_END);
+			new_char = fgetc(fp);
+		}
+		fclose(fp);
+		last_bid[index] = '\0';
+		printf("last_bid (backwards) is %s\n", last_bid);
+	
+		/* FLIP THE STRING AAAAACK *flips table* */
+		reverse(last_bid);
+		printf("last_bid (forwards?) is %s\n", last_bid);
+		strcpy(msg_out, last_bid);
+
+	} else if (strcmp(buffer, "3") == 0) {
+		printf("in quit mode; a user has left the bidding\n");
+		// here keep track of users still around, for end-of-auction condition.
+	} else {
+/*
 	n = write(sock,"New bid:",18);
 	if (n < 0) error("ERROR writing to socket");
 	else write_bid(buffer);
-	printf("success_write = %d\n", success_write);
-	if (success_write) write(sock, "BID SUCCESSFUL\n", 18);
-	else write(sock, "UNSUCCESSFUL: You have already been outbid.\n", 18);
+*/
+		//retrieve new bid
+		n = read(sock, buffer, 255); // works based on print statement
+		write_bid(buffer);
+		printf("success_write = %d\n", success_write);
+
+		if (success_write) strcpy(msg_out, "BID SUCCESSFUL\n");
+		else strcpy(msg_out, "UNSUCCESSFUL: You have already been outbid.\n");
+		has_msg = 1;
+	
+	} //newly added, same goes for below
+	printf("msg_out = %s\n", msg_out);
+	n = write(sock, msg_out, strlen(msg_out));
+	if (n < 0) error("SOME FORM OF ERROR OCCURED\n");
+	else if (has_msg) write(sock, msg_out, 256);
 }
 
 void write_bid(char *offer) {

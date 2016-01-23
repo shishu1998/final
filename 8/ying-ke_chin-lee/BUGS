@@ -40,9 +40,15 @@ JAN 16:
 
 JAN 21:
 - fixed issues with receiving new bid, now updates bids appropriately
-- still need to make use of paddle numbers
+- still need to make use of paddle numbers 
+	- [UPDATE] JAN 22 may need to use something rather than pid for paddle numbers
 - need to check whether client code will suddenly quit on its own
 - need to make display update with new bidding price
+
+JAN 22:
+- fixed issue where exit(0) was placed in old_main rather than in client_socket so the program quit too quickly without informing server.
+- server/client out of sync, cause unknown.
+- server does not return newly found bid price to client.
 
 Possible changes to make?
 	- browser defaults to Chromium, add Firefox option later?

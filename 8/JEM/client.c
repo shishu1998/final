@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   sock.sin_port = htons(24601);
   //Set the IP address to connect to
   //127.0.0.1 is the "loopback" address of any machine
-  inet_aton( "127.0.0.1", &(sock.sin_addr) );
+  inet_aton( "149.89.151.100", &(sock.sin_addr) );
   bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   
   //attempt a connection

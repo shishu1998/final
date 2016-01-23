@@ -28,7 +28,7 @@ card top_card;
   play_card(player p, card c) - check if card is valid, remove card from 
     player p's hand, change top card (uses the update_top_card() function)
   update_top_card( card c ) - changes top_card to c
-  player_action() - uses fgets to get player input
+  player_action() - prints options player can take, gets player input
   
  */
 srand(time(NULL));
@@ -89,7 +89,19 @@ void player_action(player p) {
   }
   printf("%d - draw a card\n", i++);
   //get player input as an int
-  
+  int input;
+  scanf("%d", &input);
+  //action
+  if (input < num_cards) { //player wanted to play a card
+    //code to remove card from hand, update top_card, update num_cards
+  }
+  else if (input == num_cards) { //player wants to draw a card
+    //code to draw a card and update num_cards
+  }
+  else { //player entered an invalid input
+    //ask player to input a valid input
+  }
+  next_player();
 }
 
 void play_card(player p, card c) {
@@ -102,7 +114,6 @@ void play_card(player p, card c) {
   //ask player for another card to play
   //play_card(p, newcard);
   //}
-  next_player();
 }
 //ANDY'S CODE ENDS HERE//
 

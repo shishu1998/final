@@ -1,7 +1,7 @@
 Mail protocol
 
 4 bytes: max size of transmission (network byte order)
-- Use htoni() <==> ntohi()
+- Use htonl() <==> ntohl()
 
 n bytes: the transmission itself
 

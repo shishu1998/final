@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <termios.h>
 
 #define CURSOR_UP "\033[1A"
 #define CURSOR_DOWN "\033[1B"
@@ -16,42 +17,78 @@
 #define PRESERVED_SCREEN "\033[?1049l"
 
 typedef struct line {int term_line; int file_line; char* text; struct line* next;} line;
+typedef struct termios termios;
 typedef struct winsize winsize;
 
 int init(line*, winsize*);
 int cleanup(line*);
 int fill_buffers(int, int, line*);
 int print_buffers(line*);
-int open_screen_buffer();
-int open_preserved_screen();
+int open_screen_buffer(termios*);
+int open_preserved_screen(termios*);
+int detectKeyPress(int*, int*);
 
 int main(){
   int cursor_row, cursor_col, read_line;
-
+  struct termios term;
   struct winsize window;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
 
   line* first_line = (line*)malloc(sizeof(line));
   init(first_line, &window);
 
-  int map = open("./map",O_RDONLY);
+  int map = open("./map",O_RDWR);
 
   fill_buffers(map,0,first_line);
   
   print_buffers(first_line);
 
-  open_screen_buffer();
+  open_screen_buffer(&term);
   print_buffers(first_line);
-  
-  while (1){
-    fflush(stdout);
-    sleep(1);
+
+  //int i;
+  while (detectKeyPress(&cursor_row,&cursor_col)){
+    //fflush(stdout);
+    //sleep(1);
   }
-  
-  open_preserved_screen();
-  
+  open_preserved_screen(&term);
+
   cleanup(first_line);
   close(map);
+}
+
+int detectKeyPress(int* cursor_row, int* cursor_col){
+  int key;
+  key = getchar();
+  if (key == '\033'){
+    if (getchar() == '['){
+      key = getchar();
+      if (key == 65){
+	//UP
+	printf(CURSOR_UP);
+      }
+      if (key == 66){
+	//DOWN
+	printf(CURSOR_DOWN);
+      }
+      if (key == 67){
+	//RIGHT
+	printf(CURSOR_RIGHT);
+      }
+      if (key == 68){
+	//LEFT
+	printf(CURSOR_LEFT);
+      }
+    }
+  }
+  else if (key == 17){//ctrl+q
+    return 0;
+  }
+  //TODO: BACKSPACE,TAB
+  else{
+    printf("%c",key);
+    return key;
+  }
 }
 
 int fill_buffers(int file, int start_read, line* first_line){
@@ -67,17 +104,22 @@ int fill_buffers(int file, int start_read, line* first_line){
   
 int print_buffers(line* first_line){
   while (first_line->next){
-    printf("%s",first_line->text);
+    printf("%*s\r%s\n",sizeof(first_line->text),"HELLO",first_line->text);
     first_line = first_line->next;
   }
 }
 
-int open_screen_buffer(){
+int open_screen_buffer(termios* term){
   printf(ALT_BUFFER);
+  tcgetattr(STDIN_FILENO,term);
+  term->c_lflag = ~(ICANON|ECHO);
+  tcsetattr(STDIN_FILENO,TCSANOW,term);
 }
 
-int open_preserved_screen(){
+int open_preserved_screen(termios* term){
   printf(PRESERVED_SCREEN);
+  term->c_lflag = (ICANON|ECHO);
+  tcsetattr(STDIN_FILENO,TCSANOW,term);
 }
 
 int init(line* line_node, winsize* window){
@@ -88,6 +130,12 @@ int init(line* line_node, winsize* window){
     line_node = line_node->next;
   }
   return 0;
+}
+
+int edit_file(line* line){
+}
+
+int update_display(){
 }
 
 int cleanup(line* line_node){

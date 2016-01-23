@@ -30,8 +30,9 @@ int main() {
     socket_client = accept( socket_id, NULL, NULL );
     printf("<server> connected: %d\n", socket_client );
 
-    if (fork() ==0){
-
+    if (fork() == 0){
+      
+      //system("gnome-terminal"); -> this is how to open a new window but u cant control it
       printf("Enter text to write:\n");
       char s[100];
       fgets(s, sizeof(s), stdin);

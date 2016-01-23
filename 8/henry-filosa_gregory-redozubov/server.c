@@ -119,6 +119,76 @@ void get_user(char * ans, char name[], char password[], int socket_client){
   }
 }
 
+void send_mail(char name[], int socket_client){
+  int error;
+  char file_path[NAME_LEN+5]="root/";
+  strcat(file_path,name);
+  struct stat buf;
+  stat(file_path,&buf);
+  int size = buf.st_size;
+  if (size == 0)
+    return;
+  int fd=open(file_path,O_RDONLY);
+  if (fd == -1){
+    perror("Error opening %s's messages\n");
+    return;
+  }
+  char buf_out[size];
+  error=read(fd,buf_out,size);
+  if (error == -1){
+    perror("Error reading %s's messages\n");
+    return;
+  }
+  error=write(socket_client,&size,4);
+  if (error == -1){
+    perror("Error sending %s's message size\n");
+    return;
+  }
+  error=write(socket_client,buf_out,size);
+  if (error == -1){
+    perror("Error sending %s's messages\n");
+    return;
+  }
+  error=close(fd);
+  if (error == -1){
+    perror("Error closing %s's messages\n");
+    return;
+  }
+  //delete file
+}
+
+void recieve_mail(char name[], int socket_client){
+  printf("Starting to listen\n");
+  int error,size;
+  char target[NAME_LEN];
+  error=read(socket_client,&size,4);
+  if (error == -1){
+    perror("Error getting target size:\n");
+    return;
+  }
+  //check for exit
+  if (size == kill_num)
+    raise(SIGPIPE);
+  printf("kill pass\n");
+  error=read(socket_client,target,size);
+  if (error == -1){
+    perror("Error getting target:\n");
+    return;
+  }
+  error=read(socket_client,&size,4);
+  if (error == -1){
+    perror("Error getting message size:\n");
+    return;
+  }
+  char buf_in[size];
+  error=read(socket_client,buf_in,size);
+  if (error == -1){
+    perror("Error getting target:\n");
+    return;
+  }
+  //Put message in file
+}
+
 int main(int argc, char *argv[]){
   ppid=getppid();
   signal(SIGINT,sighandler);
@@ -158,32 +228,49 @@ int main(int argc, char *argv[]){
 	//check for mail, repeat above
       }
       while(1==1){
-      //do child stuff
-	sleep(1);
-	printf("child\n");
+	//do child stuff
+	send_mail(name,socket_client);
+	recieve_mail(name,socket_client);
       }
       close(socket_client);
       printf("Connection closed\n");
     }
   }
 }
-
-
-
-
-
-
+/*
 int authenticate(char name[], char password[]){
-  /* Returns: boolean
+   Returns: boolean
   Checks userlist for username and password
   Checks logged to see if user already logged in
   Returns 0 if correct combination not present or the user is already logged in
-  */
   
-  int fd = read(/root/log.txt, 
-  
-
-int add_user(char name[], char password[]){
+  FILE *fr;
+  int count1 = 0, count2 = 0, check = 0, i, j, flag;
+  fr = fopen("root/log/txt", "rt");
+  while(fgets(line, 80, fr) != NULL){
+    sscanf (line, "%ld", &elapsed_seconds);
+  }
+  fclose(fr);
+  //open and read the file
+  //keep file in stringarray 
+  //DON'T FORGET TO CLOSE
+  for(i=0; i <= count1 - count2; i++){
+    for(j=i; j < i + count2; j++){
+      flag = 1;
+      if(name[j] != fr[j - i])
+	{
+	  flag = 0;
+	  break;
+	}
+    }
+    if(flag == 1)
+      return 0;
+    else
+      return -1;
+  }
+} 
+*/
+//int add_user(char name[], char password[]){
   /*Returns boolean
   Checks user to see if name is already taken
   Return 1 if name is available and appends name and password to userlist,

@@ -62,7 +62,7 @@ int main() {
 
 void server_talk(int socket_client) {
   char *buffer;
-  int size;
+  unsigned int size;
 
   // Session
   user *session;
@@ -81,7 +81,7 @@ void server_talk(int socket_client) {
       exit(1);
     }
     else {
-      size = ntohi(size);
+      size = ntohl(size);
       printf("Reading up to %d bytes\n", size);
     }
 
@@ -99,11 +99,26 @@ void server_talk(int socket_client) {
 
     // TODO: parse input
     if (strstart(buffer, "LOGIN")) {
+      printf("Found LOGIN command\n");
+      
       session = server_login(buffer);
+      if (session) {
+	sock_write(socket_client, "OK");
+      }
+      else if (errno == EACCES) {
+	sock_write(socket_client, "FAIL\nIncorrect password");
+      }
+      else if (errno == ENOENT) {
+	sock_write(socket_client, "FAIL\nNo such user");
+      }
     }
 
     else if (strstart(buffer, "SETUP")) {
       session = server_acct_setup(buffer);
+      if (session) {
+	sock_write(socket_client, "OK");
+      }
+      
     }
 
     else if (strstart(buffer, "GET")) {
@@ -133,25 +148,49 @@ void server_talk(int socket_client) {
   user_freemem(session);
 }
 
-user *server_login(char *buffer) {
+user *scan_userinfo(char *buffer) {
+  printf("Entered scan_userinfo fn\n");
+  
   user *u = malloc(sizeof(user));
-  sscanf(buffer, "Username: %ms", &(u->name));
-  sscanf(buffer, "Password: %ms", &(u->passwd));
+  u->name = malloc(256);
+  memset(u->name, 0, 256);
+  u->passwd = malloc(256);
+  memset(u->passwd, 0, 256);
+
+  
+  sscanf(buffer, "Username: %255s", u->name);
+  sscanf(buffer, "Password: %255s", u->passwd);
+
+  printf("%s / %s\n", u->name, u->passwd);
+
+  printf("Created object\n");
+  
+  return u;
+}
+
+user *server_login(char *buffer) {
+  user *u = scan_userinfo(buffer);
 
   // Validate login
   FILE *userfile = fopen("mail.d/users.csv", "r+");
   user *account = user_find(u->name, userfile);
+  printf("user_find\n");
   fclose(userfile);
+  printf("fclose\n");
 
   if (account) {
     if (strcmp(u->passwd, account->passwd) == 0) {
       // Username and password correct
+      printf("Correct login\n");
+      
       user_freemem(account);
       return u;
     }
 
     else {
       // Valid username, wrong password
+      printf("Valid username, wrong password\n");
+      
       user_freemem(u);
       user_freemem(account);
       errno = EACCES;
@@ -159,12 +198,60 @@ user *server_login(char *buffer) {
     }
   }
 
-  else {
-    // No such user
-    user_freemem(u);
-    errno = ENOENT;
-    return NULL;
-  }
+  // No such user
+  printf("No such user\n");
   
-  return u;
+  user_freemem(u);
+  errno = ENOENT;
+  return NULL;
 }
+
+user *server_acct_setup(char *buffer) {
+  user *u = scan_userinfo(buffer);
+
+  // Create user in userfile
+  FILE *userfile = fopen("mail.d/users.csv", "r+");
+  user *clone = user_create(u->name, u->passwd, userfile);
+  fclose(userfile);
+
+  if (clone) {
+    // Only free the struct, don't free the strings inside
+    free(clone);
+
+    // Make new folder for user
+    char *folder = server_dir(u->name);
+    if (mkdir(folder, 0744)) {
+      perror("Error creating user directory");
+      exit(1);
+    }
+    free(folder);
+
+    return u;
+  }
+
+  free(u);
+
+  return NULL;
+}
+
+/* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */
+
+/* char* server_dir(char* s){ */
+/*   char* return_value = "hello"; */
+/*   return return_value; */
+/* } */
+
+/* user* user_create(char* s1, char* s2, FILE* f){ */
+/*   user* u; */
+/*   return u; */
+/* } */
+
+/* user* user_find(char* s, FILE* f){ */
+/*   user* u; */
+/*   return u; */
+/* } */
+
+/* void user_freemem(user* u){ */
+
+/* } */
+

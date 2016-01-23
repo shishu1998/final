@@ -6,29 +6,77 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <errno.h>
 
+void process(int fd, int sockfd){
+  char sen[256];
+  char rec[256];
+  int num_bytes;
+  num_bytes=recv(sockfd,rec,sizeof(rec),0);
+  rec[num_bytes]='\0';
+  printf("RECEIVED:%s\n", rec);
+  fflush(stdout);
+}
 
 int main() {
-
-  int socket_id, socket_client;
+  int socket_id;
+  int i = 1;
+  fd_set master, read_fds;
   
   //create the socket
-  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
-  
+  socket_id = socket(AF_INET, SOCK_STREAM, 0);
+  if(socket_id == -1){
+    printf("socket: %s\n", strerror(errno));
+    exit(0);
+  }
+
   //bind to port/address
   struct sockaddr_in listener;
   listener.sin_family = AF_INET;  //socket type IPv4
-  listener.sin_port = htons(24601); //port #
+  listener.sin_port = htons(56347); //port #
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  if(setsockopt(socket_id, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(socket_id)) == -1){
+    printf("setsockopt %s\n", strerror(errno));
+    exit(0);
+  }
+  if(bind(socket_id, (struct sockaddr *)&listener, sizeof(listener)) == -1){
+    printf("bind: %s\n", strerror(errno));
+    exit(0);
+  }
   
-  listen( socket_id, 1 );
-  printf("<server> listening\n");
+  if(listen(socket_id, 15) == -1){
+    printf("listen: %s\n", strerror(errno));
+    exit(0);
+  }
 
-  socket_client = accept( socket_id, NULL, NULL );
-  printf("<server> connected: %d\n", socket_client );
+  FD_ZERO(&master);
+  FD_ZERO(&read_fds);
+  FD_SET(socket_id, &master);
+  int fdmax = socket_id;
 
-  write( socket_client, "hello", 6 );
-  
+  while(1){
+    read_fds = master;
+    if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1){
+      printf("select: %s\n", strerror(errno));
+      exit(0);
+    }
+    for(i = 0; i <= fdmax; i++){
+      if(FD_ISSET(i, &read_fds)){
+	if(i == socket_id){
+	  struct sockaddr_in client_addr;
+	  socklen_t addrlen;
+	  addrlen = sizeof(client_addr);
+	  int client_socket = accept(socket_id, (struct sockaddr*)&client_addr, &addrlen);
+	  FD_SET(client_socket, &master);
+	  if(client_socket > fdmax){
+	    fdmax = client_socket;
+	  }
+	}else{
+	  process(i,socket_id);
+	}
+      }
+    }
+  }
+
   return 0;
 }

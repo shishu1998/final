@@ -3,23 +3,19 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef LINUX
+int playsong(){
 
-int playsong(char * song){
+//char * command1[3];
+//char * command2[3];
   char * pointers[3];
   
-  #ifdef LINUX
-  pointers[0] = "aplay";
-  #endif
+  #ifdef __linux__
+  pointers[0] = "mpg321";
   #else
   pointers[0] = "afplay";
-  pointers[1] = song;
+  #endif
+  pointers[1] = "temp.mp3";
   pointers[2] = NULL;
   execvp(pointers[0], pointers);
-  return 0;
-}
-
-int main(){
-  playsong("State_of_Grace.mp3");
   return 0;
 }

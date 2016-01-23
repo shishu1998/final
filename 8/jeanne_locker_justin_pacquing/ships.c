@@ -15,17 +15,19 @@
 #include <sys/sem.h>
 #include <sys/types.h>
 
-char uboard [11][11]; //your board
-char oboard [11][11]; //your opponent's board
+char uboard [6][6]; //your board
+char oboard [6][6]; //your opponent's board
+int shippies[5]; //the placement of your ships
 
 
-/*======== void makeboards() ==========
-Inputs:
 
-Result:
+/*======== void makeBoards() ==========
+Inputs: none
+
+Result: creates the displayed boards for play
 
 ====================*/
-void makeboards(){
+void makeBoards(){
   int d = 1;
   int a = 0;
   while (d < 11){
@@ -42,16 +44,41 @@ void makeboards(){
   }
 }
 
-int setup(){
+
+/*======== int checkMatey() ==========
+Inputs:
+int guess: opponent's guess of where user's ship is
+int places[]: user's ship placement
+
+Result:
+returns either 1 or 0: 1 if the guess hit, 0 if it didn't
+
+====================*/
+int checkMatey(int guess, int places[]){
+  int ind = 0;
+  int result = 0;
+  while (places[ind] != NULL){
+    if (places[ind] == guess){
+      result = 1;
+    } else {
+      ind++;
+    }
+  }
+  return result;
+}
+
+
+int play(){
 
   int pos;
   
-  printf("Ahoy, matey! Welcome to Battleship Bash Bros.");
+  printf("Ahoy, matey! Welcome to Battleship Bash Bros.\n");
   //insert grid setup
-  printf("It's time to arrange your fleet.");
+  printf("It's time to arrange your fleet.\n");
   //printf("Input where you want the leftmost or topmost part of your ship: ");
-  printf("Input where you want your ship! Each ship is one unit: ");
-  scanf("%s", &pos);
+  makefleet(shippies);
+  printf("Now all that's left is to find an enemy! Hold on while we explore the seven seas for a battle.");
+  
   
   //a bunch of stuff
   return 0;

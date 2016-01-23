@@ -6,13 +6,6 @@
 #include <signal.h>
 #include "deck.h"
 
-
-card* reddeck;
-card* greendeck;
-int playerturn;
-int playernum;
-
-
 static void sighandler(int signo){
   if(signo == SIGINT){
     printf("Server crash, oopsies doops\n");
@@ -22,7 +15,7 @@ static void sighandler(int signo){
 }
 
 int handshake(int *from_player){
-
+  
   int to_player;
   char buffer[100];
 
@@ -49,6 +42,7 @@ char* process(char* string){
 }
 
 void player_connection(int to_player,int from_player){
+  
   char buffer[100];
   printf("before while loop\n");
   while(read(from_player,buffer,sizeof(buffer))){
@@ -67,13 +61,20 @@ int main(){
   int to_player;
   int from_player;
   char buffer[100];
+
+  card* red = makedeck("red");
+  card* green = makedeck("green");
+  int playerturn;
+  int playernum = 0;
   
   while(1){
     printf("waiting for players to connect\n");
     to_player = handshake(&from_player);
 
     if(to_player != 0){
+      
       player_connection(to_player,from_player);
+      
       close(to_player);
     }
   }

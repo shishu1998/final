@@ -67,7 +67,11 @@ void sign_up(int socket_id){
   if(i==-1){
     printf("Error\n");
   }else if(i==0){
-    execl("mkdir","mkdir","mail");
+    int i;
+    i = execlp("mkdir","mkdir","mail",NULL);
+    if(i==-1){
+      perror("Something went wrong!");
+    }
   }else{
     strcat(final,use_phrase);
     choose_username(final, use);
@@ -89,6 +93,16 @@ void check_for_account(char *buffer, int socket_id){
     check_for_account(buffer, socket_id);
   }
 }
+
+void enter_mail(int socket_id){
+  int i;
+  for(i=0;i<10;i++){
+    printf("\n");
+  }
+  printf("Welcome to mail!");
+}
+
+
 int main() {
 
   // Step 1. Create the socket (same as server code)
@@ -113,7 +127,6 @@ int main() {
   //read(socket_id, buffer, sizeof(buffer) - 1);
   
   //Request info from user
-
   printf("Do you already have an account? (y/n)\n");
   //read info
   fgets(buffer,sizeof(stdin)-1,stdin);

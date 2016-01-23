@@ -65,7 +65,7 @@ void server_talk(int socket_client) {
   unsigned int size;
 
   // Session
-  user *session;
+  user *session = NULL;
 
   int r;
 
@@ -138,28 +138,9 @@ void server_talk(int socket_client) {
       
     }
 
-    // Upload one email
     else if (strstart(buffer, "SEND")) {
-      // Skip past the newline
-      char *content = strchr(buffer, '\n') + 1;
-
-      // Initialize filename
-      char *filename = server_dir(session->name);
-      filename = realloc(filename, strlen(filename) + 9);
-
-      // Append hashcode to filename
-      char *hashcode = hash_code(content);
-      strcat(filename, hashcode);
-      free(hashcode);
-
-      // Write!
-      FILE *mail = fopen(filename, "w");
-      // Prepend sender information
-      fprintf(mail, "From: %s\n", session->name);
-      // Write mail content
-      fputs(content, mail);
-      // Done with the file
-      fclose(mail);
+      // Upload one email
+      server_send(buffer, session);
 
       if (!errno) {
 	sock_write(socket_client, "OK");
@@ -270,6 +251,33 @@ user *server_acct_setup(char *buffer) {
   free(u);
 
   return NULL;
+}
+
+void server_send(char *buffer, user *session) {
+  // Skip past the newline
+  char *content = strchr(buffer, '\n') + 1;
+  
+  // Initialize filename
+  char *filename = server_dir(session->name);
+  filename = realloc(filename, strlen(filename) + 9);
+  
+  // Append hashcode to filename
+  char *hashcode = hash_code(content);
+  strcat(filename, hashcode);
+  free(hashcode);
+  
+  // Write!
+  FILE *mail = fopen(filename, "w");
+  
+  // Prepend sender information
+  fprintf(mail, "From: %s\n", session->name);
+  // Write mail content
+  fputs(content, mail);
+  // Done with the file
+  fclose(mail);
+
+  // Done with the filename buffer
+  free(filename);
 }
 
 /* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */

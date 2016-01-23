@@ -26,6 +26,7 @@ void client_talk(int);
 void server_talk(int);
 user *server_login(char*);
 user *server_acct_setup(char*);
+void server_send(char*, user*);
 
 // User operations
 user *user_find(char*, FILE*);

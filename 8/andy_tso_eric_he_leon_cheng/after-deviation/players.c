@@ -35,6 +35,7 @@ void add_player(player p){
 int desired_total;
 int player_count;
 int player_ids[100]; 
+int child_ids[100];
 int current_position = 0;
 
 void ask_for_total(){

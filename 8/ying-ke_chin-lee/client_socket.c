@@ -87,10 +87,11 @@ int main(int argc, char *argv[])
 			// request bid data from server
 			n = write(sockfd, "2", 1); // I'm just taking 2 to mean REQ_MODE for server
 			printf("attempting a request at info, n = %d\n", n);
+			printf("CURRENT BID AT: ");
 		} else if (QUIT_MODE != 0) {
 			// tell server that you've left
 			n = write(sockfd, "3", 1); // taking 3 to be QUIT_MODE for server
-			printf("attempting a quit from server end\n");
+			printf("Notified server that you have quit.\n");
 			exit(0);
 		}
 		n = read(sockfd,buffer,255);

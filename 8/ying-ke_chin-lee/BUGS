@@ -48,7 +48,9 @@ JAN 21:
 JAN 22:
 - fixed issue where exit(0) was placed in old_main rather than in client_socket so the program quit too quickly without informing server.
 - server/client out of sync, cause unknown.
+	- [UPDATE] JAN 22 seems that it is back in sync, though client oddly receives messages from server twice.
 - server does not return newly found bid price to client.
+	- [UPDATE] JAN 22 server returns price to client.
 
 Possible changes to make?
 	- browser defaults to Chromium, add Firefox option later?

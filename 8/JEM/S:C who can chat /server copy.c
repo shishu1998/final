@@ -26,16 +26,25 @@ int main() {
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
   listen( socket_id, 100 );
-  printf("<server> listening\n");
-
+  
   for ( ; ; ) {
 
     socket_client = accept(socket_id, NULL, NULL); // blocking call 
     int pid = fork();
 
     if ( pid == 0 ) { //check for child
+
+      close(socket_id);
       printf("<server> connected: %d\n", socket_client );
-      write( socket_client, "success", 8 );
+      //now you can do things
+      while( strcmp(input, exit_sig) != 0 ) {
+	printf("Talk to <client> : ");
+	fgets(input, sizeof(input), stdin);
+	write( socket_client, input, sizeof(input));
+
+	read( socket_client, buffer, sizeof(buffer));
+	printf("<server> received: [%s]\n", buffer );
+      }
       close(socket_client);
       exit(0); 
     }

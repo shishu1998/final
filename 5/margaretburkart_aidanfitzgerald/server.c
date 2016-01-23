@@ -88,6 +88,13 @@ void server_talk(int socket_client) {
     // Read transmission into dynamically allocated buffer
     buffer = malloc(size + 1);
 
+#define die(status) do {    \
+    user_freemem(session);  \
+    close(socket_client);   \
+    free(buffer); \
+    exit(status); \
+    } while (0)
+
     if ( (r = read(socket_client, buffer, size)) == -1) {
       perror("Error reading data from socket");
       exit(1);
@@ -107,9 +114,11 @@ void server_talk(int socket_client) {
       }
       else if (errno == EACCES) {
 	sock_write(socket_client, "FAIL\nIncorrect password");
+	die(1);
       }
       else if (errno == ENOENT) {
 	sock_write(socket_client, "FAIL\nNo such user");
+	die(1);
       }
     }
 
@@ -118,7 +127,10 @@ void server_talk(int socket_client) {
       if (session) {
 	sock_write(socket_client, "OK");
       }
-      
+      else {
+	sock_write(socket_client, "FAIL\nInvalid username");
+	die(1);
+      }
     }
 
     else if (strstart(buffer, "GET")) {
@@ -126,21 +138,47 @@ void server_talk(int socket_client) {
       
     }
 
+    // Upload one email
     else if (strstart(buffer, "SEND")) {
-      // Upload one email
-      
+      // Skip past the newline
+      char *content = strchr(buffer, '\n') + 1;
+
+      // Initialize filename
+      char *filename = server_dir(session->name);
+      filename = realloc(filename, strlen(filename) + 9);
+
+      // Append hashcode to filename
+      char *hashcode = hash_code(content);
+      strcat(filename, hashcode);
+      free(hashcode);
+
+      // Write!
+      FILE *mail = fopen(filename, "w");
+      // Prepend sender information
+      fprintf(mail, "From: %s\n", session->name);
+      // Write mail content
+      fputs(content, mail);
+      // Done with the file
+      fclose(mail);
+
+      if (!errno) {
+	sock_write(socket_client, "OK");
+      }
+      else {
+	sock_write(socket_client, "FAIL\nCould not send email");
+	die(1);
+      }
     }
 
     else if (strstart(buffer, "LOGOUT")) {
-      user_freemem(session);
-      close(socket_client);
-      free(buffer);
-      exit(0);
+      die(0);
     }
 
     // Done with transmission content
     free(buffer);
 
+    // Reset errno
+    errno = 0;
   }
   // END LOOP
 
@@ -254,23 +292,3 @@ user *server_acct_setup(char *buffer) {
 /* void user_freemem(user* u){ */
 
 /* } */
-
-char* server_dir(char* s){
-  char* return_value = "hello";
-  return return_value;
-}
-
-user* user_create(char* s1, char* s2, FILE* f){
-  user* u;
-  return u;
-}
-
-user* user_find(char* s, FILE* f){
-  user* u;
-  return u;
-}
-
-void user_freemem(user* u){
-
-}
-

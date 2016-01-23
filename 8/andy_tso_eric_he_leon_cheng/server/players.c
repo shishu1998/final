@@ -4,7 +4,7 @@
 
 typedef struct
 {
-  char color; //1-red, 1-blue, 2-green, 3-yellow
+  char color; //0-red, 1-blue, 2-green, 3-yellow
   int value; //10-skip, 11-reverse, 12-plus two, 13-wild, 14-wild four
 } card;
 
@@ -12,15 +12,25 @@ typedef struct
 {
   int position;
   card cards[1000];
+  int num_cards;//number of cards in player's hand
 } player;
 
 
 int total_players;
 int current_player;
 player player_list[1000];
+card top_card;
 
-//ANDY'S CODE STARTS HERE
-// returns a card of random value and random color
+//ANDY'S CODE STARTS HERE//
+/*
+  List of functions:
+  draw_card() - returns card of random value and random color
+  play_card(player p, card c) - check if card is valid, remove card from 
+    player p's hand, change top card (uses the update_top_card() function)
+  update_top_card( card c ) - changes top_card to c
+  player_action() - prints options player can take, gets player input
+  
+ */
 srand(time(NULL));
 card draw_card() {
   card new_card;
@@ -29,11 +39,83 @@ card draw_card() {
   return new_card;
 }
 
-// play card
-void play_card(player p, card c) {
-  p.cards
+update_top_card( card c ) {
+  top_card.color = c.color;
+  top_card.value = c.value;
 }
-//ANDY'S CODE ENDS HERE
+
+char *stringify_color(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
+  char *color;
+  if (c.color == 0) 
+    color = "red";
+  else if (c.color == 1) 
+    color = "blue";
+  else if (c.color == 2) 
+    color = "green";
+  else 
+    color = "yellow";
+  return color;
+}
+
+char *stringify_value(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
+  char *value;
+  if (c.value < 10) { //is a number card
+    char snum[5];
+    itoa(c.value, snum, 5);
+    value = snum;
+  }
+  else { //is an action card
+    if (c.value == 10)
+      value = "skip";
+    else if (c.value == 11)
+      value = "reverse";
+    else if (c.value == 12) 
+      value = "draw 2";
+    else if (c.value == 13) 
+      value = "wild card";
+    else if (c.value == 14) 
+      value = "wild draw 4";
+  }
+  return value;
+}
+
+void player_action(player p) {
+  //print out options for the player
+  printf("It's your turn! What would you like to do?\n");
+  printf("Options:\n");
+  int i;
+  for ( i = 0; i < num_cards; i++ ) {
+    printf("%d - play %s %s\n", i, stringify_color(p.cards[i]), stringify_value(p.cards[i]));
+  }
+  printf("%d - draw a card\n", i++);
+  //get player input as an int
+  int input;
+  scanf("%d", &input);
+  //action
+  if (input < num_cards) { //player wanted to play a card
+    //code to remove card from hand, update top_card, update num_cards
+  }
+  else if (input == num_cards) { //player wants to draw a card
+    //code to draw a card and update num_cards
+  }
+  else { //player entered an invalid input
+    //ask player to input a valid input
+  }
+  next_player();
+}
+
+void play_card(player p, card c) {
+  //check if this is a valid next card to play
+  //if (check if card is valid) {
+  //remove card from p.cards and update num_cards
+  //change the card that is on top of the pile (shared memory?)
+  //}
+  //else {
+  //ask player for another card to play
+  //play_card(p, newcard);
+  //}
+}
+//ANDY'S CODE ENDS HERE//
 
 //Note: Skip and Reverse are to be dealt with later
 void next_player(){

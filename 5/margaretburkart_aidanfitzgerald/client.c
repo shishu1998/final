@@ -31,29 +31,6 @@ void sign_in(int socket_id){
 
   sock_write(socket_id,final);
   printf("This is what you sent to the server:\n[%s]\n",final);
-
-
-  /*
-  char buff[256];
-  char *buffer = buff;
-  char buff1[256];
-  char *buffer1 = buff;
-  char *final = "LOGIN\nUsername: ";
-
-  printf("Enter username: ");
-  fgets(buffer,sizeof(stdin)+1,stdin);
-  strcat(final,buffer);
-  
-  char *sep = "\nPassword: ";
-  strcat(final,sep);
-
-  printf("Enter password: ");
-  fgets(buffer1,sizeof(stdin)+1,stdin);
-  strcat(final,buffer);
-
-  //write(socket_id, final, sizeof(final) -1);
-  sock_write(socket_id,final);
-  */
 }
 
 void choose_username(char* final, char* use){
@@ -107,7 +84,9 @@ void check_for_account(char *buffer, int socket_id){
   }else if(strncmp(buffer,"n\n",2)==0){
     sign_up(socket_id);
   }else{
-    printf("Not a valid response.");
+    printf("Not a valid response. Enter another response: ");
+    fgets(buffer,sizeof(stdin)-1,stdin);
+    check_for_account(buffer, socket_id);
   }
 }
 int main() {
@@ -138,8 +117,6 @@ int main() {
   printf("Do you already have an account? (y/n)\n");
   //read info
   fgets(buffer,sizeof(stdin)-1,stdin);
-  printf("Successfully read from stdin\n");
-  //buffer = strsep(&pin, args);
   check_for_account(buffer, socket_id);
   
   return 0;

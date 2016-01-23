@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct
 {
-  char color;
-  int value; //s-skip, r-reverse, t-plus two, w-wild, f-wild four
+  char color; //1-red, 1-blue, 2-green, 3-yellow
+  int value; //10-skip, 11-reverse, 12-plus two, 13-wild, 14-wild four
 } card;
 
 typedef struct
@@ -17,6 +18,22 @@ typedef struct
 int total_players;
 int current_player;
 player player_list[1000];
+
+//ANDY'S CODE STARTS HERE
+// returns a card of random value and random color
+srand(time(NULL));
+card draw_card() {
+  card new_card;
+  new_card.color = rand() % 4;//[0,3]
+  new_card.value = rand() % 15;//[0,14]
+  return new_card;
+}
+
+// play card
+void play_card(player p, card c) {
+  p.cards
+}
+//ANDY'S CODE ENDS HERE
 
 //Note: Skip and Reverse are to be dealt with later
 void next_player(){

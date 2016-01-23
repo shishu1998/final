@@ -5,6 +5,37 @@
 #include <string.h>
 #include "players.c"
 
+void sendpos( int fd ) {
+  char *buffer;
+  buffer = "init";
+  int n = write(fd, buffer, sizeof(buffer) );
+}
+
+char randColor( int p ) {
+  char color;
+  if ( p == 0 ) 
+    color = 'r';
+  else if ( p == 1 )
+    color = 'b';
+  else if ( p == 2 )
+    color = 'g';
+  else if ( p == 3 )
+    color = 'y';
+  else 
+    printf( "Error in handling colors\n" );
+  return color;
+}
+
+card * generateHand() {
+  card cards[1000];
+  int i = 0;
+  while ( i < 7 ) {
+    cards[i].value=rand()%10;
+    cards[i].color=randColor( rand()%4 ); 
+  }
+  
+}
+
 void doprocessing (int sock) {
   int n;
   char buffer[256];
@@ -27,6 +58,10 @@ void doprocessing (int sock) {
 }
 
 int main( int argc, char *argv[] ) {
+  
+  ask_for_total();
+  int turns;
+  
   int sockfd, newsockfd, portno, clilen;
   char buffer[256];
   struct sockaddr_in serv_addr, cli_addr;
@@ -64,6 +99,17 @@ int main( int argc, char *argv[] ) {
    
   while (1) {
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+
+    //if ( newsockfd == 4 ) 
+    //  sendpos( 4 );
+    
+    players_connect();
+    player_ids[player_count-1] = newsockfd;
+    int i=0;
+    while(i<player_count){
+      printf("player_ids[%d] = %d\n", i, player_ids[i]);
+      i++;
+    }
 		
     if (newsockfd < 0) {
       perror("ERROR on accept");
@@ -79,14 +125,15 @@ int main( int argc, char *argv[] ) {
     }
       
     if (pid == 0) {
+      while( 1 ) {
       /* This is the client process */
-      printf("hello\n");
-      close(sockfd);
-      doprocessing(newsockfd);
-      exit(0);
+	printf("hello\n");
+	//close(sockfd);
+	doprocessing(newsockfd);
+      }
     }
     else {
-      close(newsockfd);
+      //close(newsockfd);
     }
 		
   } /* end of while */

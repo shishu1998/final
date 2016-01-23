@@ -102,6 +102,9 @@ void dostuff (int sock)
 	n = write(sock,"New bid:",18);
 	if (n < 0) error("ERROR writing to socket");
 	else write_bid(buffer);
+	printf("success_write = %d\n", success_write);
+	if (success_write) write(sock, "BID SUCCESSFUL\n", 18);
+	else write(sock, "UNSUCCESSFUL: You have already been outbid.\n", 18);
 }
 
 void write_bid(char *offer) {

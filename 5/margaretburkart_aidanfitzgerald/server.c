@@ -152,8 +152,14 @@ user *scan_userinfo(char *buffer) {
   printf("Entered scan_userinfo fn\n");
   
   user *u = malloc(sizeof(user));
-  sscanf(buffer, "Username: %ms", &(u->name));
-  sscanf(buffer, "Password: %ms", &(u->passwd));
+  u->name = malloc(256);
+  memset(u->name, 0, 256);
+  u->passwd = malloc(256);
+  memset(u->passwd, 0, 256);
+
+  
+  sscanf(buffer, "Username: %255s", u->name);
+  sscanf(buffer, "Password: %255s", u->passwd);
 
   printf("%s / %s\n", u->name, u->passwd);
 
@@ -248,4 +254,23 @@ user *server_acct_setup(char *buffer) {
 /* void user_freemem(user* u){ */
 
 /* } */
+
+char* server_dir(char* s){
+  char* return_value = "hello";
+  return return_value;
+}
+
+user* user_create(char* s1, char* s2, FILE* f){
+  user* u;
+  return u;
+}
+
+user* user_find(char* s, FILE* f){
+  user* u;
+  return u;
+}
+
+void user_freemem(user* u){
+
+}
 

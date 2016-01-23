@@ -16,17 +16,22 @@
 #define ALT_BUFFER "\033[?1049h\033[H"
 #define PRESERVED_SCREEN "\033[?1049l"
 
-typedef struct line {int term_line; int file_line; char* text; struct line* next;} line;
+typedef struct line {int term_line; 
+  int file_line; 
+  char* text; 
+  char* status;
+  struct line* next;} line;
 typedef struct termios termios;
 typedef struct winsize winsize;
 
 int init(line*, winsize*);
 int cleanup(line*);
 int fill_buffers(int, int, line*);
-int print_buffers(line*);
+int print_buffers(line*, winsize*);
 int open_screen_buffer(termios*);
 int open_preserved_screen(termios*);
-int detectKeyPress();
+int detect_keypress(int*, int*);
+int get_cursor(int*, int*);//int*, int*);
 
 int main(){
   int cursor_row, cursor_col, read_line;
@@ -35,57 +40,84 @@ int main(){
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
 
   line* first_line = (line*)malloc(sizeof(line));
+  line* changed_lines;
+
   init(first_line, &window);
 
-  int map = open("./map",O_RDONLY);
+  int map = open("./map",O_RDWR);
 
   fill_buffers(map,0,first_line);
-  
-  print_buffers(first_line);
-
+ 
   open_screen_buffer(&term);
-  print_buffers(first_line);
+  
+  print_buffers(first_line,&window);
 
-  int i;
-  while (detectKeyPress()){
-    //detectKeyPress();
+  while (detect_keypress(&cursor_row,&cursor_col)){
     //fflush(stdout);
-    //sleep(1);
   }
+  
   open_preserved_screen(&term);
 
   cleanup(first_line);
   close(map);
 }
 
-int detectKeyPress(){
-  //UP:27,91,65
-  //DOWN:27,91,66
-  //LEFT:27,91,68
-  //RIGHT:27,91,67
+int get_cursor(int* row, int* col){
+  printf("\033[6n");
+  int temp;
+  temp = getchar();//\033
+  temp = getchar();//]
+  *row = getchar()-'0';//row
+  temp = getchar()-'0';
+  while (temp >= 0 && temp <= 9){
+    *row = 10 * *row + temp; 
+    temp = getchar()-'0';
+  }
+  //; divider
+  *col = getchar()-'0';//col
+  temp = getchar()-'0';
+  while (temp >= 0 && temp <= 9){
+    *col = 10 * *col + temp; 
+    temp = getchar()-'0';
+  }
+  while (temp != 'R'-'0'){
+    temp = getchar()-'0';
+  }
+}
+
+int detect_keypress(int* cursor_row, int* cursor_col){
   int key;
   key = getchar();
   if (key == '\033'){
     if (getchar() == '['){
       key = getchar();
       if (key == 65){
-	//UP
+	printf(CURSOR_UP);
+	get_cursor(cursor_row, cursor_col);
       }
-      if (key == 66){
-	//DOWN
+      else if (key == 66){
+	printf(CURSOR_DOWN);
+	get_cursor(cursor_row, cursor_col);
       }
-      if (key == 67){
-	//RIGHT
+      else if (key == 67){
+	printf(CURSOR_RIGHT);
       }
-      if (key == 68){
-	//LEFT
+      else if (key == 68){
+	printf(CURSOR_LEFT);
       }
     }
   }
   else if (key == 17){//ctrl+q
     return 0;
   }
-  return 1;
+  else if (key == 127){
+    printf(CURSOR_LEFT);
+    printf("%c",' ');
+    printf(CURSOR_LEFT);
+  }
+  else{
+    printf("%c",key);
+  }
 }
 
 int fill_buffers(int file, int start_read, line* first_line){
@@ -99,9 +131,9 @@ int fill_buffers(int file, int start_read, line* first_line){
   }
 }
   
-int print_buffers(line* first_line){
+int print_buffers(line* first_line, winsize* window){
   while (first_line->next){
-    printf("%s",first_line->text);
+    printf("%*s\r%s",window->ws_col,first_line->status,first_line->text);
     first_line = first_line->next;
   }
 }
@@ -127,6 +159,12 @@ int init(line* line_node, winsize* window){
     line_node = line_node->next;
   }
   return 0;
+}
+
+int edit_file(line* line){
+}
+
+int update_display(){
 }
 
 int cleanup(line* line_node){

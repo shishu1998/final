@@ -15,6 +15,7 @@ void display(Lot l) {
 	printf("cmds[1] = %s\n", cmds[1]);
 	int f = fork();
 	if (f == 0) {	
+		printf("forked\n");
 		print(l);
 
 		char ans[1];
@@ -42,9 +43,6 @@ void display(Lot l) {
 /*
 	Find out what user wants to do (?/b/x)
 */
-void query() {
-	printf("Enter an action\n");// I MAY NOT USE THIS FUNCTION AFTER ALL
-}
 
 /*
 // NOW TRYING TO GIVE THIS OVER ENTIRELY TO CLIENT.C SINCE THAT CAN TRANSMIT BID TO SERVER

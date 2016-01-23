@@ -56,17 +56,19 @@ int main() {
   **/
   int tutees[MAX_CLIENTS][3];
   int num_tutees = 0;
-
+  
   socket_id = create_server();
-  printf("<server> listening\n");
-  socket_client = accept( socket_id, NULL, NULL );
-  printf("<server> connected: %d\n", socket_client );
 
   while(1) {
+	 
+  	printf("<server> listening: %d\n", socket_id);
+  	socket_client = accept( socket_id, NULL, NULL );
+  	printf("<server> connected: %d\n", socket_client );
 	
 	int type = TUTOR_ID;  // get type from client
 	if (type == TUTOR_ID) {
 		if (num_tutors < MAX_CLIENTS) {
+			printf("Adding tutor\n");
 			tutors[num_tutors][0] = socket_client;
 			num_tutors++;
 		}
@@ -79,6 +81,7 @@ int main() {
 	}
 	else {
 		if (num_tutees < MAX_CLIENTS) {
+			printf("Adding tutee\n");
 			tutees[num_tutees][0] = socket_client;
 			num_tutees++;
 		}

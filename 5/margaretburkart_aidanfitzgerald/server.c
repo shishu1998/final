@@ -254,23 +254,3 @@ user *server_acct_setup(char *buffer) {
 /* void user_freemem(user* u){ */
 
 /* } */
-
-char* server_dir(char* s){
-  char* return_value = "hello";
-  return return_value;
-}
-
-user* user_create(char* s1, char* s2, FILE* f){
-  user* u;
-  return u;
-}
-
-user* user_find(char* s, FILE* f){
-  user* u;
-  return u;
-}
-
-void user_freemem(user* u){
-
-}
-

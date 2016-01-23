@@ -83,6 +83,12 @@ char *stringify_value(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
   return value;
 }
 
+card remove_card(player p, int i) {
+  p.cards[i] = p.cards[num_cards-1];
+  p.num_cards -= 1;
+  p.cards[num_cards-1] = NULL;
+}
+
 void player_action(player p) {
   //print out options for the player
   printf("It's your turn! What would you like to do?\n");
@@ -98,10 +104,14 @@ void player_action(player p) {
   //action
   if (input < num_cards) { //player wanted to play a card
     //code to remove card from hand, update top_card, update num_cards
+    update_top_card( remove_card(p, input) );
   }
+  /*
   else if (input == num_cards) { //player wants to draw a card
     //code to draw a card and update num_cards
+    //skip, reverse, +2, wild, wild +4
   }
+  */
   else { //player entered an invalid input
     //ask player to input a valid input
   }

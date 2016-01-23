@@ -3,6 +3,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <errno.h>
 
 int main(int argc, char *argv[]) {
 
@@ -55,7 +56,14 @@ int main(int argc, char *argv[]) {
     /* Server determines turn */
     char buffer2[256];
     printf("four (r)\n");
-    n = read(sockfd, buffer2, 255);
+    int p = read(sockfd, buffer2, 255);
+    printf("able to get pass four\n");
+    if (p < 0) {
+      perror("ERROR reading");
+      printf("error: %s \n", strerror(errno));
+      exit(1);
+    }
+      
     printf( "buffer2: %s\n", buffer2 );
     if ( !strcmp(buffer2, "go") ) {
       printf("Please enter the message: ");

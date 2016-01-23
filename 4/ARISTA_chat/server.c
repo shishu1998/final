@@ -8,12 +8,32 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#define PORT 8532
+
 #define MAX_CLIENTS 10
 #define MATH_ID 2
 #define SCIENCE_ID 3
 #define HISTORY_ID 4
 #define TUTOR_ID 0
 #define TUTEE_ID 1
+
+int create_server() {
+	int socket_id;
+	
+    //create the socket
+    socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+  
+    //bind to port/address
+    struct sockaddr_in listener;
+    listener.sin_family = AF_INET;  //socket type IPv4
+    listener.sin_port = htons(PORT); //port #
+    listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
+    bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  
+    listen( socket_id, 1 );
+	
+	return socket_id;
+}
 
 int main() {
 
@@ -37,27 +57,18 @@ int main() {
   int tutees[MAX_CLIENTS][3];
   int num_tutees = 0;
   
-  //create the socket
-  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
-  
-  //bind to port/address
-  struct sockaddr_in listener;
-  listener.sin_family = AF_INET;  //socket type IPv4
-  listener.sin_port = htons(5000); //port #
-  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
-  
-  listen( socket_id, 1 );
+  socket_id = create_server();
 
-  while(1){
-
-    printf("<server> listening\n");
-    socket_client = accept( socket_id, NULL, NULL );
-    printf("<server> connected: %d\n", socket_client );
-
+  while(1) {
+	 
+  	printf("<server> listening: %d\n", socket_id);
+  	socket_client = accept( socket_id, NULL, NULL );
+  	printf("<server> connected: %d\n", socket_client );
+	
 	int type = TUTOR_ID;  // get type from client
 	if (type == TUTOR_ID) {
 		if (num_tutors < MAX_CLIENTS) {
+			printf("Adding tutor\n");
 			tutors[num_tutors][0] = socket_client;
 			num_tutors++;
 		}
@@ -70,6 +81,7 @@ int main() {
 	}
 	else {
 		if (num_tutees < MAX_CLIENTS) {
+			printf("Adding tutee\n");
 			tutees[num_tutees][0] = socket_client;
 			num_tutees++;
 		}
@@ -81,7 +93,8 @@ int main() {
 		}
 	}
 
-    if (fork() == 0){
+	int pid = fork();
+    if (pid == 0){
       
       //system("gnome-terminal"); -> this is how to open a new window but u cant control it
       printf("Enter text to write:\n");
@@ -93,7 +106,7 @@ int main() {
       read(socket_client, s, sizeof(s));
       printf("<server> received: %s\n", s);
 
-    }else{
+    } else {
       close(socket_client);
     }
   }

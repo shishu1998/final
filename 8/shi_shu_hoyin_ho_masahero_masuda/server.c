@@ -52,7 +52,28 @@ void player_connection(int to_player,int from_player){
     strncpy(buffer,"",sizeof(buffer));
   }
 }
+//Card Deal methods
+card* deal_greencard(card** green_deck){
+  int pos = 0;
+  while(green_deck[pos]==NULL && pos!= 250){
+    pos++;
+  }
+  card* green_card = green_deck[pos];
+  return green_card;
+}
 
+card* deal_redcard(card** red_deck){
+  int pos = 200;
+  while(red_deck[pos] == NULL && pos!=746){
+    pos++;
+  }
+  card* red_card = red_deck[pos];
+  return red_card;
+}
+//Sending methods//
+
+
+//
 
 int main(){
 

@@ -7,26 +7,44 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "server.h"
+
 int main() {
 
-int socket_id, socket_client;
-
-socket_id = socket( AF_INET, SOCK_STREAM, 0 );
-
-struct sockaddr_in listener;
-
-listener.sin_family = AF_INET;  //socket type IPv4
-listener.sin_port = htons(24601); //port #
-listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  char input[256];
+  int socket_id, socket_client, con_id;
   
-listen( socket_id, 1 );
-printf("<server> listening\n");
-
-socket_client = accept( socket_id, NULL, NULL );
-printf("<server> connected: %d\n", socket_client );
-
- write( socket_client, "hello", 6 );
+  //create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
-return 0;
+  //bind to port/address
+  struct sockaddr_in listener;
+  listener.sin_family = AF_INET;  //socket type IPv4
+  listener.sin_port = htons(24601); //port #
+  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
+  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  
+  listen( socket_id, 1 );
+  
+  for ( ; ; ) {
+
+    socket_client = accept(socket_id, NULL, NULL); // blocking call 
+    int pid = fork();
+
+    if ( pid == 0 ) { //check for child
+
+      close(socket_id);
+      printf("<server> connected: %d\n", socket_client );
+      //now you can do things
+      while( strcmp(input, exit_sig) != 0 ) {
+	printf("enter a message for the client: ");
+	fgets(input, sizeof(input), stdin);
+	write( socket_client, input, sizeof(input));
+      }
+      close(socket_client);
+      exit(0); 
+    }
+  }
 }
+ 
+

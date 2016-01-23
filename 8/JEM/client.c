@@ -29,9 +29,10 @@ int main(int argc, char **argv) {
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
-
-  read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
+  while (strcmp(buffer, "bye") != 0) {
+    read( socket_id, buffer, sizeof(buffer));
+    printf("<client> received: [%s]\n", buffer );
+  }
   
   return 0;
 }

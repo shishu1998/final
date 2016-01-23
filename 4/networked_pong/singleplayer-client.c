@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <cairo.h>
 #include <math.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 static void do_drawing(cairo_t *);
 void parse_input(char *buffer);
@@ -77,7 +77,8 @@ int main(int argc, char *argv[]) {
   if (!pid) {
     int width = 720;
     int height = 480;
-    int videoFlags = SDL_SWSURFACE | SDL_RESIZABLE | SDL_DOUBLEBUF;
+    //    int videoFlags = SDL_SWSURFACE | SDL_RESIZABLE | SDL_DOUBLEBUF;
+    int videoFlags = SDL_SWSURFACE;
     int bpp = 32;
     
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {

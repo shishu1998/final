@@ -254,4 +254,3 @@ user *server_acct_setup(char *buffer) {
 /* void user_freemem(user* u){ */
 
 /* } */
-

@@ -30,7 +30,7 @@ void server_function(int from_client, int to_client) {
   
   while (1) {
     char line_to_write[100];
-    sprintf(line_to_write, "%d,%d,%d,%d,%d,%d", drawing_information.ball_x, drawing_information.ball_y, drawing_information.paddle_one_y, drawing_information.paddle_two_y, drawing_information.score_one, drawing_information.score_two);
+    printf(line_to_write, "%d,%d,%d,%d,%d,%d", drawing_information.ball_x, drawing_information.ball_y, drawing_information.paddle_one_y, drawing_information.paddle_two_y, drawing_information.score_one, drawing_information.score_two);
     write(to_client, line_to_write, sizeof(line_to_write));
  
     read(from_client, line, sizeof(line));

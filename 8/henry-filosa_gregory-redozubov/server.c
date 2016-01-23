@@ -123,6 +123,12 @@ void send_mail(char name[], int socket_client){
   int error;
   char file_path[NAME_LEN+5]="root/";
   strcat(file_path,name);
+  error=access(file_path,F_OK);
+  //Check for any messages
+  if (error == -1){
+    printf("No Messages for %s: %s\n",name,strerror(errno));
+    return;
+  }
   struct stat buf;
   stat(file_path,&buf);
   int size = buf.st_size;
@@ -130,35 +136,39 @@ void send_mail(char name[], int socket_client){
     return;
   int fd=open(file_path,O_RDONLY);
   if (fd == -1){
-    perror("Error opening %s's messages\n");
+    printf("Error opening %s's messages: %s\n",name,strerror(errno));
     return;
   }
   char buf_out[size];
   error=read(fd,buf_out,size);
   if (error == -1){
-    perror("Error reading %s's messages\n");
+    printf("Error reading %s's messages: %s\n",name,strerror(errno));
     return;
   }
   error=write(socket_client,&size,4);
   if (error == -1){
-    perror("Error sending %s's message size\n");
+    printf("Error sending %s's message size: %s\n",name,strerror(errno));
     return;
   }
   error=write(socket_client,buf_out,size);
   if (error == -1){
-    perror("Error sending %s's messages\n");
+    printf("Error sending %s's messages: %s\n",name,strerror(errno));
     return;
   }
   error=close(fd);
   if (error == -1){
-    perror("Error closing %s's messages\n");
+    printf("Error closing %s's messages: %s\n",name,strerror(errno));
     return;
   }
-  //delete file
+  //Get rid of messages
+  error=remove(file_path);
+  if (error == -1){
+    printf("Error removing %s's messages: %s\n",name,strerror(errno));
+    return;
+  }
 }
 
 void recieve_mail(char name[], int socket_client){
-  printf("Starting to listen\n");
   int error,size;
   char target[NAME_LEN];
   error=read(socket_client,&size,4);
@@ -169,7 +179,6 @@ void recieve_mail(char name[], int socket_client){
   //check for exit
   if (size == kill_num)
     raise(SIGPIPE);
-  printf("kill pass\n");
   error=read(socket_client,target,size);
   if (error == -1){
     perror("Error getting target:\n");
@@ -186,7 +195,34 @@ void recieve_mail(char name[], int socket_client){
     perror("Error getting target:\n");
     return;
   }
-  //Put message in file
+  printf("Message to %s : %s\n",target,buf_in);
+  char file_path[NAME_LEN+5]="root/";
+  strcat(file_path,target);
+  int fd=open(file_path,O_APPEND | O_CREAT | O_WRONLY, 0644);
+  if (fd == -1){
+    perror("Error opening file to store message:\n");
+    return;
+  }
+  error=write(fd,name,strlen(name));
+  if (error == -1){
+    perror("Error writing sender:\n");
+    return;
+  }
+  error=write(fd,": ",2);
+  if (error == -1){
+    perror("Error writing space:\n");
+    return;
+  }
+  error=write(fd,buf_in,size);
+  if (error == -1){
+    perror("Error writing message:\n");
+    return;
+  }
+  error=close(fd);
+  if (error == -1){
+    perror("Error closing message file:\n");
+    return;
+  }
 }
 
 int main(int argc, char *argv[]){
@@ -219,13 +255,6 @@ int main(int argc, char *argv[]){
       if (ans=='1'){
 	//Check if user logged in
 	//authenticate password. If correct, move on. Otherwise terminate
-	//Put loop here
-	//check for waiting mail
-	//send size of mail to be sent in bytes (int). If none, 0
-	//send mail
-	//wait to recieve messages
-	//pass on messages
-	//check for mail, repeat above
       }
       while(1==1){
 	//do child stuff

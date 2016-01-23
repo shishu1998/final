@@ -1,85 +1,169 @@
 #include "lib.h"
+#define MAXLEN 256
+#define PATH_MAX 2048
+
+void strip_add(char* source, char* dest){
+  char* leftovers;
+  int overall_len = strlen(source);
+  
+  leftovers = strchr(source,'\n');
+  int leftovers_len = strlen(leftovers);
+  int new_len = overall_len - leftovers_len;
+
+  strncat(dest,source,new_len);
+}
 
 void sign_in(int socket_id){
-  char buff[256];
-  char *buffer = buff;
-  char buff1[256];
-  char *buffer1 = buff;
-  char *final = "LOGIN\nUsername: ";
+  char use[256];
+  char pass[256];
+  char final[256];
+  char* use_phrase = "LOGIN\nUsername: ";
+  char* pass_phrase = "\nPassword: ";
 
-  printf("Enter username: ");
-  fgets(buffer,sizeof(stdin)+1,stdin);
-  strcat(final,buffer);
-  
-  char *sep = "\nPassword: ";
-  strcat(final,sep);
+  strcat(final,use_phrase);
+  printf("Enter your username: ");
+  fgets(use,MAXLEN,stdin);
+  strip_add(use,final);
 
-  printf("Enter password: ");
-  fgets(buffer1,sizeof(stdin)+1,stdin);
-  strcat(final,buffer);
+  strcat(final,pass_phrase);
+  printf("Enter your password: ");
+  fgets(pass,MAXLEN,stdin);
+  strip_add(pass,final);
 
-  //write(socket_id, final, sizeof(final) -1);
   sock_write(socket_id,final);
+  printf("This is what you sent to the server:\n[%s]\n",final);
 }
 
-void choose_username(char* final, char* buffer){
-  printf("[%s] %lu\n",final,strlen(final));
+void choose_username(char* final, char* use){
   printf("Enter your new username: ");
-  fgets(buffer,sizeof(stdin)-1,stdin);
-  printf("Successfully read from stdin\n");
-  strncat(final,buffer,12);
-  printf("[%s] %lu\n",final,strlen(final));
-  printf("Successfully used strcat\n");
-  
-  char *sep = "\nPassword: ";
-  strcat(final,sep);
-  printf("[%s] %lu\n",final,strlen(final));
+  fgets(use,MAXLEN,stdin);
+  strip_add(use,final);
 }
 
-void choose_password(char* final, char* buffer1, char* buffer2, int socket_id){
+void choose_password(char* final, char* pass, char* pass2, int socket_id){
   printf("Enter your new password: ");
-  fgets(buffer1,sizeof(stdin)-1,stdin);
-  printf("\n[%s] %lu\n",final,strlen(final));
+  fgets(pass,MAXLEN,stdin);
   printf("Re-enter your new password: ");
-  fgets(buffer2,sizeof(stdin)-1,stdin);
-  printf("\n[%s] %lu\n",final,strlen(final));
+  fgets(pass2,MAXLEN,stdin);
 
-  if(strcmp(buffer1,buffer2)==0){
-    strncat(final,buffer2,12);
-    //write(socket_id, final, sizeof(final) -1);
+  if(strcmp(pass,pass2)==0){
+    strip_add(pass,final);
     sock_write(socket_id,final);
   }else{
     printf("Passwords did not match. Try again:\n");
-    choose_password(final, buffer1, buffer2, socket_id);
+    choose_password(final, pass, pass2, socket_id);
   }
 }
 
-void sign_up(int socket_id){
-  char buff[512];
-  char *buffer = buff;
-  char buff1[512];
-  char *buffer1 = buff;
-  char buff2[512];
-  char *buffer2 = buff;
-  char fin[2048] = "SETUP\nUsername: ";
-  char *final;
-  final = fin;
+/*
+void create_subfolder(char* name){
+  char* path;
+  char* prev_path = "mail/";
+  strcat(path,prev_path);
+  strcat(path,name);
+  printf("path: [%s]\n",path);
 
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("\nDidn't fork correctly\n");
+  }else if(f==0){
+     int i;
+     i = execlp("mkdir","mkdir",path,NULL);
+     if(i==-1){
+       perror("Something went wrong!");
+     }
+  }else{
+  }
+}
+
+void create_mail_folders(){ 
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("\nDidn't fork correctly\n");
+  }else if(f==0){
+     int i;
+     i = execlp("mkdir","mkdir","mail",NULL);
+     if(i==-1){
+       perror("Something went wrong!");
+     }
+  }else{
+  }
+  f = fork();
+  if(f==-1){
+    perror("\nDidn't fork correctly\n");
+  }else if(f==0){
+     int i;
+     i = execlp("mkdir","mkdir","mail/Inbox",NULL);
+     if(i==-1){
+       perror("Something went wrong!");
+     }
+  }else{
+  }
+
+  
   int i;
+  i = execlp("mkdir","mkdir","mail",NULL);
+  if(i==-1){
+    perror("Something went wrong!");
+  }
+
+  printf("mail directory created\n");
+
+  char buff[PATH_MAX];
+  char* cwd;
+  cwd = getcwd(buff, PATH_MAX);
+  printf("cwd: [%s]\n",cwd);
+
+  i = chdir("mail");
+  if(i==-1){
+    perror("Something went wrong!");
+  }
+
+  printf("directory changed\n");
+
+  char buff2[PATH_MAX];
+  char* cwd2;
+  cwd2 = getcwd(buff2, PATH_MAX);
+  printf("cwd2: [%s]\n",cwd2);
+
+  i = execlp("mkdirat","mkdirat","AT_FDCWD","Inbox",NULL);
+  //i = execlp("mkdir","mkdir","Sent",NULL);
+  //i = execlp("mkdir","mkdir","Drafts",NULL);
+  //i = execlp("mkdir","mkdir","Archived",NULL);
+  //i = execlp("mkdir","mkdir","Flagged",NULL);
+  if(i==-1){
+    perror("Something went wrong!");
+  }
+  
+}
+*/
+
+void sign_up(int socket_id){
+  char use[256];
+  char pass[256];
+  char pass2[256];
+  char final[256];
+  char* use_phrase = "SETUP\nUsername: ";
+  char* pass_phrase = "\nPassword: ";
+
+   int i;
   i = fork();
   if(i==-1){
-    //return errno;
+    printf("Error\n");
   }else if(i==0){
-    execl("mkdir","mkdir","mail");
-    //return 0;
+    //create_mail_folders();
+    //create_subfolder("Inbox");
+    //create_subfolder("Sent");
+    //create_subfolder("Drafts");
   }else{
-    //int exit;
-    //int pid = wait(&exit);
-    //return WEXITSTATUS(exit);
-    //choose_username(final, buffer);
-    //choose_password(final, buffer1, buffer2, socket_id);
-    choose_username(final, buffer);
-    choose_password(final, buffer1, buffer2, socket_id);
+    strcat(final,use_phrase);
+    choose_username(final, use);
+    strcat(final,pass_phrase);
+    choose_password(final, pass, pass2, socket_id);
+
+    printf("This is what you sent to the server:\n[%s]\n",final);
   }
 }
 
@@ -89,9 +173,21 @@ void check_for_account(char *buffer, int socket_id){
   }else if(strncmp(buffer,"n\n",2)==0){
     sign_up(socket_id);
   }else{
-    printf("Not a valid response.");
+    printf("Not a valid response. Enter another response: ");
+    fgets(buffer,sizeof(stdin)-1,stdin);
+    check_for_account(buffer, socket_id);
   }
 }
+
+void enter_mail(int socket_id){
+  int i;
+  for(i=0;i<10;i++){
+    printf("\n");
+  }
+  printf("Welcome to mail!");
+}
+
+
 int main() {
 
   // Step 1. Create the socket (same as server code)
@@ -116,12 +212,9 @@ int main() {
   //read(socket_id, buffer, sizeof(buffer) - 1);
   
   //Request info from user
-
   printf("Do you already have an account? (y/n)\n");
   //read info
   fgets(buffer,sizeof(stdin)-1,stdin);
-  printf("Successfully read from stdin\n");
-  //buffer = strsep(&pin, args);
   check_for_account(buffer, socket_id);
   
   return 0;

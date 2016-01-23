@@ -120,14 +120,16 @@ int main(int argc, char *argv[]){
      }
      printf("Who do you want to message?\n");
      fgets(target,NAME_LEN,stdin);
+     strtok(target,"\n");
      printf("Message contents:\n");
      fgets(buf_out,MAX_MSG,stdin);
+     strtok(buf_out,"\n");
      size_out=strlen(target)+1;
      write(socket_id,&size_out,4);
      write(socket_id,target,size_out);
      size_out=strlen(buf_out)+1;
      write(socket_id,&size_out,4);
      write(socket_id,buf_out,size_out);
-     //printf("Message sent: %s\n",buf);
+     printf("Message sent: %s\n",buf_out);
    }
 }

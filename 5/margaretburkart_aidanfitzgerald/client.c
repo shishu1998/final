@@ -1,4 +1,16 @@
 #include "lib.h"
+#define MAXLEN 256
+
+void strip_add(char* source, char* dest){
+  char* leftovers;
+  int overall_len = strlen(source);
+  
+  leftovers = strchr(source,'\n');
+  int leftovers_len = strlen(leftovers);
+  int new_len = overall_len - leftovers_len;
+
+  strncat(dest,source,new_len);
+}
 
 void sign_in(int socket_id){
   char buff[256];
@@ -22,7 +34,11 @@ void sign_in(int socket_id){
   sock_write(socket_id,final);
 }
 
-void choose_username(char* final, char* buffer){
+void choose_username(char* final, char* use){
+  printf("Enter your new username: ");
+  fgets(use,MAXLEN,stdin);
+  strip_add(use,final);
+  /*
   printf("[%s] %lu\n",final,strlen(final));
   printf("Enter your new username: ");
   fgets(buffer,sizeof(stdin)-1,stdin);
@@ -34,9 +50,24 @@ void choose_username(char* final, char* buffer){
   char *sep = "\nPassword: ";
   strcat(final,sep);
   printf("[%s] %lu\n",final,strlen(final));
+  */
 }
 
-void choose_password(char* final, char* buffer1, char* buffer2, int socket_id){
+void choose_password(char* final, char* pass, char* pass2, int socket_id){
+  printf("Enter your new password: ");
+  fgets(pass,MAXLEN,stdin);
+  printf("Re-enter your new password: ");
+  fgets(pass2,MAXLEN,stdin);
+
+  if(strcmp(pass,pass2)==0){
+    strip_add(pass,final);
+    sock_write(socket_id,final);
+  }else{
+    printf("Passwords did not match. Try again:\n");
+    choose_password(final, pass, pass2, socket_id);
+  }
+
+  /*
   printf("Enter your new password: ");
   fgets(buffer1,sizeof(stdin)-1,stdin);
   printf("\n[%s] %lu\n",final,strlen(final));
@@ -52,9 +83,33 @@ void choose_password(char* final, char* buffer1, char* buffer2, int socket_id){
     printf("Passwords did not match. Try again:\n");
     choose_password(final, buffer1, buffer2, socket_id);
   }
+  */
 }
 
 void sign_up(int socket_id){
+  char use[256];
+  char pass[256];
+  char pass2[256];
+  char final[256];
+  char* use_phrase = "SETUP\nUsername: ";
+  char* pass_phrase = "\nPassword: ";
+
+   int i;
+  i = fork();
+  if(i==-1){
+    printf("Error\n");
+  }else if(i==0){
+    execl("mkdir","mkdir","mail");
+  }else{
+    strcat(final,use_phrase);
+    choose_username(final, use);
+    strcat(final,pass_phrase);
+    choose_password(final, pass, pass2, socket_id);
+
+    printf("This is what you sent to the server:\n[%s]\n",final);
+  }
+
+  /*
   char buff[512];
   char *buffer = buff;
   char buff1[512];
@@ -81,6 +136,7 @@ void sign_up(int socket_id){
     choose_username(final, buffer);
     choose_password(final, buffer1, buffer2, socket_id);
   }
+  */
 }
 
 void check_for_account(char *buffer, int socket_id){

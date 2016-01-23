@@ -11,11 +11,16 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#define TUTOR_ID 0
+#define TUTEE_ID 1
+
 int main(int argc, char **argv) {
 
   int socket_id;
   char buffer[256];
   int i;
+  
+  int type = 0;  // 0 (tutor) or 1 (tutee)
 
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );

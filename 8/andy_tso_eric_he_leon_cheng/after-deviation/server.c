@@ -6,31 +6,6 @@
 #include <errno.h>
 #include "players.c"
 
-char randColor( int p ) {
-  char color;
-  if ( p == 0 ) 
-    color = 'r';
-  else if ( p == 1 )
-    color = 'b';
-  else if ( p == 2 )
-    color = 'g';
-  else if ( p == 3 )
-    color = 'y';
-  else 
-    printf( "Error in handling colors\n" );
-  return color;
-}
-
-card * generateHand() {
-  card cards[1000];
-  int i = 0;
-  while ( i < 7 ) {
-    cards[i].value=rand()%10;
-    cards[i].color=randColor( rand()%4 ); 
-  }
-  
-}
-
 void doprocessing (int sock) {
 
   //printf("current_position: %d\n", current_position);
@@ -86,6 +61,8 @@ void doprocessing (int sock) {
 }
 
 int main( int argc, char *argv[] ) {
+  
+  srand(time(NULL));
   
   ask_for_total();
   int turns;

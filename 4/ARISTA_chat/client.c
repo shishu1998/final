@@ -11,6 +11,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#define PORT 8532
+
 #define TUTOR_ID 0
 #define TUTEE_ID 1
 
@@ -28,7 +30,7 @@ int main(int argc, char **argv) {
   //bind to port/address
   struct sockaddr_in sock;
   sock.sin_family = AF_INET;   
-  sock.sin_port = htons(5000);
+  sock.sin_port = htons(PORT);
   //Set the IP address to connect to
   //127.0.0.1 is the "loopback" address of any machine
   inet_aton( "127.0.0.1", &(sock.sin_addr) );
@@ -38,7 +40,7 @@ int main(int argc, char **argv) {
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
 
-  while(1){
+  while(i){
 
     printf("<client> waiting\n");
     char s[100];

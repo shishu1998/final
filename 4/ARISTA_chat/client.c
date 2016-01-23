@@ -10,30 +10,67 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
+
+#define PORT 8532
+
+#define TUTOR_ID 0
+#define TUTEE_ID 1
+
+int connect_server(char *hostname) {
+	int socket_id;
+	char ip[256];
+	int i;
+	
+    //create the socket
+    socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+  
+    //bind to port/address
+    struct sockaddr_in sock;
+    sock.sin_family = AF_INET;   
+    sock.sin_port = htons(PORT);
+    //Set the IP address to connect to
+	struct in_addr *addr;
+	struct hostent *h = (void *)123456789;
+	h = gethostbyname(hostname);
+	printf("%s\n", hostname);
+	if (h == NULL) {
+		printf("ERROR - cannot find hostname.\n");
+		return -1;
+	}
+	addr = (struct in_addr *) h->h_addr;
+	inet_ntoa(*addr);
+//	printf("%s\n",*addr);
+    //127.0.0.1 is the "loopback" address of any machine
+    inet_aton( "127.0.0.1", &(sock.sin_addr) );
+    bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  
+    //attempt a connection
+    i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+	
+	return socket_id;
+}
 
 int main(int argc, char **argv) {
 
   int socket_id;
+  char *hostname;
   char buffer[256];
   int i;
+  
+  int type = 0;  // 0 (tutor) or 1 (tutee)
 
-  //create the socket
-  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+  if (argc < 2) {
+      printf("Usage: client <hostname>\n");
+      exit(1);
+  } else {
+      hostname = argv[1];
+  }
   
-  //bind to port/address
-  struct sockaddr_in sock;
-  sock.sin_family = AF_INET;   
-  sock.sin_port = htons(5000);
-  //Set the IP address to connect to
-  //127.0.0.1 is the "loopback" address of any machine
-  inet_aton( "127.0.0.1", &(sock.sin_addr) );
-  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
-  
-  //attempt a connection
-  i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", i);
 
-  while(1){
+  while(i >= 0){
 
     printf("<client> waiting\n");
     char s[100];

@@ -1,5 +1,6 @@
 #include "lib.h"
 #define MAXLEN 256
+#define PATH_MAX 2048
 
 void strip_add(char* source, char* dest){
   char* leftovers;
@@ -54,6 +55,91 @@ void choose_password(char* final, char* pass, char* pass2, int socket_id){
   }
 }
 
+/*
+void create_subfolder(char* name){
+  char* path;
+  char* prev_path = "mail/";
+  strcat(path,prev_path);
+  strcat(path,name);
+  printf("path: [%s]\n",path);
+
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("\nDidn't fork correctly\n");
+  }else if(f==0){
+     int i;
+     i = execlp("mkdir","mkdir",path,NULL);
+     if(i==-1){
+       perror("Something went wrong!");
+     }
+  }else{
+  }
+}
+
+void create_mail_folders(){ 
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("\nDidn't fork correctly\n");
+  }else if(f==0){
+     int i;
+     i = execlp("mkdir","mkdir","mail",NULL);
+     if(i==-1){
+       perror("Something went wrong!");
+     }
+  }else{
+  }
+  f = fork();
+  if(f==-1){
+    perror("\nDidn't fork correctly\n");
+  }else if(f==0){
+     int i;
+     i = execlp("mkdir","mkdir","mail/Inbox",NULL);
+     if(i==-1){
+       perror("Something went wrong!");
+     }
+  }else{
+  }
+
+  
+  int i;
+  i = execlp("mkdir","mkdir","mail",NULL);
+  if(i==-1){
+    perror("Something went wrong!");
+  }
+
+  printf("mail directory created\n");
+
+  char buff[PATH_MAX];
+  char* cwd;
+  cwd = getcwd(buff, PATH_MAX);
+  printf("cwd: [%s]\n",cwd);
+
+  i = chdir("mail");
+  if(i==-1){
+    perror("Something went wrong!");
+  }
+
+  printf("directory changed\n");
+
+  char buff2[PATH_MAX];
+  char* cwd2;
+  cwd2 = getcwd(buff2, PATH_MAX);
+  printf("cwd2: [%s]\n",cwd2);
+
+  i = execlp("mkdirat","mkdirat","AT_FDCWD","Inbox",NULL);
+  //i = execlp("mkdir","mkdir","Sent",NULL);
+  //i = execlp("mkdir","mkdir","Drafts",NULL);
+  //i = execlp("mkdir","mkdir","Archived",NULL);
+  //i = execlp("mkdir","mkdir","Flagged",NULL);
+  if(i==-1){
+    perror("Something went wrong!");
+  }
+  
+}
+*/
+
 void sign_up(int socket_id){
   char use[256];
   char pass[256];
@@ -67,11 +153,10 @@ void sign_up(int socket_id){
   if(i==-1){
     printf("Error\n");
   }else if(i==0){
-    int i;
-    i = execlp("mkdir","mkdir","mail",NULL);
-    if(i==-1){
-      perror("Something went wrong!");
-    }
+    //create_mail_folders();
+    //create_subfolder("Inbox");
+    //create_subfolder("Sent");
+    //create_subfolder("Drafts");
   }else{
     strcat(final,use_phrase);
     choose_username(final, use);

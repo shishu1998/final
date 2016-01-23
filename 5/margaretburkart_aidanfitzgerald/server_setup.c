@@ -5,6 +5,9 @@ int main() {
   // Make mail directory
   // Needs to be rwx* so that we can cd into it
   mkdir("mail.d", 0744);
+  mkdir("mail.d/Inbox.d",0744);
+  mkdir("mail.d/Sent.d",0744);
+  mkdir("mail.d/Drafts.d",0744);
 
   printf("mkdir\n");
   

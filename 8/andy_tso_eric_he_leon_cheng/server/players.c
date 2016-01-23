@@ -4,7 +4,7 @@
 
 typedef struct
 {
-  char color; //1-red, 1-blue, 2-green, 3-yellow
+  char color; //0-red, 1-blue, 2-green, 3-yellow
   int value; //10-skip, 11-reverse, 12-plus two, 13-wild, 14-wild four
 } card;
 
@@ -28,7 +28,6 @@ card top_card;
   play_card(player p, card c) - check if card is valid, remove card from 
     player p's hand, change top card (uses the update_top_card() function)
   update_top_card( card c ) - changes top_card to c
-  num_cards() - returns int, number of cards left in a player's hand
   player_action() - uses fgets to get player input
   
  */
@@ -45,19 +44,63 @@ update_top_card( card c ) {
   top_card.value = c.value;
 }
 
-int num_cards(player p) {
+char *stringify_color(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
+  char *color;
+  if (c.color == 0) 
+    color = "red";
+  else if (c.color == 1) 
+    color = "blue";
+  else if (c.color == 2) 
+    color = "green";
+  else 
+    color = "yellow";
+  return color;
+}
+
+char *stringify_value(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
+  char *value;
+  if (c.value < 10) { //is a number card
+    char snum[5];
+    itoa(c.value, snum, 5);
+    value = snum;
+  }
+  else { //is an action card
+    if (c.value == 10)
+      value = "skip";
+    else if (c.value == 11)
+      value = "reverse";
+    else if (c.value == 12) 
+      value = "draw 2";
+    else if (c.value == 13) 
+      value = "wild card";
+    else if (c.value == 14) 
+      value = "wild draw 4";
+  }
+  return value;
+}
+
+void player_action(player p) {
+  //print out options for the player
+  printf("It's your turn! What would you like to do?\n");
+  printf("Options:\n");
+  int i;
+  for ( i = 0; i < num_cards; i++ ) {
+    printf("%d - play %s %s\n", i, stringify_color(p.cards[i]), stringify_value(p.cards[i]));
+  }
+  printf("%d - draw a card\n", i++);
+  //get player input as an int
   
 }
 
 void play_card(player p, card c) {
   //check if this is a valid next card to play
   //if (check if card is valid) {
-  //remove card from p.cards
+  //remove card from p.cards and update num_cards
   //change the card that is on top of the pile (shared memory?)
   //}
   //else {
   //ask player for another card to play
-  //play_card(p, c);
+  //play_card(p, newcard);
   //}
   next_player();
 }

@@ -12,15 +12,7 @@
   old [name] - retrieve old messages from [name]
 */
 
-//This is the information that is sent before the data to prepare server for receiving it
-typedef struct base{
-  char type;
-  char dest[30];
-  char sender[30];
-  int size;
-}base;
-
-//Needs to be commented out for linux systems
+//Only needed for linux systems
 #if defined(unix) || defined(__unix__) || defined(__unix)
 union semun {
   int val;
@@ -32,6 +24,7 @@ union semun {
 
 char * file_path="root";
 int sem_id = 42;
+//help ultimately not used
 char * help="You have the following commands:\n\t1 - Send a message\n\t2 - Send a file\n\t3- Send a command";
 int kill_num=10000000;
 

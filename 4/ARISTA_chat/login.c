@@ -47,27 +47,27 @@ int newuser() {
 
       char check[16];
       char *in =  check;
-      struct termios  tty_orig;
-      char c;
-      tcgetattr( STDIN_FILENO, &tty_orig );
-      struct termios  tty_work = tty_orig;
+      struct termios  tty_check;
+      char d;
+      tcgetattr( STDIN_FILENO, &tty_check );
+      struct termios  tty_checking = tty_check;
       puts("Please retype password:");
-      tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
-      tty_work.c_cc[ VMIN ]  = 1;
-      tty_work.c_cc[ VTIME ] = 0;
-      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+      tty_checking.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_checking.c_cc[ VMIN ]  = 1;
+      tty_checking.c_cc[ VTIME ] = 0;
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_checking );
 
       while (1) {
-	if (read(STDIN_FILENO, &c, sizeof c) > 0) {
-	  if ('\n' == c) {
+	if (read(STDIN_FILENO, &c, sizeof(d)) > 0) {
+	  if ('\n' == d) {
 	    break;
 	  }
-	  *in++ = c;
+	  *in++ = d;
 	  write(STDOUT_FILENO, "*", 1);
 	}
       }
 
-      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_check );
 
       *in = '\0';
       fputc('\n', stdout);

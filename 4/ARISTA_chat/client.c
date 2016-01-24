@@ -60,6 +60,7 @@ static void sighandler(int signo) {
 }
 
 int main(int argc, char **argv) {
+  signal(SIGINT, sighandler);
 
   int socket_id;
   char *hostname;

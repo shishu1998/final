@@ -11,9 +11,9 @@
 
 int newuser() {
   int moveon = 0;
+  int username = 0000;
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
-    int username = 0;
     scanf("%i",&username);
 
     if (username >= 1000 && username <= 9999) {
@@ -46,7 +46,7 @@ int newuser() {
       fputc('\n', stdout);
 
       char check[16];
-      char *in =  check;
+      char *checkin =  check;
       struct termios  tty_check;
       char d;
       tcgetattr( STDIN_FILENO, &tty_check );
@@ -62,14 +62,14 @@ int newuser() {
 	  if ('\n' == d) {
 	    break;
 	  }
-	  *in++ = d;
+	  *checkin++ = d;
 	  write(STDOUT_FILENO, "*", 1);
 	}
       }
 
       tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_check );
 
-      *in = '\0';
+      *checkin = '\0';
       fputc('\n', stdout);
 
       if(strcmp(passwd,check) != 0) {

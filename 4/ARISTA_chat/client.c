@@ -42,7 +42,8 @@ int connect_server(char *hostname) {
 	inet_ntoa(*addr);
 //	printf("%s\n",*addr);
     //127.0.0.1 is the "loopback" address of any machine
-    inet_aton( "127.0.0.1", &(sock.sin_addr) );
+//    inet_aton( "127.0.0.1", &(sock.sin_addr) );
+	sock.sin_addr = *addr;
     bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   
     //attempt a connection

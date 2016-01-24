@@ -267,10 +267,6 @@ int main(int argc, char *argv[]){
   }
 }
 
-
-
-
-
 int authenticate(char name[], char password[]){
   /* Returns: boolean
   Checks userlist for username and password
@@ -279,7 +275,7 @@ int authenticate(char name[], char password[]){
   */
   FILE *fr;
   int count1 = 0, count2 = 0, check = 0, i, j, flag;
-  fr = fopen("root/log/txt", "rt");
+  fr = fopen("root/log.txt", "rt");
   while(fgets(line, 80, fr) != NULL){
     sscanf (line, "%ld", &elapsed_seconds);
   }
@@ -300,15 +296,10 @@ int authenticate(char name[], char password[]){
       return 0;
     else
       return -1;
-    
 
   }
 }
 
-
-
-
-*/
 //int add_user(char name[], char password[]){
   /*Returns boolean
   Checks user to see if name is already taken

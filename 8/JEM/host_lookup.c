@@ -1,5 +1,4 @@
 /*========== host_lookup.c ==========
-
 find an ip address given a host name
 =========================*/
 

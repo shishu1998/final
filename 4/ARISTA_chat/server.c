@@ -91,6 +91,7 @@ int main() {
 				printf("Adding tutor - %d\n", socket_client);
 				tutors[num_tutors][0] = socket_client;
 				num_tutors++;
+				printf("# tutors %d\n", num_tutors);
 			}
 			else {
 				char msg[100];

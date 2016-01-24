@@ -122,7 +122,7 @@ int main() {
 
 			while(1) {
 				relay_msg(tutors[0][0], tutors[1][0]);
-				sleep(2);
+			//	sleep(2);
 				relay_msg(tutors[1][0], tutors[0][0]);
 			}
 		}

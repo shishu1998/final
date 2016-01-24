@@ -8,6 +8,44 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+static void sighandler(int signo){
+  int error;
+  if (signo==SIGPIPE){
+    error=close(socket_id);
+    if (error == -1)
+	perror("Error closing client socket\n");
+    printf("Server disconnected, client exiting\n");
+    exit(42);
+  }
+  if (signo==SIGINT){
+    write(socket_id,&kill_num,4);
+    printf("Closing socket\n");
+    error=close(socket_id);
+    if (error == -1)
+      perror("Error closing socket\n");
+    printf("Socket closed\n");
+    exit(42);
+  }
+}
+
+int connect_server(){
+  struct sockaddr_in sock; 
+  int socket_id = socket(AF_INET, SOCK_STREAM, 0);
+  sock.sin_family = AF_INET; //socket type to IPv4
+  sock.sin_port = htons(PORTNUM); //port # 
+  //convert IP address to correct format and insert into sock.sin_addr
+  inet_aton( "127.0.0.1", &(sock.sin_addr) ); 
+  //insert the socket info stuff into the file thing
+  bind(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  //attempt a connection. Will return -1and set errno if failed
+  int error = connect( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (error==-1){
+    printf("Error connecting to server: %s\n",strerror(errno));
+    exit(42);
+  }
+  return socket_id;
+}
+
 int main(int argc, char **argv) {
 
   int socket_id;

@@ -8,11 +8,18 @@
 #include <netinet/in.h>
 #include <errno.h>
 
-void process(int fd, int sockfd){
+void process(int fd, fd_set *master){
   char sen[256];
   char rec[256];
   int num_bytes;
-  num_bytes=recv(sockfd,rec,sizeof(rec),0);
+  num_bytes=recv(fd,rec,sizeof(rec),0);
+  if(num_bytes == -1){
+    printf("recv: %s\n", strerror(errno));
+    exit(0);
+  }else if(num_bytes == 0){
+    close(fd);
+    FD_CLR(fd, master);
+  }
   rec[num_bytes]='\0';
   printf("RECEIVED:%s\n", rec);
   fflush(stdout);
@@ -64,15 +71,14 @@ int main() {
       if(FD_ISSET(i, &read_fds)){
 	if(i == socket_id){
 	  struct sockaddr_in client_addr;
-	  socklen_t addrlen;
-	  addrlen = sizeof(client_addr);
+	  socklen_t addrlen = sizeof(client_addr);
 	  int client_socket = accept(socket_id, (struct sockaddr*)&client_addr, &addrlen);
 	  FD_SET(client_socket, &master);
 	  if(client_socket > fdmax){
 	    fdmax = client_socket;
 	  }
 	}else{
-	  process(i,socket_id);
+	  process(i, &master);
 	}
       }
     }

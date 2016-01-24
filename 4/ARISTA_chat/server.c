@@ -19,7 +19,7 @@
 #define TUTEE_ID 1
 
 int create_server() {
-	int socket_id;
+    int socket_id;
 	
     //create the socket
     socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -33,7 +33,18 @@ int create_server() {
   
     listen( socket_id, 1 );
 	
-	return socket_id;
+    return socket_id;
+}
+
+void relay_msg(int client_from, int client_to) {
+	char msg[100];
+	sleep(1);
+	read(client_from, msg, strlen(msg));
+//	recv(client_from, msg, strlen(msg), 0);
+	printf("<server> received [%s]\n", msg);
+	write(client_to, msg, strlen(msg));
+//	send(client_to, msg, strlen(msg), 0);
+	printf("<server> sent [%s]\n", msg);
 }
 
 static void sighandler(int signo) {
@@ -82,6 +93,7 @@ int main() {
 				printf("Adding tutor - %d\n", socket_client);
 				tutors[num_tutors][0] = socket_client;
 				num_tutors++;
+				printf("# tutors %d\n", num_tutors);
 			}
 			else {
 				char msg[100];
@@ -103,18 +115,28 @@ int main() {
 				close(socket_client);
 			}
 		}
+		
+		printf("%d\n", tutors[0][0]);
+		printf("%d\n", tutors[1][0]);
+		if (num_tutors >= 2) {
+			char msg[] = "You have been connected to a tutor.";
+			write(tutors[0][0], msg, sizeof(msg));
+			relay_msg(tutors[0][0], tutors[1][0]);
+		}
 
-	while(1) {  
-      //system("gnome-terminal"); -> this is how to open a new window but u cant control it
-      printf("Enter text to write:\n");
-      char s[100];
-      fgets(s, sizeof(s), stdin);
-      write(socket_client, s, sizeof(s));
-      printf("<server> waiting\n");
-      sleep(2);
-      read(socket_client, s, sizeof(s));
-      printf("<server> received: %s\n", s);
-	}
+		/*
+		while(1) {  
+      		//system("gnome-terminal"); -> this is how to open a new window but u cant control it
+      		printf("Enter text to write:\n");
+     		char s[100];
+      		fgets(s, sizeof(s), stdin);
+      		write(socket_client, s, sizeof(s));
+      		printf("<server> waiting\n");
+      		sleep(2);
+      		read(socket_client, s, sizeof(s));
+      		printf("<server> received: %s\n", s);
+		}
+		**/
 
     } else {
       close(socket_client);

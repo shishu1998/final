@@ -42,13 +42,17 @@ int player_handshake(int *from_server){
 //Card methods//
 void send_redcard(int to_server){
   char buffer[100];
-  
+  int i = 1;
+  while(i-1 < 7){
+    printf("%d.%s\n",i,hand[i].content);
+    i++;
+  }
   printf("Pick a red card (index)  to send to the server...");
   fgets(buffer,sizeof(buffer),stdin);
   *strchr(buffer,'\n') = 0;
-  int index  = atoi(buffer);
+  int index = atoi(buffer);
   if (index >= 0 || index <= 7){
-    write(to_server,buffer,sizeof(buffer));
+    write(to_server,hand[index].content,sizeof(hand[index].content));
     printf("You sent: %s\n", hand[index].content);
   }
   else{
@@ -95,13 +99,15 @@ int main(){
   to_server = player_handshake(&from_server);
   while(1){
     printhand();
+    send_redcard(to_server);
+    /*
     printf("type something: ");
     fgets(buffer,sizeof(buffer),stdin);
     *strchr(buffer,'\n') = 0;
     write(to_server,buffer, sizeof(buffer));
     read(from_server,buffer,sizeof(buffer));
     printf("Player received: %s\n",buffer);
-    
+    */
   }
   
   close(to_server);

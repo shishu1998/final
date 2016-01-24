@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
 {
 	signal(SIGINT, sighandler);
 
-	num_paddles = 0;
+	auction_started = 1;
+
 	int sockfd, newsockfd, portno, pid;
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
@@ -84,7 +85,8 @@ int main(int argc, char *argv[])
 		if (pid == 0)  {
 			close(sockfd);
 			printf("\nA new user has connected to the auction.\n");
-			dostuff(newsockfd);
+			num_bidders++;
+			while (1) dostuff(newsockfd);
 			exit(0);
 		}
 		else close(newsockfd);
@@ -143,6 +145,8 @@ void dostuff (int sock)
 
 	} else if (strcmp(buffer, "3") == 0) {
 		printf("in quit mode; a user has left the bidding\n");
+		num_bidders--;
+		printf("remaining bidders: %d\n", num_bidders);
 		// here keep track of users still around, for end-of-auction condition.
 	} else {
 /*
@@ -172,6 +176,8 @@ void dostuff (int sock)
 //	if (n < 0) error("SOME FORM OF ERROR OCCURED\n");
 //	else if (has_msg) write(sock, msg_out, SIZEBUFF-1);
 	if (has_msg) write(sock, msg_out, SIZEBUFF-1);
+
+	bzero(msg_out, sizeof(msg_out));
 }
 
 void write_bid(char *offer) {

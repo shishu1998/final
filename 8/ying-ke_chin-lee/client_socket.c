@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 		if (BID_MODE != 0) {
 			n = write(sockfd, "1", 2); //tbh does nothing but sync read/write in client/socket
 
-			memset(buffer, 0, sizeof(buffer));
+			memset(buffer, 0, sizeof(buffer)); // better than bzero
 			printf("Your bid: ");
 			bzero(buffer,SIZEBUFF);
 			
@@ -83,8 +83,11 @@ int main(int argc, char *argv[])
 			n = read(sockfd,buffer,SIZEBUFF-1);
 			if (n < 0) 
 				 error("ERROR reading from socket");
-			printf("client buffer: %s\n",buffer);
+//			printf("client buffer: %s\n",buffer);
+			printf("%s\n", buffer);
 */
+			//check for errors
+			if (errno) printf("error %d: %s\n", errno, strerror(errno));
 		} else if (REQ_MODE != 0) {
 			// request bid data from server
 			n = write(sockfd, "2", 2); // I'm just taking 2 to mean REQ_MODE for server
@@ -92,12 +95,19 @@ int main(int argc, char *argv[])
 
 			printf("attempting a request at info, n = %d\n", n);
 			printf("CURRENT BID AT: ");
+
+			//check for errors
+			if (errno) printf("error %d: %s\n", errno, strerror(errno));
 		} else if (QUIT_MODE != 0) {
 			// tell server that you've left
 			n = write(sockfd, "3", 2); // taking 3 to be QUIT_MODE for server
 			if (n < 0) error("ERROR writing to socket");
 
 			printf("Notified server that you have quit.\n");
+
+			//check for errors
+			if (errno) printf("error %d: %s\n", errno, strerror(errno));
+
 			exit(0);
 		}
 
@@ -106,7 +116,8 @@ int main(int argc, char *argv[])
 
 		n = read(sockfd,buffer,SIZEBUFF-1);
 		if (n < 0) error("ERROR reading from socket");
-		printf("client buffer: %s\n", buffer);
+//		printf("client buffer: %s\n", buffer);
+		printf("%s\n", buffer);
 
 	}
 	close(sockfd);

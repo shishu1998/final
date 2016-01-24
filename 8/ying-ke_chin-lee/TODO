@@ -31,3 +31,6 @@
 [COMPLETED]
 
 7) Ending condition for bid (should not be hard)
+
+>>> IF I FINISH EARLY ENOUGH <<<
+change bzeros (deprecated) to memsets

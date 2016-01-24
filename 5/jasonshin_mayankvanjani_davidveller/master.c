@@ -59,8 +59,10 @@ void check_win (char ** map, int x, int y) {
   read( z, &printer, sizeof(printer));
   */
   if (map[x][y] == '$') {
+    printf("\n\n");
     system("/bin/stty cooked");
-    printf("\nDONE WITH THE QUEST\n");
+    system("cat done.txt");
+    //    printf("\nDONE WITH THE QUEST\n");
     exit(0);
     //    printf("%s", printer);
       /*

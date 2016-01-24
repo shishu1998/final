@@ -9,7 +9,7 @@
 
 #include "server.h"
 
-int pass_note( int client_from, int client_to, char* note ) {
+int pass_note( int client_from, int client_to, char* note) { //note is buffer need storage
   read(client_from, note, sizeof(note));
   printf("<server> received [%s]\n", note);
   write(client_to, note, sizeof(note));
@@ -34,7 +34,7 @@ int main() {
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
-  listen( socket_id, 100 );
+  listen( socket_id, 10 ); //can accept 10 clients at a time
   printf("<server> listening\n");
 
   for ( ; ; ) {
@@ -45,6 +45,11 @@ int main() {
     if ( pid == 0 ) { //check for child this is the subserver now!!
       printf("<server> connected: %d\n", socket_client );
       write( socket_client, "success", 8 );
+      //Subserver does things
+      while(1) {
+	sleep(1);
+	printf("<server> connected: %d\n", socket_client );
+      }
       close(socket_client);
       exit(0); 
     }

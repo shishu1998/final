@@ -5,6 +5,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <arpa/inet.h>
 #include <sys/types.h>

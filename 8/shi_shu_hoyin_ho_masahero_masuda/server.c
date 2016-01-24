@@ -49,22 +49,38 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
   }
 }
 
-char* process(char* string){
-  strncpy(string,"Gone",sizeof(string));
-}
-
 void player_connection(int to_player,int from_player){
   
   char buffer[100];
   printf("before while loop\n");
   while(read(from_player,buffer,sizeof(buffer))){
     printf("server received %s\n",buffer);
-    process(buffer);
     write(to_player,buffer,sizeof(buffer));
     strncpy(buffer,"",sizeof(buffer));
   }
 }
+//Card Deal methods
+card deal_greencard(card* green_deck){
+  int pos = 0;
+  while(!(green_deck[pos].content) && pos!= 250){
+    pos++;
+  }
+  card green_card = green_deck[pos];
+  return green_card;
+}
 
+card deal_redcard(card* red_deck){
+  int pos = 200;
+  while(!(red_deck[pos].content) && pos!=746){
+    pos++;
+  }
+  card red_card = red_deck[pos];
+  return red_card;
+}
+//Sending methods//
+
+
+//
 
 int main(){
 
@@ -78,8 +94,11 @@ int main(){
   card* green = makedeck("green");
   int playerturn;
   int playernum = 0;
+
+  printf("%s\n",deal_redcard(red).content);
+  printf("%s\n",deal_greencard(green).content);
   
-  while(1){
+  /* while(1){
     printf("waiting for players to connect\n");
     to_player = handshake(&from_player);
 
@@ -89,7 +108,7 @@ int main(){
       
       close(to_player);
     }
-  }
+    }*/
   
   return 0;
 }

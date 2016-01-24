@@ -25,7 +25,7 @@ char *hash_code(char *str) {
   }
 
   char *hex = malloc(9);
-  sprintf("%d", n);
+  sprintf(hex, "%8x", n);
 
   return hex;
 }

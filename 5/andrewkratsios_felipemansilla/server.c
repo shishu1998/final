@@ -2,121 +2,151 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <sys/types.h>
+#include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <time.h> /* time for randomizer*/ 
 
-static void sighandler(int signo){
-  int status;
-  int error;
-  if (signo==SIGPIPE){
-    error=close(socket_client);
-    if (error == -1)
-	perror("Error closing client socket\n");
-    printf("Client disconnected, child exiting\n");
-    exit(42);
-  }
-  if (signo==SIGINT){
-    while (wait(NULL) > 0){
-      //parent waits until all children have exited
-      ;
-    }
-    if (getppid() != ppid){
-      //Exit procedure for children
-      printf("Child exiting\n");
-      error=close(socket_client);
-      if (error == -1)
-	perror("Error closing client socket\n");
-      exit(42);
-    }
-    else{
-      error=close(socket_id);
-      if (error == -1)
-	perror("Error closing main socket\n");
-      printf("Main socket closed\n");
-      error=semctl(semget(ftok(file_path, sem_id),0,0),0,IPC_RMID,0);
-      if (error==-1)
-	printf("Error removing semaphores: %s\n",strerror(errno));
-      printf("Semaphores removed\n");
-      exit(42);
-    }
-  }
+
+void error(const char *msg)
+{
+    perror(msg);
+    exit(1);
 }
 
-//idk if this helps
+int main(int argc, char *argv[])
+{
+    int sockfd, newsockfd, portno, n;
+    socklen_t clilen;
+    char buffer[256];
+    char question[1024];
+    char oddsInt[4];
+    struct sockaddr_in serv_addr, cli_addr;
 
-void setup(){
-  int error=mkdir("root", 0777);
-  if (error == -1)
-    perror("Root directory already exists\n");
-  printf("Root directory established\n");
-  int fd = open("root/log.txt", O_RDWR | O_APPEND | O_CREAT,0664);
-  if (fd < 0) {
-    perror("Error creating log file\n");
-    exit(-1);
-  }
-  error = close(fd);
-  if (error == -1){
-    perror("Error closing log file\n");
-    exit(42);
-  }
-  printf("log file established \n");
-  fd = open("root/users.txt", O_RDWR | O_APPEND | O_CREAT, 0664);
-  if (fd < 0) {
-    perror("Error creating user file\n");
-    exit(-1);
-  }
-  error = close(fd);
-  if (error == -1){
-    perror("Error closing user file\n");
-    exit(42);
-  }
-  printf("userlist established\n");
-  int semaphore=semget(ftok(file_path, sem_id),2,0664 | IPC_CREAT | IPC_EXCL);
-  if (semaphore==-1){
-    printf("Error creating log & userlist semaphore: %s\n",strerror(errno));
-    exit(42);
-  }
-  union semun command;
-  unsigned short forks[2]={100,100};
-  command.array=forks;
-  error=semctl(semaphore,0,SETALL,command);
-  if (error==-1){
-    printf("Error setting semaphore value: %s\n",strerror(errno));
-    exit(42);
-  }
-}
+    int GuessedInteger, integerRandom, serverFlagCorrect;
+    char charGuess[4], answerServer[1];
+    char* delimiter = "\\n";
 
-int main() {
+    /** initialization of variables **/
+    serverFlagCorrect = 0;
 
-  int socket_id, socket_client;
-  int exit_status = 0;
-  char input[1024];
-  
-  //create the socket
-  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
-  
-  //bind to port/address
-  struct sockaddr_in listener;
-  listener.sin_family = AF_INET;  //socket type IPv4
-  listener.sin_port = htons(6001); //port #
-  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
-  
-  listen( socket_id, 1 );
-  printf("<server> listening\n");
+    /** generate random integer from 1 to 100 **/
+    srand (time(NULL));
+    integerRandom = (rand() % 100) + 1;
 
-  socket_client = accept( socket_id, NULL, NULL );
-  printf("<server> connected: %d\n", socket_client );
+    printf("Enter your odds are: ");
+    fgets(question, sizeof(question), stdin);
+    printf("Enter the number for your odds are: ");
+    fgets(oddsInt, sizeof(oddsInt), stdin);
+    printf("\n%s1 out of %s\n",question, oddsInt );
+    printf("Enter your guess: ");
+    scanf("%d",&integerRandom);
+    printf("Waiting for opponent to connect...\n");
 
-  //fgets something
-  printf("enter a message for the client: ");
-  fgets(input, sizeof(input), stdin);
-  write( socket_client, input, sizeof(input));
-  exit_status ++;
-  
-  exit_status = 0;
+    char * new_str ;
+    if((new_str = malloc(strlen(question)+strlen("1 out of ")+strlen(oddsInt)+1)) != NULL){
+        new_str[0] = '\0';   // ensures the memory is an empty string
+        strcat(new_str,question);
+        strcat(new_str,"1 out of ");
+        strcat(new_str,oddsInt);
+    }
 
-  return 0;
+    if (argc < 2) {
+        fprintf(stderr,"ERROR, no port provided\n");
+        exit(1);
+    }
+
+    // Creates the socket socket() --> endpoints of sockets
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) 
+       error("ERROR opening socket");
+    // Creates the socket socket() --> endpoints of sockets
+
+    // assign unique new address
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    portno = atoi(argv[1]);
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(portno);
+
+    if (bind(sockfd, (struct sockaddr *) &serv_addr,
+             sizeof(serv_addr)) < 0) 
+             error("ERROR on binding");
+    // assign unique new address
+
+    // wait for a connection
+    listen(sockfd,1);
+    // wait for a connection
+
+    // accepts the connection
+    clilen = sizeof(cli_addr);
+    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+    if (newsockfd < 0) 
+         error("ERROR on accept");
+    // accepts the connection
+
+    // send the odds are question
+        n = write(newsockfd,new_str,strlen(new_str));
+        if (n < 0) 
+             error("ERROR writing to socket");
+    // send the odds are question
+
+    //while (serverFlagCorrect != 1) {
+
+        // reads the data being received
+        bzero(buffer,256);
+        n = read(newsockfd,buffer,255);
+        if (n < 0) error("ERROR reading from socket");
+        // reads the data being received
+
+        //printf("Buffer from client: <%s>\n", buffer);
+        memcpy(charGuess, buffer, sizeof(charGuess));
+        //printf("Message from client in charGuess: <%s>\n", charGuess);
+
+        /* Put if statement here for error out if no \n at the end */
+        int len = strlen(charGuess);
+        const char *last_two = &charGuess[len-2];
+
+        //printf("Last two characters of charGuess: <%s>\n", last_two);
+
+        if (strncmp ( last_two, delimiter, 2) )
+            error (" ERROR Wrong protocol received");
+
+        /** process the string to integer for server comparison **/
+        GuessedInteger = atoi(charGuess);
+        printf("Opponents guess: %d \n", GuessedInteger);
+
+        /** Server response for comparison**/
+        if (GuessedInteger > integerRandom){
+            memcpy(&answerServer, "L", sizeof(answerServer));
+            printf("Your opponent doesn't have to do the dare.\n");
+        }
+        else if (GuessedInteger < integerRandom){
+            memcpy(&answerServer, "H", sizeof(answerServer));
+            printf("Your opponent doesn't have to do the dare.\n");
+        }
+        else if (GuessedInteger == integerRandom)
+            {
+                serverFlagCorrect = 1;
+                memcpy(&answerServer, "O", sizeof(answerServer));
+                printf("Your opponent must't do the dare!\n");
+            }
+        //printf("Value of answerServer: %c\n", *answerServer);
+        /** Server response for comparison**/
+
+        // sends the answer
+        n = write(newsockfd, answerServer, 1);
+        if (newsockfd < 0) 
+            error("ERROR on accept");
+        // sends the answer
+
+
+    //}        
+
+    close(newsockfd);
+
+    //closes the socket if random integer was found
+    close(sockfd);
+
+    return 0; 
 }

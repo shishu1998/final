@@ -14,18 +14,26 @@
 
 void handle_client(int socket_client){
   char buf[64];
+
   while (  read(socket_client, buf, sizeof(buf))){
+  	printf("analyzing input: %s\n", buf);
     char substr[2];
     memcpy (substr, &buf[0], 1);
     substr[1] = '\n';
-    if (strcmp(substr, "l") == 0){
-      list_songs(socket_client);
+    if (buf[0] == 'l'){
+    	printf("Recieved 'l', listing songs\n");
+   		list_songs(socket_client);
     }
-    if (strcmp(substr, "q") == 0){
-      exit(0);
+    else if (buf[0] == 'q'){
+		printf("Recieved 'q', quitting\n");   
+    	exit(0);
     }
-    if (strcmp(substr, "p") == 0){
-      send_song(buf, socket_client);
+    else if (buf[0] == 'p'){
+	    printf("Recieved 'p', playing a song\n");
+	    send_song(buf, socket_client);
+    }
+    else{
+    	printf("Sorry, could not comprehend that command\n");
     }
   }
 
@@ -84,6 +92,7 @@ int list_songs(int socket_client){
   	}
   }
   closedir(music_dir);
+  write(socket_client, song_list, sizeof(song_list));
   printf("total song list: \n[%s]\n ", song_list);
   return 0;
 }

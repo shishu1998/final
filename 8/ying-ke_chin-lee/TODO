@@ -28,3 +28,6 @@
 
 6) Update bid so that new joiners can check out what the bidding situation is (see BUGS file)
 - created REQ_MODE, edit inside client_socket.c
+[COMPLETED]
+
+7) Ending condition for bid (should not be hard)

@@ -58,7 +58,7 @@ int newuser() {
       tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_checking );
 
       while (1) {
-	if (read(STDIN_FILENO, &c, sizeof(d)) > 0) {
+	if (read(STDIN_FILENO, &d, sizeof(d)) > 0) {
 	  if ('\n' == d) {
 	    break;
 	  }
@@ -75,6 +75,7 @@ int newuser() {
       if(strcmp(passwd,check) != 0) {
 	printf("Error: Passwords don't match. Please try again.\n");
       } else {
+	break;
 	moveon == 1;
       }
     } else {

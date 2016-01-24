@@ -105,7 +105,15 @@ int numGenerator(){//gives either -1 or 0 by reading from the rand file
 
 
 }
-
+int realBoard[16]; //represents the real board
+void boardGenerator(){//uses numGenerator to create the array that represents the board
+  // return NULL;
+  int n = 0;
+  while (n <16) {
+    realBoard[n] = numGenerator();
+  n = n + 1;
+  }
+}
 int main() {
   //testin to see if it writes
   //int x = storeCommand("A1") ; 
@@ -114,7 +122,7 @@ int main() {
   //printf("\n\n\n");
   ///char* p="melee"; //if this is melee return 0
   //printf("%d ", canCommand(p));
- printf("\n\n\n");
+  printf("\n\n\n");
  // writer(p);
  //int realboard[16] = { 0 , -1,0,0,-1 ,-1 ,-1 ,0,0,0,0,-1,0,-1,0,-1};//for testing purposes
 
@@ -123,5 +131,12 @@ int main() {
  printf("random num is : %d  \n" , numGenerator() );//should print 0 or -1 with equal chance
  printf("anotha random num is : %d  \n" , numGenerator() );
  printf("anotha random num is : %d  \n" , numGenerator() );
+ printf("\nbefore randomization"); 
+newPrint(realBoard);
+ boardGenerator() ;
+ printf("\n after board randomization"); 
+
+newPrint(realBoard);
+
  return 0;
 }

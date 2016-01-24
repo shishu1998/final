@@ -13,7 +13,7 @@ char ** map_maker(char * mapfile) {
 
   char * p = (char *)malloc(sizeof(char *) * 100);
   p = mapStr;
-  printf("MAP:\n%s\n", mapStr);
+  //  printf("MAP:\n%s\n", mapStr);
 
   int i = 0;
 
@@ -27,15 +27,6 @@ char ** map_maker(char * mapfile) {
     // Next Line Prints the entire Map!!! ////////////
     //    printf("maparray[%d]:\t%s\n",i, maparray[i]);   
 
-    /*
-    
-      for (x = 0; x < strlen(mapLine); x++) {
-      printf("Testing\n");
-      maparray[y][x] = mapLine[x];
-      printf("char %d: %c\n", x, mapLine[x]);
-    }
-    
-    */
   }
   return maparray;
 }
@@ -61,19 +52,112 @@ void print_map(char ** maparray) {
   return;
 }
 
+void check_win (char ** map, int x, int y) {
+  /*
+  int z = open( "done.txt", O_RDONLY);
+  char printer[10000];
+  read( z, &printer, sizeof(printer));
+  */
+  if (map[x][y] == '$') {
+    system("/bin/stty cooked");
+    printf("\nDONE WITH THE QUEST\n");
+    exit(0);
+    //    printf("%s", printer);
+      /*
+"\n
+|---   |-----| |\    / |-----  |  \n
+|   \  |     | | \   / |       |  \n
+|    | |     | |  \  / |-----  |  \n
+|   /  |     | |   \ / |       |  \n
+|---   |-----| |    \/ |-----  .  \n ";
+      */
+
+    //    exit(0);
+  }
+}
+
 int main() {
+  char * clear = "\033[2J";
+
   char ** map = map_maker("map.txt");
-  int coord[2] = {1, 1}
+  int coord[2] = {1, 1};
+
+  printf("%s\n", clear);
+  printf("%*s\n", 72, "Welcome, this is a Beta test of our new text based D&D game\n");
+  printf("%*s\n", 70, "Created by Jason Shin, David Veller, and Mayank Vanjani\n");
+  printf("%*s\n", 47, "Hope You Enjoy!!!\n");
+  printf("%*s\n", 50, "**Press Enter to continue**");
+
+  char s[100];
+  fgets(s, sizeof(s), stdin);
+
   while (1) {
     char c;
+    printf("%s\n", clear);
+    printf("Use w,s,a,d to Move Around the Map and Space to Quit\n\n");
     print_map(map);
-    system("/bin/stty raw");
-    c = getchar();
+
     int curX = coord[0];
     int curY = coord[1];
+    system("/bin/stty raw");
+    c = getchar();
+
     if (c == 'w') {
       char testChar = map[curX - 1][curY];
-      if (testChar != '-' || testChar != 'x') {
-	
+      if (testChar != '-' && testChar != 'x') {
+	coord[0] = coord[0] - 1;
+	check_win( map, coord[0], coord[1] );
+	map[curX][curY] = ' ';
+	map[curX - 1][curY] = '@';
+      }
+      else {
+	sleep(1);
+      }
+    }
+
+    else if (c == 's') {
+      char testChar = map[curX + 1][curY];
+      if (testChar != '-' && testChar != 'x') {
+        coord[0] = coord[0] + 1;
+	check_win( map, coord[0], coord[1] );
+        map[curX][curY] = ' ';
+        map[curX + 1][curY] = '@';
+      }
+      else {
+	sleep(1);
+      } 
+    }
+    else if (c == 'a') {
+      char testChar = map[curX][curY - 1];
+      if (testChar != '|' && testChar != 'x') {
+        coord[1] = coord[1] - 1;
+	check_win( map, coord[0], coord[1] );
+        map[curX][curY] = ' ';
+        map[curX][curY - 1] = '@';
+      }
+      else {
+	sleep(1);
+      } 
+    }
+    else if (c == 'd') {
+      char testChar = map[curX][curY + 1];
+      if (testChar != '|' && testChar != 'x') {
+        coord[1] = coord[1] + 1;
+	check_win( map, coord[0], coord[1] );
+        map[curX][curY] = ' ';
+        map[curX][curY + 1] = '@';
+      }
+      else {
+	sleep(1);
+      } 
+    }
+
+    system("/bin/stty cooked");
+
+    if (c == ' ') {
+      exit(0);
+    }
+
+  }
   return 0;
 }

@@ -8,32 +8,42 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <termios.h>
-#include <unistd.h>
-
-int getch() {
-  struct termios oldt, newt;
-  int ch;
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-  ch = getchar();
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-  return ch;
-}
-
+#include "conio.h"
 
 int newuser() {
   printf("Type in your 4-digit ID for the username.\n");
   int username = 0;
   scanf("%i",&username);
   printf("\n Type in a  password: ");
+
+/*
+  char input[255];
+	char prev = 0;
+	int i = 0;
+   	for(;;i++) // Infinite loop, exited when RETURN is pressed {
+		char temp;
+		temp = getch(); // Get the current character of the password 
+		if (temp == 13 && temp == '\n' && prev == temp) // If the user has pressed return  {
+	            	input[i] = '\0';
+			break;
+		}
+		input[i] = temp;
+		printf("*"); // Print a star 
+
+    	}
+	printf("%s", input);
+	if(!strcmp(input,"test"))
+		printf("\n\nCORRECT!");
+	else
+		printf("\n\nWRONG!");
+		getch();
+
+/*
   char pwd[25],ch='a';
   int i=0;
   while(1) {
     ch=getch();
-    if(ch==13) { //13 is ascii for return
+    if(ch=="\n") { //13 is ascii for return
       break;
     } else if(ch==8) { //8 is ascii for backspace
       if(i!=0) { //this is for avoiding the ENTER instructions getting deleted 
@@ -51,6 +61,7 @@ int newuser() {
       i++;
     }
   }
+*/
 
   return username;
 }

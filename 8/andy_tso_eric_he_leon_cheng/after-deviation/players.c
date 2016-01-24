@@ -60,7 +60,7 @@ char *stringify_color(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
     color = "yellow";
   return color;
 }
-
+/*
 char *stringify_value(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
   char *value;
   if (c.value < 10) { //is a number card
@@ -82,7 +82,7 @@ char *stringify_value(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
   }
   return value;
 }
-
+*/
 card remove_card(player p, int i) {
   card ret;
   ret.color = p.cards[i].color;
@@ -111,7 +111,7 @@ void play_card(player p, int i) {
   //play_card(p, newcard);
   }
 }
-
+/*
 void player_action(player p) {
   //print out options for the player
   printf("It's your turn! What would you like to do?\n");
@@ -146,7 +146,7 @@ void player_action(player p) {
   //next_player();
 }
 
-
+*/
 //ANDY'S CODE ENDS HERE//
 
 //Note: Skip and Reverse are to be dealt with later

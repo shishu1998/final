@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "server.h"
+
 int main(int argc, char **argv) {
 
   int socket_id;
@@ -20,7 +22,7 @@ int main(int argc, char **argv) {
   //bind to port/address
   struct sockaddr_in sock;
   sock.sin_family = AF_INET;   
-  sock.sin_port = htons(24601);
+  sock.sin_port = htons( my_port );
   //Set the IP address to connect to
   //127.0.0.1 is the "loopback" address of any machine
   inet_aton( "127.0.0.1", &(sock.sin_addr) );
@@ -35,3 +37,5 @@ int main(int argc, char **argv) {
   
   return 0;
 }
+
+

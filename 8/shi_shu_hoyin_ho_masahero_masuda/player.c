@@ -45,7 +45,7 @@ void send_redcard(int to_server){
   *strchr(buffer,'\n') = 0;
   int index = atoi(buffer);
   if (index >= 0 || index <= 6){
-    write(to_server,red_hand[index].content,sizeof(red_hand[index].content));
+    write(to_server,&red_hand[index],sizeof(red_hand[index]));
     printf("You sent: %s\n", red_hand[index].content);
   }
   else{
@@ -66,7 +66,7 @@ void send_greencard(int to_server){
   *strchr(buffer,'\n') = 0;
   int index = atoi(buffer);
   if (index >= 0 || index <= 7){
-    write(to_server,green_hand[index].content,sizeof(green_hand[index].content));
+    write(to_server,&green_hand[index],sizeof(green_hand[index]));
     printf("You sent: %s\n", green_hand[index].content);
   }
   else{
@@ -92,7 +92,7 @@ void pick_winning_card(card* pile, int from_server, int to_server){
   *strchr(buffer,'\n') = 0;
   int index  = atoi(buffer);
   if (index >= 0 || index <= 2){ //assuming there are 3 players
-    write(to_server,buffer,sizeof(buffer));
+    write(to_server,&pile[index],sizeof(pile[index]));
     printf("You chose: %s\n", pile[index].content);
   }
   else{

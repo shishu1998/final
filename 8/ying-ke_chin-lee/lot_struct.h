@@ -9,7 +9,7 @@ typedef struct Lot {
 void print(Lot l) {
 	printf("\n >>>>>>>>>> >>>>>>>>>> >>>>>>>>>> >>>>>>>>>> >>>>>>>>>>\n");
 	printf("Lot #%d: %s\n", l.number, l.name);
-	printf("currently at $%s\n", l.curr_bid);
+//	printf("currently at $%s\n", l.curr_bid);
 	printf("\nDescription:\n%s\n", l.description);
 	printf("\n");
 }

@@ -19,8 +19,3 @@ int playsong(){
   execvp(pointers[0], pointers);
   return 0;
 }
-
-
-int main(){
-	return 0;
-}

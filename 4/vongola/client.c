@@ -16,9 +16,15 @@ void process(int fd, int sockfd){
 
   if (fd==0){//send
     fgets(sen, sizeof(sen), stdin);
-    send(sockfd, sen, sizeof(sen), 0);
+    send(sockfd, sen, strlen(sen), 0);
   }else{//receive
     num_bytes=recv(sockfd,rec,sizeof(rec),0);
+    if(num_bytes == -1){
+      printf("recv: %s\n", strerror(errno));
+      exit(0);
+    }else if(num_bytes == 0){
+      exit(0);
+    }
     rec[num_bytes]='\0';
     printf("SENT:%s\n", rec);
     fflush(stdout);

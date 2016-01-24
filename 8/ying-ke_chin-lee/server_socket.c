@@ -177,44 +177,32 @@ void dostuff (int sock)
 void write_bid(char *offer) {
 	int status;
 	int fd;
-/*
-	char old_bid[SIZEBUFF]; // should be ample space
-	read(fd, old_bid, sizeof(old_bid));
-	printf("TESTING: old_bid = %s\n", old_bid);
-	if (atoi(offer) > atoi(old_bid)) {
-*/
-		// now start writing.
-		//open bid
-		int f = fork();
-		if (f == 0) {
-			char *creat[3] = {"./control", "-c", NULL};
-			int f0 = fork();
-			if (f0 == 0) {
-				execvp(creat[0], creat);
-				exit(0);
-			}
-			else {
-				wait(&status);
-			}
-			// write the bids
-			file_write(offer);
+	// now start writing.
+	//open bid
+	int f = fork();
+	if (f == 0) {
+		char *creat[3] = {"./control", "-c", NULL};
+		int f0 = fork();
+		if (f0 == 0) {
+			execvp(creat[0], creat);
+			exit(0);
+		}
+		else {
+			wait(&status);
+		}
+		// write the bids
+		file_write(offer);
 
-			// close bid info
-			char *remv[3] = {"./control", "-r", NULL};
-			int f2 = fork();
-			if (f2 == 0) {
-				execvp(remv[0], remv);
-				exit(0);
-			} else {
-				wait(&status);
-			}
+		// close bid info
+		char *remv[3] = {"./control", "-r", NULL};
+		int f2 = fork();
+		if (f2 == 0) {
+			execvp(remv[0], remv);
+			exit(0);
 		} else {
 			wait(&status);
-		} 
-/*
+		}
 	} else {
-		printf("\nSS: You have already been outbid.\n");
-		close(fd);
-	}
-*/
+		wait(&status);
+	} 
 }

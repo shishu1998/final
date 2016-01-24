@@ -112,8 +112,12 @@ int main() {
 				close(socket_client);
 			}
 		}
-
-		relay_msg(tutors[0][0], tutors[1][0]);
+		
+		if (tutors[1] != NULL) {
+			char msg[] = "You have been connected to a tutor.";
+			write(tutors[0][0], msg, sizeof(msg));
+			relay_msg(tutors[0][0], tutors[1][0]);
+		}
 
 		/*
 		while(1) {  

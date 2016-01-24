@@ -20,10 +20,6 @@
 
 #define SIZEBUFF 256
 
-int paddles[5]; //currently allow only 5 bidders at a time
-int num_paddles;
-//char *bidfile = "curr_bid.txt";
-
 /* potential ending condition: all bidders leave */
 int num_bidders = 0;
 int auction_started = 0;
@@ -167,6 +163,7 @@ void dostuff (int sock)
 	if (has_msg) write(sock, msg_out, SIZEBUFF-1);
 
 	bzero(msg_out, sizeof(msg_out));
+	success_write = 1;
 }
 
 void write_bid(char *offer, char* pno) {

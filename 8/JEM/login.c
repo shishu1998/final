@@ -48,12 +48,10 @@ void find_user() {
 }
 
 int main() {
-  //char user[USER_LEN]; char pswd[PSWD_LEN];
-  //char underscore[1] = "_";
-  //char *username;
+  char user[USER_LEN]; char pswd[PSWD_LEN];
+  char underscore[1] = "_";
+  char *username;
   char yes_no;
-  //newline = (char *)malloc(sizeof(char *));
-  //newline = "\n";
   printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\nPlease type in 1 if you have an account or 2 if you'd like to make one.\n");
   fgets(&yes_no, 3, stdin);
   printf("yes_no value:%c\n", yes_no);
@@ -63,14 +61,8 @@ int main() {
     /*FILE* fd1 = fopen("username.txt", "r");
     printf("Please type in your username:\n");
     fgets(user, USER_LEN, stdin);
-    
     printf("Please type in your password:\n");
     fgets(pswd, PSWD_LEN, stdin);
-    
-    printf("user: %s\n", user);
-    printf("pswd: %s\n", pswd);
-    
-    
     char *buffer = (char *)malloc(100*sizeof(char));
     //printf("sizeof(buffer) = %lu\n", sizeof(buffer));
     fread(buffer, sizeof(char), 100, fd1);
@@ -79,7 +71,6 @@ int main() {
     printf("buffer after fread/fwrite: %s\n", buffer);    
     */
   }
-  /*
   else if (yes_no == '2'){
     FILE* fd1 = fopen("username.txt", "a+");
     printf("Please create a username:\n");
@@ -105,7 +96,6 @@ int main() {
     fclose(fd1);
     return 0;
   }
-  */
   else
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
 }

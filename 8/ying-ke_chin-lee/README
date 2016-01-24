@@ -1,51 +1,61 @@
-Project member(s):
+PROJECT MEMBER(S):
 	Ying-ke Chin-Lee
 
-Compile:
+COMPILE:
 	make
-	run "./server_socket socket#"
+	run "./server_socket socket#" 
+		Ex) ./server_socket 51717)
 	run "./client_socket localhost socket#"
-	
+		Ex) ./client_socket localhost 51717
+			./client_socket 127.0.0.1 51717
 
-List of files in repo:
+LIST OF FILES IN REPO (and brief description):
 	BUGS
+		A much-updated file documenting the trials and tribulations entailed by this project, as well as ideas for future fixing.
 	DESIGN
+		Statement of project, description of user interface and technical design, loose timeline.
 	README
+		See "README" file.
+		(This file right here that explains the other files as well as itself.  It's very recursive.)
 	TODO
-
+		Things...to do.  At this moment, still needs cleanup because it has also been very updated as I completed some parts of it.
 	makefile
+		run "make" to make it make executables.
 
-	old_main.h
-		- void init_lots(Lot *lots)
-		- int old_main() -> just deal with client-side input
-
-	server_socket.c
-		- includes "writing.h"
-		- void sighandler(int signo) -> exits upon Ctrl-C
-		- int main() -> opens server
-		- dostuff() -> get info from client (can it be made to speak to the client??)
-		- void write_bid(char *) -> tries to write bid, uses shared memory
-	client_socket.c
-		- includes/runs old_main()
-		- void clean_stdin() -> flushes buffer
-		- int main() -> assigns paddle number, opens connection to server
-
+THE CODE FILES and description of functions therein:
 	writing.h -> now is accessed by the server side
 		- union semun
 		- void reverse(char s[]) -> reverses a string
 		- void clean_stdin() -> also to clean buffer
 		- void del_newline() -> deletes newline from a string
-		- int file_write() -> uses shared memory, checks if new bid is a valid one (by checking against old bid), writes, etc.
+		- int file_write() -> uses shared memory, checks if new bid is a valid one (by checking against old bid), writes bid and its bidder, etc.
+
+	old_main.h
+		- void init_lots(Lot *lots) -> initializes lots to be used to test this program
+		- int old_main() -> receives input on what client wants to do
+
+	server_socket.c
+		- includes "writing.h"
+		- void sighandler(int signo) -> exits upon Ctrl-C but does nothing special as of yet.
+		- int main() -> connects to client, forks
+		- dostuff() -> responds and does what client wants
+		- void write_bid(char *) -> tries to write bid, uses shared memory
+
+	client_socket.c
+		- includes/runs "old_main.h"
+		- void clean_stdin() -> flushes buffer
+		- int main() -> assigns paddle number, opens connection to server
+	
 	control.c -> now is accessed by the server side
 		- union semun
-		- void print_story()
-		- void create()
-		- void remv() 
-		- int main()
+		- void print_story() -> no longer does anything
+		- void create() -> create shared memory
+		- void remv()  -> remove shared memory
+		- int main() -> finds out if you're creating or removing and does so.
 
 	display.h
-		- void display(Lot l)
-		- void bid() -> UNDER CONSTRUCTION/no longer desired
-	lot_struct.h -> may delete hi_bid property soon
+		- void display(Lot l) -> offer the user the chance to view the auctioned art in Chromium browser
+
+	lot_struct.h
 		- typedef struct Lot
 		- void print(Lot l)

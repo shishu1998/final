@@ -2,7 +2,7 @@
 
 user *user_find(char *name, FILE *userfile) {
   char *passwd = malloc(256);
-  printf( "strlen(name): %d\n", strlen(name) );
+  printf( "strlen(name): %ld\n", strlen(name) );
   // Generate format string
   char *regex = malloc(strlen(name) + 6);
 

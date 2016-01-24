@@ -32,12 +32,11 @@ void add_player(player p){
   player_list[ current_player ] = p;
 }
 
-
-
 int desired_total;
 int player_count;
-//char player_ids[100][100];
-int player_ids[100]; //maybe make the size = desired_total
+int player_ids[100]; 
+int child_ids[100];
+int current_position = 0;
 
 void ask_for_total(){
   player_count = 0;

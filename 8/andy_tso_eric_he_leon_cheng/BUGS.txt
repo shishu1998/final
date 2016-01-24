@@ -1,1 +1,3 @@
 BUGS
+
+If the number of clients connecting is greater than (and not equal to) the desired number, then those extra clients will freeze (they will not exit themselves)

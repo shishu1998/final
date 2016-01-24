@@ -26,6 +26,7 @@ void client_talk(int);
 void server_talk(int);
 user *server_login(char*);
 user *server_acct_setup(char*);
+void server_send(char*, user*);
 
 // User operations
 user *user_find(char*, FILE*);
@@ -39,6 +40,7 @@ int sock_write(int, char*);
 // Common filename stuff
 char *client_dir(char*);
 char *server_dir(char*);
+<<<<<<< HEAD
 
 ////Functions in client.c
 //String function
@@ -57,3 +59,6 @@ void sign_up(int);
 void choose_username(char*, char*);
 void choose_password(char*, char*, char*, int);
 void check_for_account(char*, int);
+=======
+char *hash_code(char*);
+>>>>>>> f1187cbfc63d7cebd6224d9bfb85674dd0ae865c

@@ -16,10 +16,14 @@ typedef struct
 } player;
 
 
-int total_players;
+int desired_total;
+int player_count;
+int player_ids[100];
+
 int current_player;
 player player_list[1000];
 card top_card;
+
 
 //ANDY'S CODE STARTS HERE//
 /*
@@ -31,7 +35,7 @@ card top_card;
   player_action() - prints options player can take, gets player input
   
  */
-srand(time(NULL));
+
 card draw_card() {
   card new_card;
   new_card.color = rand() % 4;//[0,3]
@@ -39,7 +43,7 @@ card draw_card() {
   return new_card;
 }
 
-update_top_card( card c ) {
+void update_top_card( card c ) {
   top_card.color = c.color;
   top_card.value = c.value;
 }
@@ -79,6 +83,12 @@ char *stringify_value(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
   return value;
 }
 
+card remove_card(player p, int i) {
+  p.cards[i] = p.cards[num_cards-1];
+  p.num_cards -= 1;
+  p.cards[num_cards-1] = NULL;
+}
+
 void player_action(player p) {
   //print out options for the player
   printf("It's your turn! What would you like to do?\n");
@@ -94,10 +104,14 @@ void player_action(player p) {
   //action
   if (input < num_cards) { //player wanted to play a card
     //code to remove card from hand, update top_card, update num_cards
+    update_top_card( remove_card(p, input) );
   }
+  /*
   else if (input == num_cards) { //player wants to draw a card
     //code to draw a card and update num_cards
+    //skip, reverse, +2, wild, wild +4
   }
+  */
   else { //player entered an invalid input
     //ask player to input a valid input
   }
@@ -119,9 +133,9 @@ void play_card(player p, card c) {
 
 //Note: Skip and Reverse are to be dealt with later
 void next_player(){
-  player players[ total_players ];
+  player players[ desired_total ];
 
-  if ( current_player >= total_players )
+  if ( current_player >= desired_total )
     current_player = 0;
   else
     current_player++;
@@ -130,14 +144,6 @@ void next_player(){
 void add_player(player p){
   player_list[ current_player ] = p;
 }
-
-
-
-int desired_total;
-int player_count;
-//char player_ids[100][100];
-int player_ids[100];
-
 
 void ask_for_total(){
   player_count = 0;

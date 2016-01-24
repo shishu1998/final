@@ -52,10 +52,12 @@ int connect_server(char *hostname) {
 	return socket_id;
 }
 
-#define PORT 8532
-
-#define TUTOR_ID 0
-#define TUTEE_ID 1
+static void sighandler(int signo) {
+	if (signo == SIGINT) {
+		printf("Goodbye!\n");
+		exit(0);
+	}
+}
 
 int main(int argc, char **argv) {
 

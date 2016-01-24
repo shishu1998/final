@@ -35,7 +35,15 @@ int create_server() {
 	return socket_id;
 }
 
+static void sighandler(int signo) {
+	if (signo == SIGINT) {
+		printf("Server closing\n");
+		exit(0);
+	}
+}
+
 int main() {
+  signal(SIGINT, sighandler);
 
   int socket_id, socket_client;
   

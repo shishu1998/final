@@ -65,37 +65,37 @@ int main() {
   	socket_client = accept( socket_id, NULL, NULL );
   	printf("<server> connected: %d\n", socket_client );
 	
-	int type = TUTOR_ID;  // get type from client
-	if (type == TUTOR_ID) {
-		if (num_tutors < MAX_CLIENTS) {
-			printf("Adding tutor\n");
-			tutors[num_tutors][0] = socket_client;
-			num_tutors++;
-		}
-		else {
-			char msg[100];
-			sprintf(msg, "XSorry, too many clients. Come back later.\n");
-			write(socket_client, msg, sizeof(msg));
-			close(socket_client);
-		}
-	}
-	else {
-		if (num_tutees < MAX_CLIENTS) {
-			printf("Adding tutee\n");
-			tutees[num_tutees][0] = socket_client;
-			num_tutees++;
-		}
-		else {
-			char msg[100];
-			sprintf(msg, "XSorry, too many clients. Come back later.\n");
-			write(socket_client, msg, sizeof(msg));
-			close(socket_client);
-		}
-	}
-
 	int pid = fork();
     if (pid == 0){
-      
+    	int type = TUTOR_ID;  // get type from client
+		if (type == TUTOR_ID) {
+			if (num_tutors < MAX_CLIENTS) {
+				printf("Adding tutor\n");
+				tutors[num_tutors][0] = socket_client;
+				num_tutors++;
+			}
+			else {
+				char msg[100];
+				sprintf(msg, "XSorry, too many clients. Come back later.\n");
+				write(socket_client, msg, sizeof(msg));
+				close(socket_client);
+			}
+		}
+		else {
+			if (num_tutees < MAX_CLIENTS) {
+				printf("Adding tutee\n");
+				tutees[num_tutees][0] = socket_client;
+				num_tutees++;
+			}
+			else {
+				char msg[100];
+				sprintf(msg, "XSorry, too many clients. Come back later.\n");
+				write(socket_client, msg, sizeof(msg));
+				close(socket_client);
+			}
+		}
+
+	while(1) {  
       //system("gnome-terminal"); -> this is how to open a new window but u cant control it
       printf("Enter text to write:\n");
       char s[100];
@@ -105,6 +105,7 @@ int main() {
       sleep(2);
       read(socket_client, s, sizeof(s));
       printf("<server> received: %s\n", s);
+	}
 
     } else {
       close(socket_client);

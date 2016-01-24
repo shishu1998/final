@@ -6,7 +6,8 @@
 int playsong(){
   char * pointers[3];
 
-  #ifdef LINUX
+  #ifdef __linux__
+  printf("in linux\n");
   pointers[0] = "mpg321";
   #else
   pointers[0] = "afplay";

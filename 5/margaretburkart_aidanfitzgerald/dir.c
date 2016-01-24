@@ -15,3 +15,17 @@ char *server_dir(char *path) {
   strcat(fullpath, path);
   return fullpath;
 }
+
+// Simple hash algorithm: sum of bytes
+char *hash_code(char *str) {
+  int n = 0;
+  while (*str) {
+    n += *str;
+    str++;
+  }
+
+  char *hex = malloc(9);
+  sprintf(hex, "%8x", n);
+
+  return hex;
+}

@@ -77,7 +77,7 @@ int play(){
   printf("It's time to arrange your fleet.\n");
   //printf("Input where you want the leftmost or topmost part of your ship: ");
   makefleet(shippies);
-  
+  printf("Now all that's left is to find an enemy! Hold on while we explore the seven seas for a battle.");
   
   
   //a bunch of stuff

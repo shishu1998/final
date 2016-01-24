@@ -7,12 +7,17 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <termios.h>
 
 int newuser() {
+	int moveon = 0;
+	while (moveon == 0) {
   printf("Type in your 4-digit ID for the username.\n");
   int username = 0;
   scanf("%i",&username);
-  
+
+	if (username >= 1000 && username <= 9999) {
+
   char passwd[16];
   char *in = passwd;
   struct termios  tty_orig;
@@ -41,7 +46,12 @@ int newuser() {
   fputc('\n', stdout);
 
   // if you want to see the result: 
-  printf("Got password: %s\n", passwd);
+  //printf("Got password: %s\n", passwd);
+	moveon ==1;
+	} else {
+		printf("Error: Invalid username. Please input your 4-digit ID\n");
+}
+}
 
   return username;
 }

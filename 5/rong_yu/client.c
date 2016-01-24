@@ -18,7 +18,7 @@ int client_handshake(int *from_server){
 
   *strchr(buffer, '\n') = 0;
 
-  printf("Name: %s\n", buffer);
+  //printf("Name: %s\n", buffer);
   
   strcat(name, buffer);
   printf("Name: %s\n", name);
@@ -47,8 +47,10 @@ int main(){
   char to_who[50];
   //char name[50];
   char message[500];
+  //char SPLIT[18] = "010203040506070809";
   char SPLIT[3] = "\n";
   
+
   to_server = client_handshake( &from_server);
   
   while (1){

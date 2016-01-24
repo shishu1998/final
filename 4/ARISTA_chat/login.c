@@ -12,13 +12,13 @@
 int newuser() {
   int moveon = 0;
   int username = 0000;
+  char passwd[16];
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
     scanf("%i",&username);
 
     if (username >= 1000 && username <= 9999) {
 
-      char passwd[16];
       char *in = passwd;
       struct termios  tty_orig;
       char c;
@@ -82,6 +82,12 @@ int newuser() {
       printf("Error: Invalid username. Please input your 4-digit ID.\n");
     }
   }
+
+  char newuser[1000];
+  snprintf(newuser,sizeof(newuser), "%i: %s",username,passwd);
+  int fd = open("tutoraccounts.txt",O_RDWR | O_APPEND,0644);
+  write(fd, newuser, strlen(newuser));
+  close(fd);
 
   return username;
 }

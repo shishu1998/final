@@ -79,7 +79,7 @@ int main() {
     	int type = TUTOR_ID;  // get type from client
 		if (type == TUTOR_ID) {
 			if (num_tutors < MAX_CLIENTS) {
-				printf("Adding tutor\n");
+				printf("Adding tutor - %d\n", socket_client);
 				tutors[num_tutors][0] = socket_client;
 				num_tutors++;
 			}

@@ -39,9 +39,9 @@ int create_server() {
 void relay_msg(int client_from, int client_to) {
 	char msg[100];
 	sleep(1);
-	recv(client_from, msg, strlen(msg), 0);
+	read(client_from, msg, sizeof(msg));
 	printf("<server> received [%s]\n", msg);
-	send(client_to, msg, strlen(msg), 0);
+	write(client_to, msg, sizeof(msg));
 	printf("<server> sent [%s]\n", msg);
 }
 
@@ -119,7 +119,12 @@ int main() {
 		if (num_tutors >= 2) {
 			char msg[] = "You have been connected to a tutor.";
 			write(tutors[0][0], msg, sizeof(msg));
-			relay_msg(tutors[0][0], tutors[1][0]);
+
+			while(1) {
+				relay_msg(tutors[0][0], tutors[1][0]);
+			//	sleep(2);
+				relay_msg(tutors[1][0], tutors[0][0]);
+			}
 		}
 
 		/*

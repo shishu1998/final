@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
       return -1;
     }
     
-    SDL_WM_SETCAPTION("Pong", "Pong");
+    SDL_WM_SetCaption("Pong", "Pong");
     
     SDL_Surface *screen;
     screen = SDL_SetVideoMode(width, height, bpp, videoFlags);

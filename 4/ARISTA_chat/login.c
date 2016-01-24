@@ -84,7 +84,7 @@ int newuser() {
   }
 
   char newuser[1000];
-  snprintf(newuser,sizeof(newuser), "%i: %s",username,passwd);
+  snprintf(newuser,sizeof(newuser), "%i: %s\n",username,passwd);
   int fd = open("tutoraccounts.txt",O_RDWR | O_APPEND,0644);
   write(fd, newuser, strlen(newuser));
   close(fd);

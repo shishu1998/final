@@ -44,7 +44,7 @@ void send_redcard(int to_server){
   fgets(buffer,sizeof(buffer),stdin);
   *strchr(buffer,'\n') = 0;
   int index = atoi(buffer);
-  if (index >= 0 || index <= 6){
+  if (index >= 0 && index <= 6){
     write(to_server,&red_hand[index],sizeof(red_hand[index]));
     printf("You sent: %s\n", red_hand[index].content);
   }
@@ -65,7 +65,7 @@ void send_greencard(int to_server){
   fgets(buffer,sizeof(buffer),stdin);
   *strchr(buffer,'\n') = 0;
   int index = atoi(buffer);
-  if (index >= 0 || index <= 7){
+  if (index >= 0 && index <= 7){
     write(to_server,&green_hand[index],sizeof(green_hand[index]));
     printf("You sent: %s\n", green_hand[index].content);
   }

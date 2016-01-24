@@ -1,4 +1,7 @@
-all: server client
+all: server client players
+
+players: players.c
+	gcc -c players.c
 
 server: server.c
 	gcc -o server server.c

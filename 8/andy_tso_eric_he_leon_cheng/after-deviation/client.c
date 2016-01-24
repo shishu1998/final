@@ -9,9 +9,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
+#include "players.c"
 
-
-
+player p;
 
 static void sighandler(int signo) {
   if (signo == SIGINT) {
@@ -20,9 +20,12 @@ static void sighandler(int signo) {
   }
 }
 
-
 int main(int argc, char *argv[]) {
 
+  p = generate_hand(p);
+  printf("p.num_cards: %d\n", p.num_cards);
+  player_action(p);
+  
   signal(SIGINT, sighandler);
 
   int sockfd, portno, n;
@@ -69,14 +72,12 @@ int main(int argc, char *argv[]) {
      * will be read by server
      */
 
-  
-
     /* Server determines turn */
     char buffer2[256];
     //printf("four (r)\n");
-    int p = read(sockfd, buffer2, 255);
+    int a = read(sockfd, buffer2, 255);
     //printf("able to get pass four\n");
-    if (p < 0) {
+    if (a < 0) {
       perror("ERROR reading");
       printf("error: %s \n", strerror(errno));
       exit(1);
@@ -86,15 +87,36 @@ int main(int argc, char *argv[]) {
     if ( !strcmp(buffer2, "terminate") ) {
       break;
     }
+
     if ( !strcmp(buffer2, "go") ) {
       printf("Please enter the message: ");
       bzero(buffer,256);
       fgets(buffer,255,stdin);
-    
+
+      char * scard;
+      int num = atoi(buffer);
+      if (num==p.num_cards){
+	p.cards[p.num_cards] = draw_card();
+	p.num_cards++;
+      }
+      else{
+	card c = p.cards[num];
+	int value = c.value;
+	int color = c.color;
+	char svalue[100];
+	sprintf(svalue, "%d", value);
+	char cvalue[100];
+	sprintf(cvalue, "%d", color);	
+	scard = strcat(svalue, ",");
+	scard = strcat(scard, cvalue);
+	printf("tried to stringify a card in client: %s \n", scard);
+      }
+
       /* Send message to the server */
       //printf("five (w)\n");
-      n = write(sockfd, buffer, strlen(buffer));
-    }  
+      //n = write(sockfd, buffer, strlen(buffer));
+      n = write(sockfd, scard, strlen(scard));
+    }
     if (n < 0) {
       perror("ERROR writing to socket");
       exit(1);

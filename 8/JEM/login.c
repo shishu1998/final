@@ -18,7 +18,6 @@ void find_user() {
   char user[USER_LEN]; char pswd[PSWD_LEN];
   char underscore[3] = "_\0";
   char *username;
-
   //retrieves username and password
   printf("Please type in your username:\n");
   fgets(user, USER_LEN, stdin);
@@ -79,7 +78,7 @@ int main() {
     buffer = "";
     printf("buffer after fread/fwrite: %s\n", buffer);    
     */
-    }
+  }
   /*
   else if (yes_no == '2'){
     FILE* fd1 = fopen("username.txt", "a+");

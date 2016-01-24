@@ -13,6 +13,12 @@
 #include <signal.h>
 #include "players.c"
 
+typedef struct
+{
+  card top_card;
+  int position;
+} data;
+
 union semun {
   int val;
   struct semid_ds *buf;    // Buffer for IPC_STAT, IPC_SET
@@ -31,7 +37,7 @@ void sig_handler( int signo ) {
     //semid = semget( sem_key, 1, 0644 );
     
     //if ( semctl( semid, 0, IPC_RMID ) == -1 )
-      //printf( "[Remove_SEMCTL]Errno: %d Error: %s\n\n", errno, strerror( errno ) );
+    //printf( "[Remove_SEMCTL]Errno: %d Error: %s\n\n", errno, strerror( errno ) );
 
     printf( "REMOVED SHARED MEMORY\n" );
     shmid = shmget( shm_key, sizeof(int), 0644 );
@@ -52,14 +58,14 @@ void incre_pos() {
 
   //semid = semget(semkey, 1, 0644);
   //if ( semid == -1 )
-    //printf("Others are still using shared memory. Waiting...\n");
+  //printf("Others are still using shared memory. Waiting...\n");
   /*
-  struct sembuf sb;
-  sb.sem_num = 0;
-  sb.sem_flg = SEM_UNDO;
-  sb.sem_op = -1;
+    struct sembuf sb;
+    sb.sem_num = 0;
+    sb.sem_flg = SEM_UNDO;
+    sb.sem_op = -1;
 
-  semop(semid, &sb, 1);
+    semop(semid, &sb, 1);
   */
   /* Get the key and attach */
   int check = shmget(shmemkey, sizeof(int), 0644);
@@ -122,44 +128,44 @@ void doprocessing (int sock) {
     //printf( "debugging\n" );
     shmdt(x);
   
-  sleep(1); //GO TO SLEEP and wait for read to happen first    
-  int p = write(sock, "go", sizeof("go"));
-  
-  if (p < 0) {
-    perror("ERROR writing");
-    printf("error: %s \n", strerror(errno));
-    exit(1);
-  }
+    sleep(1); //GO TO SLEEP and wait for read to happen first    
+    int p = write(sock, "go", sizeof("go"));
+    
+    if (p < 0) {
+      perror("ERROR writing");
+      printf("error: %s \n", strerror(errno));
+      exit(1);
+    }
   
   
     
-  int n;
-  char buffer[256];
-  bzero(buffer,256);
-  //printf("two (r)\n");
-  n = read(sock,buffer,255);
-  //printf("able to get pass two\n");
+    int n;
+    char buffer[256];
+    bzero(buffer,256);
+    //printf("two (r)\n");
+    n = read(sock,buffer,255);
+    //printf("able to get pass two\n");
   
   
-  if (n < 0) {
-    perror("ERROR reading from socket");
-    exit(1);
-  }
+    if (n < 0) {
+      perror("ERROR reading from socket");
+      exit(1);
+    }
   
-  printf("Here is the message: %s\n",buffer);
-  //printf("three (w)\n");
-  n = write(sock,"I got your message",18);
+    printf("Here is the message: %s\n",buffer);
+    //printf("three (w)\n");
+    n = write(sock,"I got your message",18);
   
-  //current_position++;
+    //current_position++;
   
-  if (n < 0) {
-    perror("ERROR writing to socket");
-    exit(1);
-  }
+    if (n < 0) {
+      perror("ERROR writing to socket");
+      exit(1);
+    }
   
-  //printf("current_position: %d\n", current_position);
-  //printf("desired_total: %d\n", desired_total);
-  incre_pos();
+    //printf("current_position: %d\n", current_position);
+    //printf("desired_total: %d\n", desired_total);
+    incre_pos();
     
   }
   
@@ -170,8 +176,6 @@ void doprocessing (int sock) {
 int main( int argc, char *argv[] ) {
   
   signal( SIGINT, sig_handler );
-  
-  srand(time(NULL));
   
   ask_for_total();
   int turns;
@@ -195,7 +199,7 @@ int main( int argc, char *argv[] ) {
     printf( "[shm_key]Errno: %d Error: %s", errno, strerror( errno ) );
   
   //if ( sem_key == -1 )
-    //printf( "[sem_key]Errno: %d Error: %s", errno, strerror( errno ) );
+  //printf( "[sem_key]Errno: %d Error: %s", errno, strerror( errno ) );
     
   //union semun su;
   printf( "CREATE SHARED MEMORY\n\n" );
@@ -206,7 +210,7 @@ int main( int argc, char *argv[] ) {
   
   x = shmat(shmid, 0, 0);
   //if ( *x == -1 )
-    //printf( "[shmat]Errno: %d Error: %s", errno, strerror( errno ) );
+  //printf( "[shmat]Errno: %d Error: %s", errno, strerror( errno ) );
   *x = 4;
   printf( "<server> Set int to %d\n", *x );
   shmdt(x);
@@ -215,7 +219,7 @@ int main( int argc, char *argv[] ) {
   //semid = semget( sem_key, 1, 0644 | IPC_CREAT | IPC_EXCL);
 
   //if ( semid == -1 ) 
-    //printf( "[SEMGET]Errno: %d Error: %s\n", errno, strerror( errno ) );
+  //printf( "[SEMGET]Errno: %d Error: %s\n", errno, strerror( errno ) );
 
   //su.val = 1;
   //semctl( semid, 0, SETVAL, su );
@@ -274,8 +278,8 @@ int main( int argc, char *argv[] ) {
       }
       
       if (newsockfd < 0) {
-	      perror("ERROR on accept");
-	      exit(1);
+	perror("ERROR on accept");
+	exit(1);
       }
       
       /* Create child process */
@@ -299,12 +303,12 @@ int main( int argc, char *argv[] ) {
 
       if (pid == 0) {
 	
-	      while( 1 ) {		
-	      /* This is the client process */
-	        printf("hello\n");
-	        //close(sockfd);
-	        //printf( "sock:%d\n", newsockfd );
-	        doprocessing(newsockfd);
+	while( 1 ) {		
+	  /* This is the client process */
+	  printf("hello\n");
+	  //close(sockfd);
+	  //printf( "sock:%d\n", newsockfd );
+	  doprocessing(newsockfd);
 
 	  /* printf("current_position: %d\n", current_position); */
 	  /* printf("desired_total: %d\n", desired_total); */
@@ -318,7 +322,7 @@ int main( int argc, char *argv[] ) {
 	  /* printf("newsockfd: %d\n", newsockfd); */
 	  //sleep(1);
 	  
-	      }
+	}
 
       }
     }
@@ -327,7 +331,7 @@ int main( int argc, char *argv[] ) {
       write(newsockfd, "terminate", sizeof("terminate"));
       close(newsockfd);
       if (pid==0){
-	      close(sockfd);
+	close(sockfd);
       }
     }
 		

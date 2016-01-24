@@ -14,20 +14,22 @@
 
 #include "writing.h"
 
-int old_bid = 0; //simple initialization value
-
 /*
 	CODE ADAPTED FROM http://www.linuxhowtos.org/C_C++/socket.htm
 */
 
-// NOTE: Move the write-conditional-part back into writing.h
+#define SIZEBUFF 256
 
 int paddles[5]; //currently allow only 5 bidders at a time
 int num_paddles;
 //char *bidfile = "curr_bid.txt";
 
+/* potential ending condition: all bidders leave */
+int num_bidders = 0;
+int auction_started = 0;
+
 void dostuff(int); /* function prototype */
-void write_bid(char *); // check if you can write the new bid, and then do the sem/shmem stuff
+void write_bid(char *, char *); // check if you can write the new bid, and then do the sem/shmem stuff
 void error(const char *msg)
 {
 	perror(msg);
@@ -35,7 +37,6 @@ void error(const char *msg)
 }
 
 static void sighandler(int signo) {
-	// get rid of the annoying mario
 	if (signo == SIGINT) {
 		printf("ctrl c was hit\n");
 		exit(0);
@@ -46,7 +47,8 @@ int main(int argc, char *argv[])
 {
 	signal(SIGINT, sighandler);
 
-	num_paddles = 0;
+	auction_started = 1;
+
 	int sockfd, newsockfd, portno, pid;
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
@@ -80,7 +82,8 @@ int main(int argc, char *argv[])
 		if (pid == 0)  {
 			close(sockfd);
 			printf("\nA new user has connected to the auction.\n");
-			dostuff(newsockfd);
+			num_bidders++;
+			while (1) dostuff(newsockfd);
 			exit(0);
 		}
 		else close(newsockfd);
@@ -92,61 +95,109 @@ int main(int argc, char *argv[])
 /******** DOSTUFF() *********************
  There is a separate instance of this function 
  for each connection.  It handles all communication
- once a connnection has been established.
+ once a connection has been established.
  *****************************************/
 void dostuff (int sock)
 {
+	char *paddleno;
 	int n;
-	char buffer[256];
-	  
-	bzero(buffer,256);
-	n = read(sock,buffer,255);
+	int has_msg = 0;
+	char buffer[SIZEBUFF];
+	char msg_out[SIZEBUFF]; //should be enough space...
+	 
+	bzero(buffer,SIZEBUFF);
+	n = read(sock,buffer,SIZEBUFF-1);
 	if (n < 0) error("ERROR reading from socket");
 	printf("Here is the message: %s\n",buffer);
-	n = write(sock,"New bid:",18);
-	if (n < 0) error("ERROR writing to socket");
-	else write_bid(buffer);
+
+	if (strcmp(buffer, "2") == 0) {		// next three lines newly added
+		has_msg = 1;
+		printf("in req info mode\n");
+		// retrieve the necessary info
+		
+		// okay, this is yucky but is just the copy/paste of code from writing.h
+		char last_bid[SIZEBUFF]; //hopefully enough space
+		char new_char;
+		int index = 0;
+
+		FILE *fp;
+		fp = fopen(bidfile, "r");
+		fseek(fp, 0, SEEK_END);
+		new_char = fgetc(fp);
+		while (new_char != '\n') {
+			last_bid[index] = new_char;
+			index++;
+
+			fseek(fp, -1*index, SEEK_END);
+			new_char = fgetc(fp);
+		}
+		fclose(fp);
+		last_bid[index] = '\0';
+		printf("last_bid (backwards) is %s\n", last_bid);
+	
+		/* FLIP THE STRING AAAAACK *flips table* */
+		reverse(last_bid);
+		printf("last_bid (forwards?) is %s\n", last_bid);
+		sprintf(msg_out, "%s", last_bid);
+
+	} else if (strcmp(buffer, "3") == 0) {
+		printf("in quit mode; a user has left the bidding\n");
+		num_bidders--;
+		printf("remaining bidders: %d\n", num_bidders);
+		// here keep track of users still around, for end-of-auction condition.
+	} else {
+		strcpy(paddleno, buffer);
+		//retrieve new bid
+		bzero(buffer,SIZEBUFF);
+		n = read(sock, buffer, SIZEBUFF-1); // works based on print statement
+		printf("should contain new bid: %s\n", buffer);
+		if (n < 0) error("ERROR reading from socket");
+
+		write_bid(buffer, paddleno);
+		printf("success_write = %d\n", success_write);
+
+		if (success_write) 
+			sprintf(msg_out, "BID SUCCESSFUL.");
+		else 
+			sprintf(msg_out, "UNSUCCESSFUL: You have already been outbid.");
+		has_msg = 1;
+	
+	} //newly added, same goes for below
+	printf("msg_out = %s\n", msg_out);
+	if (has_msg) write(sock, msg_out, SIZEBUFF-1);
+
+	bzero(msg_out, sizeof(msg_out));
 }
 
-void write_bid(char *offer) {
+void write_bid(char *offer, char* pno) {
 	int status;
 	int fd;
-//	char old_bid[256]; // should be ample space
-//	read(fd, old_bid, sizeof(old_bid));
-	printf("(SS: ensuring atoi works) %d, %d\n", atoi(offer), old_bid);
-	if (atoi(offer) > old_bid) {
-		old_bid = atoi(offer);
-		printf("SS: trying to input bid...\n");
-		//open bid
-		int f = fork();
-		if (f == 0) {
-			char *creat[3] = {"./control", "-c", NULL};
-			int f0 = fork();
-			if (f0 == 0) {
-				execvp(creat[0], creat);
-				exit(0);
-			}
-			else {
-				wait(&status);
-			}
-			// write the bids
-			file_write(offer);
+	// now start writing.
+	//open bid
+	int f = fork();
+	if (f == 0) {
+		char *creat[3] = {"./control", "-c", NULL};
+		int f0 = fork();
+		if (f0 == 0) {
+			execvp(creat[0], creat);
+			exit(0);
+		}
+		else {
+			wait(&status);
+		}
+		// write the bids
+		file_write(offer, pno);
 
-			// close bid info
-			char *remv[3] = {"./control", "-r", NULL};
-			int f2 = fork();
-			if (f2 == 0) {
-				printf("removes shared memory\n");
-				execvp(remv[0], remv);
-				exit(0);
-			} else {
-				wait(&status);
-			}
+		// close bid info
+		char *remv[3] = {"./control", "-r", NULL};
+		int f2 = fork();
+		if (f2 == 0) {
+			execvp(remv[0], remv);
+			exit(0);
 		} else {
 			wait(&status);
-		} 
+		}
 	} else {
-		printf("\nSS: You have already been outbid.\n");
-		close(fd);
-	}
+		wait(&status);
+	} 
 }

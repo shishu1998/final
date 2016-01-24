@@ -14,6 +14,7 @@
 */
 
 #define SIZEBUFF 256
+char my_paddle[100];
 
 void error(const char *msg)
 {
@@ -33,7 +34,9 @@ void clean_stdin(void)
 
 int main(int argc, char *argv[])
 {
-	printf("Your paddle number is: %d\n", getpid());
+	memset(my_paddle, 0, sizeof(my_paddle));
+	sprintf(my_paddle, "%d", getpid());
+	printf("Your paddle number is: %s\n", my_paddle);
 	int sockfd, portno, n;
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
@@ -65,7 +68,7 @@ int main(int argc, char *argv[])
 		old_main();
 
 		if (BID_MODE != 0) {
-			n = write(sockfd, "1", 2); //tbh does nothing but sync read/write in client/socket
+			n = write(sockfd, my_paddle, strlen(my_paddle)+1); //tbh does nothing but sync read/write in client/socket
 
 			memset(buffer, 0, sizeof(buffer)); // better than bzero
 			printf("Your bid: ");

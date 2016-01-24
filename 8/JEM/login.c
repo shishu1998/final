@@ -23,7 +23,7 @@ int main() {
   char *two = (char *)malloc(3*sizeof(char *));
   //newline = (char *)malloc(sizeof(char *));
   //usrname = malloc(50*sizeof(char));
-  printf("sizeof(usrname) = %d\n", (int)sizeof(usrname));
+  //printf("sizeof(usrname) = %d\n", (int)sizeof(usrname));
   
   yes_no = (char *)malloc(sizeof(char *));
   //newline = "\n";
@@ -41,7 +41,7 @@ int main() {
     fgets(usrname, sizeof(usrname), stdin);
     printf("username without new line: %s\n", usrname);
     char *buffer = (char *)malloc(100*sizeof(char));
-    printf("sizeof(buffer) = %lu\n", sizeof(buffer));
+    //printf("sizeof(buffer) = %lu\n", sizeof(buffer));
     fread(buffer, sizeof(char), 100, fd1);
     printf("buffer: %s\n", buffer);
     buffer = "";

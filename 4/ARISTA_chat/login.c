@@ -10,48 +10,77 @@
 #include <termios.h>
 
 int newuser() {
-	int moveon = 0;
-	while (moveon == 0) {
-  printf("Type in your 4-digit ID for the username.\n");
-  int username = 0;
-  scanf("%i",&username);
+  int moveon = 0;
+  while (moveon == 0) {
+    printf("Type in your 4-digit ID for the username.\n");
+    int username = 0;
+    scanf("%i",&username);
 
-	if (username >= 1000 && username <= 9999) {
+    if (username >= 1000 && username <= 9999) {
 
-  char passwd[16];
-  char *in = passwd;
-  struct termios  tty_orig;
-  char c;
-  tcgetattr( STDIN_FILENO, &tty_orig );
-  struct termios  tty_work = tty_orig;
-  puts("Please input password:");
-  tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
-  tty_work.c_cc[ VMIN ]  = 1;
-  tty_work.c_cc[ VTIME ] = 0;
-  tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+      char passwd[16];
+      char *in = passwd;
+      struct termios  tty_orig;
+      char c;
+      tcgetattr( STDIN_FILENO, &tty_orig );
+      struct termios  tty_work = tty_orig;
+      puts("Please input password:");
+      tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_work.c_cc[ VMIN ]  = 1;
+      tty_work.c_cc[ VTIME ] = 0;
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
 
-  while (1) {
-    if (read(STDIN_FILENO, &c, sizeof c) > 0) {
-      if ('\n' == c) {
-	break;
+      while (1) {
+	if (read(STDIN_FILENO, &c, sizeof c) > 0) {
+	  if ('\n' == c) {
+	    break;
+	  }
+	  *in++ = c;
+	  write(STDOUT_FILENO, "*", 1);
+	}
       }
-      *in++ = c;
-      write(STDOUT_FILENO, "*", 1);
+
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+
+      *in = '\0';
+      fputc('\n', stdout);
+
+      char check[16];
+      char *in =  check;
+      struct termios  tty_orig;
+      char c;
+      tcgetattr( STDIN_FILENO, &tty_orig );
+      struct termios  tty_work = tty_orig;
+      puts("Please retype password:");
+      tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_work.c_cc[ VMIN ]  = 1;
+      tty_work.c_cc[ VTIME ] = 0;
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+
+      while (1) {
+	if (read(STDIN_FILENO, &c, sizeof c) > 0) {
+	  if ('\n' == c) {
+	    break;
+	  }
+	  *in++ = c;
+	  write(STDOUT_FILENO, "*", 1);
+	}
+      }
+
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+
+      *in = '\0';
+      fputc('\n', stdout);
+
+      if(strcmp(passwd,check) != 0) {
+	printf("Error: Passwords don't match. Please try again.\n");
+      } else {
+	moveon == 1;
+      }
+    } else {
+      printf("Error: Invalid username. Please input your 4-digit ID.\n");
     }
   }
-
-  tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
-
-  *in = '\0';
-  fputc('\n', stdout);
-
-  // if you want to see the result: 
-  //printf("Got password: %s\n", passwd);
-	moveon ==1;
-	} else {
-		printf("Error: Invalid username. Please input your 4-digit ID\n");
-}
-}
 
   return username;
 }

@@ -36,6 +36,15 @@ int create_server() {
 	return socket_id;
 }
 
+void relay_msg(int client_from, int client_to) {
+	char msg[100];
+	sleep(1);
+	recv(client_from, msg, strlen(msg), 0);
+    printf("<server> received [%s]", msg);
+	send(client_to, msg, strlen(msg), 0);
+	printf("<server> sent [%s]", msg);
+}
+
 static void sighandler(int signo) {
 	if (signo == SIGINT) {
 		printf("Server closing\n");
@@ -104,17 +113,21 @@ int main() {
 			}
 		}
 
-	while(1) {  
-      //system("gnome-terminal"); -> this is how to open a new window but u cant control it
-      printf("Enter text to write:\n");
-      char s[100];
-      fgets(s, sizeof(s), stdin);
-      write(socket_client, s, sizeof(s));
-      printf("<server> waiting\n");
-      sleep(2);
-      read(socket_client, s, sizeof(s));
-      printf("<server> received: %s\n", s);
-	}
+		relay_msg(tutors[0][0], tutors[1][0]);
+
+		/*
+		while(1) {  
+      		//system("gnome-terminal"); -> this is how to open a new window but u cant control it
+      		printf("Enter text to write:\n");
+     		char s[100];
+      		fgets(s, sizeof(s), stdin);
+      		write(socket_client, s, sizeof(s));
+      		printf("<server> waiting\n");
+      		sleep(2);
+      		read(socket_client, s, sizeof(s));
+      		printf("<server> received: %s\n", s);
+		}
+		**/
 
     } else {
       close(socket_client);

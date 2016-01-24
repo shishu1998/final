@@ -19,7 +19,7 @@
 #define TUTEE_ID 1
 
 int create_server() {
-	int socket_id;
+    int socket_id;
 	
     //create the socket
     socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -33,7 +33,7 @@ int create_server() {
   
     listen( socket_id, 1 );
 	
-	return socket_id;
+    return socket_id;
 }
 
 void relay_msg(int client_from, int client_to) {
@@ -91,6 +91,7 @@ int main() {
 				printf("Adding tutor - %d\n", socket_client);
 				tutors[num_tutors][0] = socket_client;
 				num_tutors++;
+				printf("# tutors %d\n", num_tutors);
 			}
 			else {
 				char msg[100];
@@ -113,7 +114,9 @@ int main() {
 			}
 		}
 		
-		if (tutors[1] != NULL) {
+		printf("%d\n", tutors[0][0]);
+		printf("%d\n", tutors[1][0]);
+		if (num_tutors >= 2) {
 			char msg[] = "You have been connected to a tutor.";
 			write(tutors[0][0], msg, sizeof(msg));
 			relay_msg(tutors[0][0], tutors[1][0]);

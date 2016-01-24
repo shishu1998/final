@@ -40,9 +40,9 @@ void relay_msg(int client_from, int client_to) {
 	char msg[100];
 	sleep(1);
 	recv(client_from, msg, strlen(msg), 0);
-    printf("<server> received [%s]", msg);
+	printf("<server> received [%s]\n", msg);
 	send(client_to, msg, strlen(msg), 0);
-	printf("<server> sent [%s]", msg);
+	printf("<server> sent [%s]\n", msg);
 }
 
 static void sighandler(int signo) {

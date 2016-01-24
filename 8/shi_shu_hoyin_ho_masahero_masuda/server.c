@@ -7,6 +7,7 @@
 #include "deck.h"
 
 int connectedPlayers = 0;
+int ids[8] = [1,2,3,4,5,6,7,8];
 
 static void sighandler(int signo){
   if(signo == SIGINT){
@@ -17,7 +18,10 @@ static void sighandler(int signo){
 }
 
 int handshake(int *from_player, card *redDeck, card *greenDeck){
-  
+  int freeID=0;
+  while(*ids){
+    freeID++;
+  }
   int to_player;
   char buffer[100];
   int counter = 0;
@@ -37,9 +41,13 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
     remove(buffer);
     while (counter < 7){
       redCards[counter] = *deal_redcard(redDeck);
+      redCards[counter].owner=ids[freeID];
       counter++;
     }
     greenCard = *deal_greencard(greenDeck);
+    greenCard->owner=ids[freeID];
+    write(to_player,ids[freeID],size(int));
+    ids[freeID] = 0;
     write(to_player,redCards,sizeof(card)*7);
     write(to_player,greenCard,sizeof(card));
     return to_player;

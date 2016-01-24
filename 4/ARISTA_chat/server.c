@@ -113,6 +113,7 @@ int main() {
 			}
 		}
 		
+		printf("%d\n", tutors[1][0]);
 		if (tutors[1] != NULL) {
 			char msg[] = "You have been connected to a tutor.";
 			write(tutors[0][0], msg, sizeof(msg));

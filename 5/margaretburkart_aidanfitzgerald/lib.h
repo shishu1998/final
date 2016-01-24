@@ -39,3 +39,21 @@ int sock_write(int, char*);
 // Common filename stuff
 char *client_dir(char*);
 char *server_dir(char*);
+
+////Functions in client.c
+//String function
+void strip_add(char*, char*);
+
+//File navigation functions
+void change_location(char*); //moves between subfolders
+void execute(char*); //executes user's command
+void take_directions(); //prompts user for a command, then reads it
+void my_ls(); //lists contents of current location
+void enter_mail(int); //starting screen for file navigation
+
+//Authentication functions
+void sign_in(int);
+void sign_up(int);
+void choose_username(char*, char*);
+void choose_password(char*, char*, char*, int);
+void check_for_account(char*, int);

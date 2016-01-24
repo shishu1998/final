@@ -13,6 +13,87 @@ void strip_add(char* source, char* dest){
   strncat(dest,source,new_len);
 }
 
+void change_location(char* location){
+  char buffer[256];
+   char* path = getcwd(buffer,256);
+   char* sep = "/";
+   strcat(path,sep);
+   strcat(path,location);
+   int r;
+   r = chdir(path);
+   int i;
+   for(i=0;i<20;i++){
+     printf("\n");
+   }
+   printf("Location: [%s]\n",path);
+   my_ls();
+   for(i=0;i<20;i++){
+     printf("\n");
+   }
+   take_directions();
+}
+
+void execute(char* cmd){
+  if(strncmp(cmd,"go_to",5)==0){
+    char* location;
+    strsep(&cmd," ");
+    location = cmd;
+    change_location(location);
+  }
+}
+
+void take_directions(){
+  char buffer[256];
+  char final[256];
+
+  printf("Enter your command: ");
+  fgets(buffer,MAXLEN,stdin);
+  strip_add(buffer,final);
+  execute(final);
+}
+
+void my_ls(){
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("fork failed");
+  }else if(f==0){
+    int r;
+    r = execl("/bin/ls","ls",NULL);
+    if(r==-1){
+      perror("this is what's wrong");
+    }
+    exit(0);
+  }else{
+    printf("Contents:\n");
+    int exit;
+    int pid = wait(&exit);
+  }
+  printf("\nCommands:\n");
+  printf("Type 'go_to' and the folder name to enter that folder\n");
+  printf("(other commands as we create them)");
+}
+
+void enter_mail(int socket_id){
+  int i;
+  for(i=0;i<10;i++){
+    printf("\n");
+  }
+    printf("Welcome to my_mail!\n");
+    char buffer[256];
+    char* path = getcwd(buffer,256);
+    char* new_path = "/my_mail.d";
+    strcat(path,new_path);
+    printf("Location: [%s]\n",path);
+    int r;
+    r = chdir(path);
+    my_ls();
+    for(i=0;i<10;i++){
+      printf("\n");
+    } 
+    take_directions();
+}
+
 void sign_in(int socket_id){
   char use[256];
   char pass[256];
@@ -32,6 +113,7 @@ void sign_in(int socket_id){
 
   sock_write(socket_id,final);
   printf("This is what you sent to the server:\n[%s]\n",final);
+  enter_mail(socket_id);
 }
 
 void choose_username(char* final, char* use){
@@ -55,91 +137,6 @@ void choose_password(char* final, char* pass, char* pass2, int socket_id){
   }
 }
 
-/*
-void create_subfolder(char* name){
-  char* path;
-  char* prev_path = "mail/";
-  strcat(path,prev_path);
-  strcat(path,name);
-  printf("path: [%s]\n",path);
-
-  int f;
-  f = fork();
-  if(f==-1){
-    perror("\nDidn't fork correctly\n");
-  }else if(f==0){
-     int i;
-     i = execlp("mkdir","mkdir",path,NULL);
-     if(i==-1){
-       perror("Something went wrong!");
-     }
-  }else{
-  }
-}
-
-void create_mail_folders(){ 
-  int f;
-  f = fork();
-  if(f==-1){
-    perror("\nDidn't fork correctly\n");
-  }else if(f==0){
-     int i;
-     i = execlp("mkdir","mkdir","mail",NULL);
-     if(i==-1){
-       perror("Something went wrong!");
-     }
-  }else{
-  }
-  f = fork();
-  if(f==-1){
-    perror("\nDidn't fork correctly\n");
-  }else if(f==0){
-     int i;
-     i = execlp("mkdir","mkdir","mail/Inbox",NULL);
-     if(i==-1){
-       perror("Something went wrong!");
-     }
-  }else{
-  }
-
-  
-  int i;
-  i = execlp("mkdir","mkdir","mail",NULL);
-  if(i==-1){
-    perror("Something went wrong!");
-  }
-
-  printf("mail directory created\n");
-
-  char buff[PATH_MAX];
-  char* cwd;
-  cwd = getcwd(buff, PATH_MAX);
-  printf("cwd: [%s]\n",cwd);
-
-  i = chdir("mail");
-  if(i==-1){
-    perror("Something went wrong!");
-  }
-
-  printf("directory changed\n");
-
-  char buff2[PATH_MAX];
-  char* cwd2;
-  cwd2 = getcwd(buff2, PATH_MAX);
-  printf("cwd2: [%s]\n",cwd2);
-
-  i = execlp("mkdirat","mkdirat","AT_FDCWD","Inbox",NULL);
-  //i = execlp("mkdir","mkdir","Sent",NULL);
-  //i = execlp("mkdir","mkdir","Drafts",NULL);
-  //i = execlp("mkdir","mkdir","Archived",NULL);
-  //i = execlp("mkdir","mkdir","Flagged",NULL);
-  if(i==-1){
-    perror("Something went wrong!");
-  }
-  
-}
-*/
-
 void sign_up(int socket_id){
   char use[256];
   char pass[256];
@@ -153,10 +150,7 @@ void sign_up(int socket_id){
   if(i==-1){
     printf("Error\n");
   }else if(i==0){
-    //create_mail_folders();
-    //create_subfolder("Inbox");
-    //create_subfolder("Sent");
-    //create_subfolder("Drafts");
+
   }else{
     strcat(final,use_phrase);
     choose_username(final, use);
@@ -179,13 +173,6 @@ void check_for_account(char *buffer, int socket_id){
   }
 }
 
-void enter_mail(int socket_id){
-  int i;
-  for(i=0;i<10;i++){
-    printf("\n");
-  }
-  printf("Welcome to mail!");
-}
 
 
 int main() {

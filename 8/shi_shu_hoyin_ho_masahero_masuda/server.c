@@ -6,6 +6,9 @@
 #include <signal.h>
 #include "deck.h"
 
+int connectedPlayers = 0;
+int ids[8] = [1,2,3,4,5,6,7,8];
+
 static void sighandler(int signo){
   if(signo == SIGINT){
     printf("Server crash, oopsies doops\n");
@@ -14,22 +17,39 @@ static void sighandler(int signo){
   }
 }
 
-int handshake(int *from_player){
-  
+int handshake(int *from_player, card *redDeck, card *greenDeck){
+  int freeID=0;
+  while(*ids){
+    freeID++;
+  }
   int to_player;
   char buffer[100];
-
+  int counter = 0;
+  card *redCards = (card *)malloc(sizeof(card)*7);
+  card *greenCard = (card *)malloc(sizeof(card));
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
   remove("pipe");
-
+  connectedPlayers += 1; 
+  
   int f = fork();
   if(f == 0){
     read(*from_player,buffer,sizeof(buffer));
     printf("Handshake done\n");
     
     to_player = open(buffer,O_WRONLY);
-    write(to_player,buffer,sizeof(buffer));
+    remove(buffer);
+    while (counter < 7){
+      redCards[counter] = *deal_redcard(redDeck);
+      redCards[counter].owner=ids[freeID];
+      counter++;
+    }
+    greenCard = *deal_greencard(greenDeck);
+    greenCard->owner=ids[freeID];
+    write(to_player,ids[freeID],size(int));
+    ids[freeID] = 0;
+    write(to_player,redCards,sizeof(card)*7);
+    write(to_player,greenCard,sizeof(card));
     return to_player;
   }
   else{
@@ -65,9 +85,11 @@ card deal_redcard(card* red_deck){
   card red_card = red_deck[pos];
   return red_card;
 }
-//Sending methods//
-
-
+//Receiving methods//
+void receive_redcard(int from_player){
+  char buffer[100];
+  read(from_player,buffer,sizeof(buffer));
+}
 //
 
 int main(){

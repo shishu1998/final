@@ -9,6 +9,7 @@
 
 card green_hand[8];
 card red_hand[7];
+int id;
 
 int player_handshake(int *from_server){
   int to_server;
@@ -23,7 +24,9 @@ int player_handshake(int *from_server){
   *from_server = open(buffer,O_RDONLY);
   remove(buffer);
   
-  read(*from_server,buffer,sizeof(buffer));
+  read(*from_server,red_hand,sizeof(card)*7);
+  read(*from_server,green_hand,sizeof(card));
+  read(*from_server,id,sizeof(int));
   printf("Player connection established: %s\n",buffer);
 
   return to_server;

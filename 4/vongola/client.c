@@ -9,40 +9,34 @@
 #include <netinet/in.h>
 #include <errno.h>
 
-void process(int fd, int sockfd){
-  char sen[256];
-  char rec[256];
+void process(int fd, int socket_id){
+  char buffer[256];
   int num_bytes;
 
-  if (fd==0){//send
-    fgets(sen, sizeof(sen), stdin);
-    send(sockfd, sen, strlen(sen), 0);
-  }else{//receive
-    num_bytes=recv(sockfd,rec,sizeof(rec),0);
+  if (fd == 0){
+    //send from stdin to server
+    fgets(buffer, sizeof(buffer), stdin);
+    send(socket_id, buffer, strlen(buffer), 0);
+  }else{
+    //receive from server
+    num_bytes=recv(fd, buffer, sizeof(buffer),0);
     if(num_bytes == -1){
       printf("recv: %s\n", strerror(errno));
       exit(0);
     }else if(num_bytes == 0){
+      printf("Server closed\n");
       exit(0);
+    }else{
+      buffer[num_bytes]='\0';
+      printf("RECEIVED:%s", buffer);
     }
-    rec[num_bytes]='\0';
-    printf("SENT:%s\n", rec);
-    fflush(stdout);
   }
 }
 
-int main(int argc, char **argv) {
-
-  int socket_id, fdmax;
-  char buffer[256];
-  int i;
-  fd_set master;
-  fd_set read_fds;
-
-
-  //create the socket
-  socket_id = socket(AF_INET, SOCK_STREAM, 0);
-  if(socket_id == -1){
+void setup_socket(int *socket_id){
+ //create the socket
+  *socket_id = socket(AF_INET, SOCK_STREAM, 0);
+  if(*socket_id == -1){
     printf("socket: %s\n", strerror(errno));
     exit(0);
   }
@@ -54,26 +48,40 @@ int main(int argc, char **argv) {
   //Set the IP address to connect to
   //127.0.0.1 is the "loopback" address of any machine
   inet_aton("127.0.0.1", &(sock.sin_addr));
-  if(connect(socket_id, (struct sockaddr *)&sock, sizeof(sock)) == -1){
+  if(connect(*socket_id, (struct sockaddr *)&sock, sizeof(sock)) == -1){
     printf("connect: %s\n", strerror(errno));
     exit(0);
   }
+
+}
+
+int main(int argc, char **argv) {
+
+  int socket_id;
+  char buffer[256];
+  int i;
+  fd_set master;
+  fd_set read_fds;
   
+  setup_socket(&socket_id);
+
   FD_ZERO(&master);
   FD_ZERO(&read_fds);
   FD_SET(0, &master);
   FD_SET(socket_id, &master);
 
-  fdmax=socket_id;
+  int fdmax = socket_id;
+
   while (1){
     read_fds = master;
     if (select(fdmax+1, &read_fds, NULL, NULL, NULL)==-1){
       printf("select: %s\n", strerror(errno));
     }
-    for (i=0;i<=fdmax;i++){
-      if (FD_ISSET(i, &read_fds)){
-	process(i,socket_id);
-      }
+    if(FD_ISSET(0, &read_fds)){
+      process(0, socket_id);
+    }
+    if(FD_ISSET(socket_id, &read_fds)){
+      process(socket_id, socket_id);
     }
   }
 

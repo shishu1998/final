@@ -42,7 +42,8 @@ int connect_server(char *hostname) {
 	inet_ntoa(*addr);
 //	printf("%s\n",*addr);
     //127.0.0.1 is the "loopback" address of any machine
-    inet_aton( "127.0.0.1", &(sock.sin_addr) );
+//    inet_aton( "127.0.0.1", &(sock.sin_addr) );
+	sock.sin_addr = *addr;
     bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   
     //attempt a connection
@@ -51,12 +52,15 @@ int connect_server(char *hostname) {
 	return socket_id;
 }
 
-#define PORT 8532
-
-#define TUTOR_ID 0
-#define TUTEE_ID 1
+static void sighandler(int signo) {
+	if (signo == SIGINT) {
+		printf("Goodbye!\n");
+		exit(0);
+	}
+}
 
 int main(int argc, char **argv) {
+  signal(SIGINT, sighandler);
 
   int socket_id;
   char *hostname;

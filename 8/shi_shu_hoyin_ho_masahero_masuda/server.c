@@ -95,20 +95,17 @@ int main(){
   int playerturn;
   int playernum = 0;
 
-  printf("%s\n",deal_redcard(red).content);
-  printf("%s\n",deal_greencard(green).content);
-  
-  /* while(1){
+  while(1){
     printf("waiting for players to connect\n");
     to_player = handshake(&from_player);
-
+    
     if(to_player != 0){
       
       player_connection(to_player,from_player);
       
       close(to_player);
     }
-    }*/
+  }
   
   return 0;
 }

@@ -7,7 +7,7 @@
 #include "deck.h"
 
 int connectedPlayers = 0;
-int ids[8] = [1,2,3,4,5,6,7,8];
+int ids[8] = {1,2,3,4,5,6,7,8};
 
 static void sighandler(int signo){
   if(signo == SIGINT){

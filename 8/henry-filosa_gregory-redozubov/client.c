@@ -17,14 +17,16 @@
 int socket_id;
 
 static void sighandler(int signo){
+  int error;
   if (signo==SIGPIPE){
-    error=close(socket_client);
+    error=close(socket_id);
     if (error == -1)
 	perror("Error closing client socket\n");
     printf("Server disconnected, client exiting\n");
     exit(42);
   }
   if (signo==SIGINT){
+    write(socket_id,&kill_num,4);
     printf("Closing socket\n");
     error=close(socket_id);
     if (error == -1)
@@ -75,8 +77,6 @@ int main(int argc, char *argv[]){
   char ans;
   char name[NAME_LEN];
   char password[PASS_LEN];
-  char msg[MSG_LEN];
-  int size;
    while (ans!='1' && ans!='2'){
      printf("Welcome to DW-NET\nAre you:\n1-Logging in\n2-Creating a new account\n");
      fgets(&ans,3,stdin);
@@ -104,16 +104,32 @@ int main(int argc, char *argv[]){
      //If not available, ask user to create a different name. Resend that
    }       
    //Begin standard operation
+   int size;
+   int size_out;
+   int error;
+   char target[NAME_LEN];
+   char buf_out[MAX_MSG];
    while (1==1){
-     printf("Waiting for message size\n");
      error=read(socket_id,&size,sizeof(size));
      if (error == -1)
        perror("Error getting size\n");
-     char buf_in[size];
-     read(socket_id,buf_in,size);
-     printf("Your messages: \n%s",buf_in);
-     //read(socket_id,stdin,
-     //write(socket_id,msg,MSG_LEN);
-     //printf("Message sent: %s\n",buf);
+     if (size){
+       char buf_in[size];
+       read(socket_id,buf_in,size);
+       printf("Your messages: \n%s",buf_in);
+     }
+     printf("Who do you want to message?\n");
+     fgets(target,NAME_LEN,stdin);
+     strtok(target,"\n");
+     printf("Message contents:\n");
+     fgets(buf_out,MAX_MSG,stdin);
+     strtok(buf_out,"\n");
+     size_out=strlen(target)+1;
+     write(socket_id,&size_out,4);
+     write(socket_id,target,size_out);
+     size_out=strlen(buf_out)+1;
+     write(socket_id,&size_out,4);
+     write(socket_id,buf_out,size_out);
+     printf("Message sent: %s\n",buf_out);
    }
 }

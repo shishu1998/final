@@ -16,9 +16,15 @@ void process(int fd, int sockfd){
 
   if (fd==0){//send
     fgets(sen, sizeof(sen), stdin);
-    send(sockfd, sen, sizeof(sen), 0);
+    send(sockfd, sen, strlen(sen), 0);
   }else{//receive
     num_bytes=recv(sockfd,rec,sizeof(rec),0);
+    if(num_bytes == -1){
+      printf("recv: %s\n", strerror(errno));
+      exit(0);
+    }else if(num_bytes == 0){
+      exit(0);
+    }
     rec[num_bytes]='\0';
     printf("SENT:%s\n", rec);
     fflush(stdout);
@@ -44,15 +50,11 @@ int main(int argc, char **argv) {
   //bind to port/address
   struct sockaddr_in sock;
   sock.sin_family = AF_INET;
-  sock.sin_port = htons(24601);
+  sock.sin_port = htons(56347);
   //Set the IP address to connect to
   //127.0.0.1 is the "loopback" address of any machine
-  inet_aton( "127.0.0.1", &(sock.sin_addr));
-  if(bind(socket_id, (struct sockaddr *)&sock, sizeof(sock)) == -1){
-    printf("bind: %s\n", strerror(errno));
-    exit(0);
-  }
-  if (connect(socket_id, (struct sockaddr *)&sock, sizeof(sock))==-1){
+  inet_aton("127.0.0.1", &(sock.sin_addr));
+  if(connect(socket_id, (struct sockaddr *)&sock, sizeof(sock)) == -1){
     printf("connect: %s\n", strerror(errno));
     exit(0);
   }

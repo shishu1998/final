@@ -83,7 +83,7 @@ void setup(){
   error = close(fd);
   if (error == -1){
     perror("Error closing user file\n");
-    exit(42);
+ (f(f(f (f  exit(42);
   }
   printf("userlist established\n");
   int semaphore=semget(ftok(file_path, sem_id),2,0664 | IPC_CREAT | IPC_EXCL);
@@ -123,34 +123,104 @@ void send_mail(char name[], int socket_client){
   int error;
   char file_path[NAME_LEN+5]="root/";
   strcat(file_path,name);
+  error=access(file_path,F_OK);
+  //Check for any messages
+  if (error == -1){
+    printf("No Messages for %s: %s\n",name,strerror(errno));
+    return;
+  }
   struct stat buf;
   stat(file_path,&buf);
-  if (buf.st_size == 0)
+  int size = buf.st_size;
+  if (size == 0)
     return;
   int fd=open(file_path,O_RDONLY);
   if (fd == -1){
-    perror("Error opening %s's messages\n");
+    printf("Error opening %s's messages: %s\n",name,strerror(errno));
     return;
   }
-  char buf_out[buf.st_size];
-  error=read(fd,buf_out,buf.st_size);
+  char buf_out[size];
+  error=read(fd,buf_out,size);
   if (error == -1){
-    perror("Error reading %s's messages\n");
+    printf("Error reading %s's messages: %s\n",name,strerror(errno));
     return;
   }
-  error=write(socket_client,&buf.st_size,sizeof(buf.st_size));
+  error=write(socket_client,&size,4);
   if (error == -1){
-    perror("Error sending %s's message size\n");
+    printf("Error sending %s's message size: %s\n",name,strerror(errno));
     return;
   }
-  error=write(socket_client,buf_out,buf.st_size);
+  error=write(socket_client,buf_out,size);
   if (error == -1){
-    perror("Error sending %s's messages\n");
+    printf("Error sending %s's messages: %s\n",name,strerror(errno));
     return;
   }
   error=close(fd);
   if (error == -1){
-    perror("Error closing %s's messages\n");
+    printf("Error closing %s's messages: %s\n",name,strerror(errno));
+    return;
+  }
+  //Get rid of messages
+  error=remove(file_path);
+  if (error == -1){
+    printf("Error removing %s's messages: %s\n",name,strerror(errno));
+    return;
+  }
+}
+
+void recieve_mail(char name[], int socket_client){
+  int error,size;
+  char target[NAME_LEN];
+  error=read(socket_client,&size,4);
+  if (error == -1){
+    perror("Error getting target size:\n");
+    return;
+  }
+  //check for exit
+  if (size == kill_num)
+    raise(SIGPIPE);
+  error=read(socket_client,target,size);
+  if (error == -1){
+    perror("Error getting target:\n");
+    return;
+  }
+  error=read(socket_client,&size,4);
+  if (error == -1){
+    perror("Error getting message size:\n");
+    return;
+  }
+  char buf_in[size];
+  error=read(socket_client,buf_in,size);
+  if (error == -1){
+    perror("Error getting target:\n");
+    return;
+  }
+  printf("Message to %s : %s\n",target,buf_in);
+  char file_path[NAME_LEN+5]="root/";
+  strcat(file_path,target);
+  int fd=open(file_path,O_APPEND | O_CREAT | O_WRONLY, 0644);
+  if (fd == -1){
+    perror("Error opening file to store message:\n");
+    return;
+  }
+  error=write(fd,name,strlen(name));
+  if (error == -1){
+    perror("Error writing sender:\n");
+    return;
+  }
+  error=write(fd,": ",2);
+  if (error == -1){
+    perror("Error writing space:\n");
+    return;
+  }
+  error=write(fd,buf_in,size);
+  if (error == -1){
+    perror("Error writing message:\n");
+    return;
+  }
+  error=close(fd);
+  if (error == -1){
+    perror("Error closing message file:\n");
     return;
   }
 }
@@ -185,25 +255,17 @@ int main(int argc, char *argv[]){
       if (ans=='1'){
 	//Check if user logged in
 	//authenticate password. If correct, move on. Otherwise terminate
-	//Put loop here
-	//check for waiting mail
-	//send size of mail to be sent in bytes (int). If none, 0
-	//send mail
-	//wait to recieve messages
-	//pass on messages
-	//check for mail, repeat above
       }
       while(1==1){
 	//do child stuff
 	send_mail(name,socket_client);
-	sleep(1);
+	recieve_mail(name,socket_client);
       }
       close(socket_client);
       printf("Connection closed\n");
     }
   }
 }
-
 
 
 
@@ -238,10 +300,16 @@ int authenticate(char name[], char password[]){
       return 0;
     else
       return -1;
-  }
-} 
+    
 
-int add_user(char name[], char password[]){
+  }
+}
+
+
+
+
+*/
+//int add_user(char name[], char password[]){
   /*Returns boolean
   Checks user to see if name is already taken
   Return 1 if name is available and appends name and password to userlist,

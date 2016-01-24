@@ -7,16 +7,29 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include <signal.h>
 #include "len_prefix.h"
 #include "shared.h"
 #include "server.h"
 
 int running = 1;
 
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    running = 0;
+  }
+}
+
 int main() {
   int socket_id, client, e;
-  char resp[10];
 
+  struct sigaction action = {
+    .sa_handler = sighandler,
+    .sa_flags = 0
+  };
+  sigemptyset(&action.sa_mask);
+
+  sigaction(SIGINT, &action, NULL);
   socket_id = setup_server(PORT);
   if (socket_id < 0) {
     perror("Error setting up server");

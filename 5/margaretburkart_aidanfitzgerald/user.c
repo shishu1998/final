@@ -1,16 +1,20 @@
 #include "lib.h"
 
 user *user_find(char *name, FILE *userfile) {
-  char *passwd;
-
+  char *passwd = malloc(256);
+  printf( "strlen(name): %ld\n", strlen(name) );
   // Generate format string
-  char *regex = malloc(strlen(name) + 5);
+  char *regex = malloc(strlen(name) + 6);
+
   strcpy(regex, name);
-  strcat(regex, ",%ms");
+  strcat(regex, ",%255s");
+
+  printf("Build regex\n");
 
   // Search for user and password
   rewind(userfile);
-  if (fscanf(userfile, regex, &passwd) > 0) {
+  
+  if (fscanf(userfile, regex, passwd) > 0) {
     // User found - indicated by presence of password field
     user *found = malloc(sizeof(user));
     found->name = name;

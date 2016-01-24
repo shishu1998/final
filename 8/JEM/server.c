@@ -7,26 +7,39 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "server.h"
+
 int main() {
 
-int socket_id, socket_client;
-
-socket_id = socket( AF_INET, SOCK_STREAM, 0 );
-
-struct sockaddr_in listener;
-
-listener.sin_family = AF_INET;  //socket type IPv4
-listener.sin_port = htons(24601); //port #
-listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  char input[256];
+  char buffer[256];
+  int socket_id, socket_client, con_id;
   
-listen( socket_id, 1 );
-printf("<server> listening\n");
-
-socket_client = accept( socket_id, NULL, NULL );
-printf("<server> connected: %d\n", socket_client );
-
-write( socket_client, "hello", 6 );
+  //create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
-return 0;
+  //bind to port/address
+  struct sockaddr_in listener;
+  listener.sin_family = AF_INET;  //socket type IPv4
+  listener.sin_port = htons(24601); //port #
+  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
+  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  
+  listen( socket_id, 100 );
+  printf("<server> listening\n");
+
+  for ( ; ; ) {
+
+    socket_client = accept(socket_id, NULL, NULL); // blocking call 
+    int pid = fork();
+
+    if ( pid == 0 ) { //check for child
+      printf("<server> connected: %d\n", socket_client );
+      write( socket_client, "success", 8 );
+      close(socket_client);
+      exit(0); 
+    }
+  }
 }
+ 
+

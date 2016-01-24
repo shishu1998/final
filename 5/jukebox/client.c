@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "client.h"
+#include "player.h"
 
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -17,9 +18,9 @@ void parse(char * command, int socket_id){
   strcpy(command_copy, command);
   command = strsep(&command, " ");
   if(command_copy[0] == 'p'){ //play cmd goes here
-  	printf("boutta play\n");
-    send_to_server(command_copy, socket_id);
-    play_song(socket_id);
+	printf("boutta play\n");
+	send_to_server(command_copy, socket_id);
+	play_song(socket_id);
 	}	
   else if(command_copy[0] == 'q'){
 		printf("boutta quit\n");
@@ -57,20 +58,25 @@ void list_songs(int socket_id){
 }
 
 void play_song(int socket_id){
-  char * mp3;
-  int num_bytes;
-  num_bytes = recv(socket_id, mp3, sizeof(mp3),0);
+  void * mp3 = calloc(10, 1048576); // 10mb
+  if (read(socket_id, mp3, 1048576 * 10) < 0){
+  	printf("erro readin\n");
+  }
   printf("Client:Message Received From Server -  %s\n", mp3);
   
   int song_file;
-  song_file = open("temp.mp3", O_CREAT | O_RDWR , 0644);
+  song_file = open("temp.mp3", O_CREAT | O_RDWR | O_TRUNC , 0644);
   write(song_file, mp3, sizeof(mp3));
+  if (strcmp(mp3, "-1") == 0){
+  	printf("unable to play the song\n");
+  	return;
+  }
+  playsong();
   //playsong code
   //  recieve mp3 file, save it to a temp file, play, delete it from the temp file
 }
 
 int main(int argc, char **argv) {
-  
   int socket_id;
   char buffer[256];
   int i;
@@ -82,6 +88,10 @@ int main(int argc, char **argv) {
   bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("errno: %s\n", strerror(errno));
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (i < 0 ){
+  	printf("error connecting, quitting\n");
+  	exit(0);
+  }
   printf("<client> connect returned: %d\n", i);
   printf("errno: %s\n", strerror(errno));
   char input[256];

@@ -1,7 +1,7 @@
 //this is meant to be the file that writse a history of one's commands to a file
 //will have to read the file to see if a shot fired actually hits
-
-
+//creates a randomly generated board, and can print and manipulate it according to a command <whatevs the user inputed>
+//feel free to test, once a working connection is made this is basically done
 #include <sys/shm.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
@@ -90,7 +90,7 @@ void newPrint(int  a[]){//prints out a pretty board with the info given
 
 
 
-int numGenerator(){//gives either -1 or 0 by reading from the rand file
+int numGenerator(){//gives either -1 or 0 by reading from the rand file. This will be used to randomly generate boards
   //WORKING
   //int x = rand();  WRONG
   int num;
@@ -114,6 +114,142 @@ void boardGenerator(){//uses numGenerator to create the array that represents th
   n = n + 1;
   }
 }
+
+
+void editBoard(char * command) {//assumes command has no  '\n' on it. edits the array of -1 and zeroes according to inputs
+  //commands should be  '1A, 3B , etc ' 
+  //in changing realBoard, it changes the board of the user, and therefore whats printed in newPrint(int a[])
+  if (strcmp(command, "1A") == 0){
+    if (realBoard[0]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[0] =  1;
+    }
+  }
+  else if (strcmp(command, "1B") == 0){
+    if (realBoard[1]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[1] =  1;
+    }
+  }
+  else if (strcmp(command, "1C") == 0){
+    if (realBoard[2]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[2] = 1;
+    }
+  }
+  else if (strcmp(command, "1D") == 0){
+    if (realBoard[3]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[3] = 1;
+    }
+  }
+  else if (strcmp(command, "2A") == 0){
+    if (realBoard[4]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[4] = 1;
+    }
+  }
+  else if (strcmp(command, "2B") == 0){
+    if (realBoard[5]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[5] = 1;
+    }
+  }
+  else if (strcmp(command, "2C") == 0){
+    if (realBoard[6]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[6] = 1;
+    }
+  }
+  else if (strcmp(command, "2D") == 0){
+    if (realBoard[7]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[7] = 1;
+    }
+  }
+  else if (strcmp(command, "3A") == 0){
+    if (realBoard[8]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[8] =  1;
+    }
+  }
+  else if (strcmp(command, "3B") == 0){
+    if (realBoard[9]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[9] =  1;
+    }
+  }
+  else if (strcmp(command, "3C") == 0){
+    if (realBoard[10]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[10] = 1;
+    }
+  }
+  else if (strcmp(command, "3D") == 0){
+    if (realBoard[11]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[11] = 1;
+    }
+  }
+  else if (strcmp(command, "4A") == 0){
+    if (realBoard[12]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[12] =  1;
+    }
+  }
+  else if (strcmp(command, "4B") == 0){
+    if (realBoard[13]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[13] = 1;
+    }
+  }
+  else if (strcmp(command, "4C") == 0){
+    if (realBoard[14]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[14] =  1;
+    }
+  }
+  else if (strcmp(command, "4D") == 0){
+    if (realBoard[15]==-1){
+      printf("\n\n its a miss bro\n");
+    }
+    else{
+      realBoard[15] = 1;
+    }
+  }
+  
+  
+}
 int main() {
   //testin to see if it writes
   //int x = storeCommand("A1") ; 
@@ -128,15 +264,23 @@ int main() {
 
  //newPrint(realboard);
  // printf("max random number is %d\n", RAND_MAX);
- printf("random num is : %d  \n" , numGenerator() );//should print 0 or -1 with equal chance
- printf("anotha random num is : %d  \n" , numGenerator() );
- printf("anotha random num is : %d  \n" , numGenerator() );
- printf("\nbefore randomization"); 
-newPrint(realBoard);
- boardGenerator() ;
- printf("\n after board randomization"); 
+  // printf("random num is : %d  \n" , numGenerator() );//should print 0 or -1 with equal chance
+  //printf("anotha random num is : %d  \n" , numGenerator() );
+  // printf("anotha random num is : %d  \n" , numGenerator() );
+  //printf("\nbefore randomization"); 
+  //newPrint(realBoard);
+  //boardGenerator() ;
+  //printf("\n after board randomization"); 
 
-newPrint(realBoard);
+  // newPrint(realBoard);
+  //ALL WORKING AT THIS POINT
+  char * c = "1A";
+  realBoard[0] = -1;
+  editBoard(c);
+  printf("%d\n" , realBoard[0]);
+  newPrint(realBoard);
+ 
 
+  //NOW EVERY FUNCTION WORKS IN THIS FILE, ONTO THE BIG BOY STUFF
  return 0;
 }

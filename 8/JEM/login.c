@@ -10,8 +10,12 @@
 #define BUFFER_LEN 500 //# of characters read from username.txt 
 
 void make_profile(char *username, char *password) {
+  char a1[20]; char a2[20];
   printf("You have successfully created a username and account! To complete account information, please answer the following questions below:");
+  fgets(a1, 20, stdin);
+  printf("a1: %s\n", a1);
   printf("Question 1\nWhat's your full name? Please put spaces between your first, middle, and last name. You may omit your middle name.\n");
+  printf("a2: %s\n", a2);
   printf("Question 2\nWhat's your current age?\n");
   printf("Question 3\nWhat's your hair color?\n");
   //printf("Question 4\nWhy do you want to take Mary to PROM? Please limit your answer to 500 characters.\n");
@@ -97,7 +101,6 @@ int main() {
     printf("line: %s\n", line);
     
     fwrite(line, sizeof(char), strlen(line), fd1);
-       
     fclose(fd1);
     return 0;
   }

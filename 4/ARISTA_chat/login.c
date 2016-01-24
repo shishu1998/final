@@ -18,7 +18,6 @@ int newuser() {
     scanf("%i",&username);
 
     if (username >= 1000 && username <= 9999) {
-
       char *in = passwd;
       struct termios  tty_orig;
       char c;
@@ -93,6 +92,39 @@ int newuser() {
 }
 
 int registereduser() {
+	FILE* fd;
+	int line_num = 1;
+	int find_result = 0;
+	int username = 0000;
+
+	printf("Type in your 4-digit ID for the username.\n");
+    	scanf("%i",&username);
+
+	if((fd = fopen("tutoraccounts.txt", "r")) == NULL) {
+		return(-1);
+	}
+
+	char buffer[256];
+
+	while(fgets(buffer, sizeof(buffer), fd) != NULL) {
+		printf("%s\n",buffer);
+
+		if((strstr(buffer, username)) != NULL) {
+			printf("A match found on line: %d\n", line_num);
+			printf("\n%s\n", buffer);
+			find_result++;
+		}
+
+	}
+
+	if(find_result == 0) {
+		printf("\nSorry, couldn't find a match.\n");
+	}
+
+	//Close the file if still open.
+	if(fd) {
+		fclose(fd);
+	}
 
   return 1;
 

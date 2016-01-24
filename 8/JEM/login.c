@@ -10,15 +10,23 @@
 #define BUFFER_LEN 500 //# of characters read from username.txt 
 
 void make_profile(char *username, char *password) {
+  char a1[20]; char a2[20];
+  printf("You have successfully created a username and account! To complete account information, please answer the following questions below:");
+  fgets(a1, 20, stdin);
+  printf("a1: %s\n", a1);
+  printf("Question 1\nWhat's your full name? Please put spaces between your first, middle, and last name. You may omit your middle name.\n");
+  printf("a2: %s\n", a2);
+  printf("Question 2\nWhat's your current age?\n");
+  printf("Question 3\nWhat's your hair color?\n");
+  //printf("Question 4\nWhy do you want to take Mary to PROM? Please limit your answer to 500 characters.\n");
 
 }
 
 void find_user() {
   FILE* fd1 = fopen("username.txt", "r");//open username.txt
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  char underscore[1] = "_";
+  char underscore[3] = "_\0";
   char *username;
-
   //retrieves username and password
   printf("Please type in your username:\n");
   fgets(user, USER_LEN, stdin);
@@ -29,7 +37,7 @@ void find_user() {
 
   username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char               
   strcat(username, user);                                                                                                                         
-  char *line = (char *)calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));                                                                 
+  char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(underscore) + 1, sizeof(char));                                                                 
   line = strsep(&username, "\n");                                                                                                                 
   strcat(line, underscore);
   strcat(line, pswd);                                                                                                                             
@@ -49,12 +57,10 @@ void find_user() {
 }
 
 int main() {
-  //char user[USER_LEN]; char pswd[PSWD_LEN];
-  //char underscore[1] = "_";
-  //char *username;
+  char user[USER_LEN]; char pswd[PSWD_LEN];
+  char underscore[1] = "_";
+  char *username;
   char yes_no;
-  //newline = (char *)malloc(sizeof(char *));
-  //newline = "\n";
   printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\nPlease type in 1 if you have an account or 2 if you'd like to make one.\n");
   fgets(&yes_no, 3, stdin);
   printf("yes_no value:%c\n", yes_no);
@@ -64,14 +70,8 @@ int main() {
     /*FILE* fd1 = fopen("username.txt", "r");
     printf("Please type in your username:\n");
     fgets(user, USER_LEN, stdin);
-    
     printf("Please type in your password:\n");
     fgets(pswd, PSWD_LEN, stdin);
-    
-    printf("user: %s\n", user);
-    printf("pswd: %s\n", pswd);
-    
-    
     char *buffer = (char *)malloc(100*sizeof(char));
     //printf("sizeof(buffer) = %lu\n", sizeof(buffer));
     fread(buffer, sizeof(char), 100, fd1);
@@ -79,8 +79,7 @@ int main() {
     buffer = "";
     printf("buffer after fread/fwrite: %s\n", buffer);    
     */
-    }
-  /*
+  }
   else if (yes_no == '2'){
     FILE* fd1 = fopen("username.txt", "a+");
     printf("Please create a username:\n");
@@ -102,22 +101,9 @@ int main() {
     printf("line: %s\n", line);
     
     fwrite(line, sizeof(char), strlen(line), fd1);
-       
     fclose(fd1);
     return 0;
   }
-  */
   else
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
 }
-/*
-  int fd1 = open("username.txt", O_RDONLY | O_WRONLY | O_APPEND);
-  if (fd1 == -1)
-    printf("fd1 is broken: %s\n", strerror(errno));
-    int fd2 = write(fd1, usrname, sizeof(usrname));
-    if (fd2 == -1)
-    printf("fd2 is broken: %s\n", strerror(errno));
-    char *buffer = (char *)malloc(1024);
-    int readfile = scanf(fd1, buffer, sizeof(buffer));
-    printf("buffer: %s\n", buffer);
-*/

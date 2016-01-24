@@ -177,9 +177,12 @@ void dostuff (int sock)
 void write_bid(char *offer) {
 	int status;
 	int fd;
+/*
 	char old_bid[SIZEBUFF]; // should be ample space
 	read(fd, old_bid, sizeof(old_bid));
+	printf("TESTING: old_bid = %s\n", old_bid);
 	if (atoi(offer) > atoi(old_bid)) {
+*/
 		// now start writing.
 		//open bid
 		int f = fork();
@@ -208,8 +211,10 @@ void write_bid(char *offer) {
 		} else {
 			wait(&status);
 		} 
+/*
 	} else {
 		printf("\nSS: You have already been outbid.\n");
 		close(fd);
 	}
+*/
 }

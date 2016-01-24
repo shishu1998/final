@@ -15,7 +15,24 @@ void strip_add(char* source, char* dest){
 
 void change_location(char* location){
   char buffer[256];
-   char* path = getcwd(buffer,256);
+  char current_path[256];
+  char path[256];
+  char* curr = getcwd(buffer,256);
+
+  strcat(current_path,curr);
+  printf("current_path: [%s]\n",current_path);
+  int overall_len = strlen(current_path);
+  char* leftovers = strrchr(current_path,'/');
+
+  if(strcmp(leftovers,"/my_mail.d")!=0){
+    printf("leftovers: [%s]\n",leftovers);
+    int leftovers_len = strlen(leftovers);
+    int new_len = overall_len - leftovers_len;
+    strncat(path,current_path,new_len);
+  }else{
+    strcat(path,current_path);
+  }
+  printf("path: [%s]\n",path);
    char* sep = "/";
    strcat(path,sep);
    strcat(path,location);
@@ -182,6 +199,7 @@ int main() {
 
   // Step 2. Bind to port/address
   struct sockaddr_in sock;
+  //memset(&sock, '\0', sizeof(sock));
   sock.sin_family = AF_INET;
   sock.sin_port = htons(5000);
   // void: parses a string into a binary IP address
@@ -191,8 +209,12 @@ int main() {
 
   // Step 3. Attempt to create a connection
   // i is a message
+
   int i = connect(socket_id, (struct sockaddr *) &sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
+  if(i==-1){
+    perror("");
+  }
 
   // Step 4. Do network stuff
   char buffer[256];

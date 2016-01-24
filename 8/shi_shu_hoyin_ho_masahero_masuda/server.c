@@ -85,9 +85,11 @@ card deal_redcard(card* red_deck){
   card red_card = red_deck[pos];
   return red_card;
 }
-//Sending methods//
-
-
+//Receiving methods//
+void receive_redcard(int from_player){
+  char buffer[100];
+  read(from_player,buffer,sizeof(buffer));
+}
 //
 
 int main(){

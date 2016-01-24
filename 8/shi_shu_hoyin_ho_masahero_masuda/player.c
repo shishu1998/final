@@ -43,16 +43,16 @@ void send_redcard(int to_server){
     printf("%d.%s\n",i,red_hand[i].content);
     i++;
   }
-  printf("Pick a red card (index)  to send to the server...");
+  printf("Pick a red card (index)  to send to the server...\n");
   fgets(buffer,sizeof(buffer),stdin);
   *strchr(buffer,'\n') = 0;
   int index = atoi(buffer);
-  if (index >= 0 || index <= 6){
-    write(to_server,red_hand[index].content,sizeof(red_hand[index].content));
+  if (index >= 0 && index <= 6){
+    write(to_server,&red_hand[index],sizeof(red_hand[index]));
     printf("You sent: %s\n", red_hand[index].content);
   }
   else{
-    printf("You did not enter a legal number");
+    printf("You did not enter a valid index\n");
   }
   
 }
@@ -64,16 +64,16 @@ void send_greencard(int to_server){
     printf("%d.%s\n",i,green_hand[i].content);
     i++;
   }
-  printf("Pick a green card (index)  to send to the server...");
+  printf("Pick a green card (index)  to send to the server...\n");
   fgets(buffer,sizeof(buffer),stdin);
   *strchr(buffer,'\n') = 0;
   int index = atoi(buffer);
-  if (index >= 0 || index <= 7){
-    write(to_server,green_hand[index].content,sizeof(green_hand[index].content));
+  if (index >= 0 && index <= 7){
+    write(to_server,&green_hand[index],sizeof(green_hand[index]));
     printf("You sent: %s\n", green_hand[index].content);
   }
   else{
-    printf("You did not enter a legal number");
+    printf("You did not enter a valid index\n");
   }
 }
 ///////////
@@ -83,9 +83,9 @@ void send_greencard(int to_server){
 void pick_winning_card(card* pile, int from_server, int to_server){
   char buffer[100];
   
-  printf("Pick what you think best fits the adjective...");
+  printf("Pick what you think best fits the adjective...\n");
   read(from_server,buffer,sizeof(buffer));
-  printf("Here is the list of cards received...");
+  printf("Here is the list of cards received...\n");
   int counter = 0;                                                                
   while(pile[counter].content){                                                  
     printf("%d.%s",counter,pile[counter].content);                               
@@ -95,11 +95,11 @@ void pick_winning_card(card* pile, int from_server, int to_server){
   *strchr(buffer,'\n') = 0;
   int index  = atoi(buffer);
   if (index >= 0 || index <= 2){ //assuming there are 3 players
-    write(to_server,buffer,sizeof(buffer));
+    write(to_server,&pile[index],sizeof(pile[index]));
     printf("You chose: %s\n", pile[index].content);
   }
   else{
-    printf("You did not enter a valid index");
+    printf("You did not enter a valid index\n");
   }
 }
 

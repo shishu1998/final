@@ -14,6 +14,7 @@
 */
 
 #define SIZEBUFF 256
+char my_paddle[100];
 
 void error(const char *msg)
 {
@@ -33,7 +34,9 @@ void clean_stdin(void)
 
 int main(int argc, char *argv[])
 {
-	printf("Your paddle number is: %d\n", getpid());
+	memset(my_paddle, 0, sizeof(my_paddle));
+	sprintf(my_paddle, "%d", getpid());
+	printf("Your paddle number is: %s\n", my_paddle);
 	int sockfd, portno, n;
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
@@ -65,9 +68,9 @@ int main(int argc, char *argv[])
 		old_main();
 
 		if (BID_MODE != 0) {
-			n = write(sockfd, "1", 2); //tbh does nothing but sync read/write in client/socket
+			n = write(sockfd, my_paddle, strlen(my_paddle)+1); //tbh does nothing but sync read/write in client/socket
 
-			memset(buffer, 0, sizeof(buffer));
+			memset(buffer, 0, sizeof(buffer)); // better than bzero
 			printf("Your bid: ");
 			bzero(buffer,SIZEBUFF);
 			
@@ -83,8 +86,11 @@ int main(int argc, char *argv[])
 			n = read(sockfd,buffer,SIZEBUFF-1);
 			if (n < 0) 
 				 error("ERROR reading from socket");
-			printf("client buffer: %s\n",buffer);
+//			printf("client buffer: %s\n",buffer);
+			printf("%s\n", buffer);
 */
+			//check for errors
+			if (errno) printf("error %d: %s\n", errno, strerror(errno));
 		} else if (REQ_MODE != 0) {
 			// request bid data from server
 			n = write(sockfd, "2", 2); // I'm just taking 2 to mean REQ_MODE for server
@@ -92,12 +98,19 @@ int main(int argc, char *argv[])
 
 			printf("attempting a request at info, n = %d\n", n);
 			printf("CURRENT BID AT: ");
+
+			//check for errors
+			if (errno) printf("error %d: %s\n", errno, strerror(errno));
 		} else if (QUIT_MODE != 0) {
 			// tell server that you've left
 			n = write(sockfd, "3", 2); // taking 3 to be QUIT_MODE for server
 			if (n < 0) error("ERROR writing to socket");
 
 			printf("Notified server that you have quit.\n");
+
+			//check for errors
+			if (errno) printf("error %d: %s\n", errno, strerror(errno));
+
 			exit(0);
 		}
 
@@ -106,7 +119,8 @@ int main(int argc, char *argv[])
 
 		n = read(sockfd,buffer,SIZEBUFF-1);
 		if (n < 0) error("ERROR reading from socket");
-		printf("client buffer: %s\n", buffer);
+//		printf("client buffer: %s\n", buffer);
+		printf("%s\n", buffer);
 
 	}
 	close(sockfd);

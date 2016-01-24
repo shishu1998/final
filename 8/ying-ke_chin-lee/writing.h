@@ -10,6 +10,7 @@
 
 //char *fname = "bids.txt"; // will have to make one bid file per item later on
 char *bidfile = "curr_bid.txt";
+char *bidderfile = "bidders.txt";
 int fd;
 int success_write = 1;
 
@@ -52,7 +53,7 @@ char *del_newline(char *in) {
 	return in;
 }
 
-int file_write(char *to_write) {
+int file_write(char *to_write, char *pno) {
 	int shmkey = ftok("control.c", 'a');
 	int semkey = ftok("control.c", 'b');
 //	printf("semkey = %d, shmkey = %d\n", semkey, shmkey);
@@ -69,7 +70,7 @@ int file_write(char *to_write) {
 //	printf("shid = %d\n", shid);
 
 	char* shmem = shmat(shid, 0, 0); // took out of below commented section
-	FILE *fp;
+	FILE *fp, *fp_bidder;
 
 	/* CHECK WHAT WAS THE LAST BID */
 	fp = fopen(bidfile, "r");
@@ -101,10 +102,17 @@ int file_write(char *to_write) {
 	if (atoi(last_bid) >= atoi(to_write)) {
 		printf("bid unsuccessful...\n");
 		success_write = 0;
-		return;
+		return 0;
 	}
 
 	fp = fopen(bidfile, "a");
+	printf("Error %d: %s\n", errno, strerror(errno));
+	// open bidderfile
+
+	fp_bidder = fopen(bidderfile, "a");
+	printf("Error %d: %s\n", errno, strerror(errno));
+	fprintf(fp_bidder, "%s\n", pno);
+	fclose(fp_bidder);
 
 	char line[256];
 	strcpy(line, to_write); //this might be necessary...

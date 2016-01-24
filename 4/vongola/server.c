@@ -14,16 +14,18 @@ void process(int fd, fd_set *master, int fdmax, int socket_id, char*** ulist){
   char line[256];
   int num_bytes;
   int new_player = 0;
-  printf("Status:%s\n",(*ulist)[fd]);
+  //printf("Status:%s\n",(*ulist)[fd]);
   num_bytes=recv(fd,rec,sizeof(rec),0);
-  if(num_bytes == -1){
+  if(num_bytes <=0){
+    if(num_bytes == -1){
     printf("recv: %s\n", strerror(errno));
-    exit(0);
-  }else if(num_bytes == 0){
+    }else if(num_bytes == 0){
+      printf("Socket %d has closed", fd);
+    }
     close(fd);
     FD_CLR(fd, master);
   }
-  rec[num_bytes]='\0';
+    rec[num_bytes]='\0';
   if(strlen((*ulist)[fd])==0){
     char *name = (char*)malloc(sizeof(char));
     strcpy(name,rec);
@@ -33,14 +35,14 @@ void process(int fd, fd_set *master, int fdmax, int socket_id, char*** ulist){
   int i;
   for (i=0; i<=fdmax; i++){
     if (FD_ISSET(i,master)&&i!=socket_id){
-      printf("Name Changed: %s\n",(*ulist)[fd]);
+      // printf("Name Changed: %s\n",(*ulist)[fd]);
       //printf("works\n");
       if(!new_player){
 	//printf("works2\n");
 	strcpy(line,(*ulist)[fd]);
 	strcat(line,": ");
 	strcat(line,rec);
-	printf("Has A Name: %d\n",strlen((*ulist)[fd]));
+	//printf("Has A Name: %d\n",strlen((*ulist)[fd]));
 	if(send(i,line,strlen(line),0)==-1)
 	  printf("SEND: %s\n",strerror(errno));
       }
@@ -72,12 +74,14 @@ int main() {
     exit(0);
   }
 
+  int on = 1;
+
   //bind to port/address
   struct sockaddr_in listener;
   listener.sin_family = AF_INET;  //socket type IPv4
   listener.sin_port = htons(56348); //port #
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-  if(setsockopt(socket_id, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(socket_id)) == -1){
+  if(setsockopt(socket_id, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(socket_id)) == -1){
     printf("setsockopt %s\n", strerror(errno));
     exit(0);
   }
@@ -91,6 +95,26 @@ int main() {
     exit(0);
   }
 
+/*void accept_client(int *socket_id, fd_set *master, int *fdmax){
+  struct sockaddr_in client_addr;
+  socklen_t addrlen = sizeof(client_addr);
+  int client_socket = accept(*socket_id, (struct sockaddr*)&client_addr, &addrlen);
+  if(client_socket == -1){
+    printf("accept: %s\n", strerror(errno));
+  }else{
+    FD_SET(client_socket, master);
+    if(client_socket > *fdmax){
+      *fdmax = client_socket;
+    }
+  }
+}*/
+
+/*int main() {
+  int socket_id;
+  int i;
+  fd_set master, read_fds;
+
+  setup_socket(&socket_id);*/
   FD_ZERO(&master);
   FD_ZERO(&read_fds);
   FD_SET(socket_id, &master);
@@ -102,7 +126,7 @@ int main() {
       printf("select: %s\n", strerror(errno));
       exit(0);
     }
-    for(i = 0; i <= fdmax; i++){
+    for(i = 3; i <= fdmax; i++){
       if(FD_ISSET(i, &read_fds)){
 	//printf("%d\n",i);
 	if(i == socket_id){//i==3

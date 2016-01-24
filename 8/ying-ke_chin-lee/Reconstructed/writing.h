@@ -10,7 +10,10 @@
 
 //char *fname = "bids.txt"; // will have to make one bid file per item later on
 char *bidfile = "curr_bid.txt";
+char *bidderfile = "bidders.txt";
 int fd;
+int success_write = 1;
+
 
 char entered_bid[256];
 
@@ -21,7 +24,7 @@ union semun {
 	struct seminfo *_buf;
 };
 
-/* courtesy of le K&R */
+/* adapted from le K&R */
 void reverse(char s[]) {
 	int length = strlen(s);
 	int c, i, j;
@@ -38,9 +41,9 @@ void clean_stdin(void)
     int c;
     do {
         c = getchar();
-	printf("w:getchar hang?\n");
+//	printf("w:getchar hang?\n");
     } while (c != '\n' && c != EOF);
-	printf("w:out of getchar\n");
+//	printf("w:out of getchar\n");
 }
 
 char *del_newline(char *in) {
@@ -50,10 +53,10 @@ char *del_newline(char *in) {
 	return in;
 }
 
-int file_write(char *to_write) {
+int file_write(char *to_write, char *pno) {
 	int shmkey = ftok("control.c", 'a');
 	int semkey = ftok("control.c", 'b');
-	printf("semkey = %d, shmkey = %d\n", semkey, shmkey);
+//	printf("semkey = %d, shmkey = %d\n", semkey, shmkey);
 
 	int semid = semget(semkey, 1, IPC_CREAT|0644);
 
@@ -63,11 +66,11 @@ int file_write(char *to_write) {
 	sb.sem_op = -1;
 	semop(semid, &sb, 1);
 
-	int shid = shmget(shmkey, sizeof(int), 0644);//IPC_CREAT|0644); 
-	printf("shid = %d\n", shid);
+	int shid = shmget(shmkey, sizeof(int), 0644);
+//	printf("shid = %d\n", shid);
 
 	char* shmem = shmat(shid, 0, 0); // took out of below commented section
-	FILE *fp;
+	FILE *fp, *fp_bidder;
 
 	/* CHECK WHAT WAS THE LAST BID */
 	fp = fopen(bidfile, "r");
@@ -75,16 +78,9 @@ int file_write(char *to_write) {
 	char last_bid[256]; //hopefully enough space
 	char new_char;
 	int index = 0;
-	int check_read = 0;
 	new_char = fgetc(fp);
-	printf("check_read = %d\n", check_read);
-	printf("does fp work? %c\n", fp);
 	while (new_char != '\n') {
-<<<<<<< HEAD
-		printf("I am inside the loop\n");
-=======
-		printf("I am inside the loop, new_char = %c\n", new_char);
->>>>>>> 249c51afae157ba1676a4371e31c94f047ddfa4d
+//		printf("I am inside the loop, new_char = %c\n", new_char);
 		last_bid[index] = new_char;
 		index++;
 
@@ -93,11 +89,11 @@ int file_write(char *to_write) {
 	}
 	fclose(fp);
 	last_bid[index] = '\0';
-	printf("last_bid (backwards) is %s\n", last_bid);
+//	printf("last_bid (backwards) is %s\n", last_bid);
 	
 	/* FLIP THE STRING AAAAACK *flips table* */
 	reverse(last_bid);
-	printf("last_bid (forwards?) is %s\n", last_bid);
+	printf("last_bid is %s\n", last_bid);
 
 	/*
 		WRITE IN THE NEW BID IF POSSIBLE
@@ -105,29 +101,34 @@ int file_write(char *to_write) {
 
 	if (atoi(last_bid) >= atoi(to_write)) {
 		printf("bid unsuccessful...\n");
-		return;
+		success_write = 0;
+		return 0;
 	}
 
 	fp = fopen(bidfile, "a");
+	printf("Error %d: %s\n", errno, strerror(errno));
+	// open bidderfile
+
+	fp_bidder = fopen(bidderfile, "a");
+	printf("Error %d: %s\n", errno, strerror(errno));
+	fprintf(fp_bidder, "%s\n", pno);
+	fclose(fp_bidder);
 
 	char line[256];
 	strcpy(line, to_write); //this might be necessary...
 
 	// find out if this new bid is higher than the old bid
-//	printf("previous bid = %s\n", prev_bid);
 	printf("This is entered bid: %s\n", line);
 
 	*shmem = strlen(line);
 
-//	char *prev_del_newline = del_newline(prev_bid);
 	char *line_del_newline = del_newline(line);
 
-//	printf("p_d_n = %s, l_d_n = %s\n", prev_del_newline, line_del_newline);
-	printf("strlen = %zu, to_write = %s\n", strlen(to_write), to_write);
+//	printf("strlen = %zu, to_write = %s\n", strlen(to_write), to_write);
 	char *str = del_newline(to_write);
 	int check1 = fprintf(fp, "\n");
 	int check = fprintf(fp, "%s", str);//to_write);
-	printf("is check negative? %d\n", check);
+//	printf("is check negative? %d\n", check);
 
 	fclose(fp);
 	close(fd);
@@ -137,6 +138,6 @@ int file_write(char *to_write) {
 	sb.sem_op = 1;
 	semop(semid, &sb, 1);
 
-	printf("completed write\n"); //ah, so it never gets here....why is that?  
+	printf("completed write\n"); 
 	return 0;
 }

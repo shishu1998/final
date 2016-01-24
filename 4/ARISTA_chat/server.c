@@ -39,11 +39,9 @@ int create_server() {
 void relay_msg(int client_from, int client_to) {
 	char msg[100];
 	sleep(1);
-	read(client_from, msg, strlen(msg));
-//	recv(client_from, msg, strlen(msg), 0);
+	read(client_from, msg, sizeof(msg));
 	printf("<server> received [%s]\n", msg);
-	write(client_to, msg, strlen(msg));
-//	send(client_to, msg, strlen(msg), 0);
+	write(client_to, msg, sizeof(msg));
 	printf("<server> sent [%s]\n", msg);
 }
 

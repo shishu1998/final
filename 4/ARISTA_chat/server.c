@@ -119,7 +119,11 @@ int main() {
 		if (num_tutors >= 2) {
 			char msg[] = "You have been connected to a tutor.";
 			write(tutors[0][0], msg, sizeof(msg));
-			relay_msg(tutors[0][0], tutors[1][0]);
+
+			while(1) {
+				relay_msg(tutors[0][0], tutors[1][0]);
+				relay_msg(tutors[1][0], tutors[0][1]);
+			}
 		}
 
 		/*

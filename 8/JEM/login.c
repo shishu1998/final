@@ -16,15 +16,15 @@ void find_username(char *username) {
 }
 
 int main() {
-  char usrname[5];
+  char input[5];
+  char user[20];
   //char *newline;
+  char *username;
   char *yes_no;
   char *one = (char *)malloc(3*sizeof(char *));
   char *two = (char *)malloc(3*sizeof(char *));
   //newline = (char *)malloc(sizeof(char *));
   //usrname = malloc(50*sizeof(char));
-  //printf("sizeof(usrname) = %d\n", (int)sizeof(usrname));
-  
   yes_no = (char *)malloc(sizeof(char *));
   //newline = "\n";
   one ="1\0"; two = "2\0";
@@ -34,12 +34,11 @@ int main() {
   
   printf("yes_no value:%s\n", yes_no);
   
-
   if (strncmp(yes_no, one, 1) == 0) {
     FILE* fd1 = fopen("username.txt", "r");
     printf("Please type in your username:\n");
-    fgets(usrname, sizeof(usrname), stdin);
-    printf("username without new line: %s\n", usrname);
+    fgets(user, sizeof(user), stdin);
+    printf("user without new line: %s\n", user);
     char *buffer = (char *)malloc(100*sizeof(char));
     //printf("sizeof(buffer) = %lu\n", sizeof(buffer));
     fread(buffer, sizeof(char), 100, fd1);
@@ -50,12 +49,16 @@ int main() {
   else if (strncmp(yes_no, two, 1) == 0){
     FILE* fd1 = fopen("username.txt", "a+");
     printf("Please create a username:\n");
-    fgets(usrname, sizeof(usrname), stdin);
-    printf("username without new line: %s\n", usrname);
-    //strcat(usrname, newline);
-    //printf("username WITH new line: %sword\n", usrname);
-    //printf("sizeof(usrname) = %lu\n", sizeof(usrname));
-    fwrite(usrname, sizeof(char), sizeof(usrname), fd1);
+    fgets(user, 10, stdin);
+    printf("username array: %s\n", user);
+    username = calloc(strlen(user) + 1, sizeof(char));
+    strcat(username, user);
+    
+    printf("sizeof(username) = %lu\n", sizeof(username));
+    printf("username: %s\n", username);
+    
+    fwrite(username, sizeof(char), sizeof(username), fd1);
+
         
     fclose(fd1);
     return 0;

@@ -16,7 +16,7 @@ void make_profile(char *username, char *password) {
 void find_user() {
   FILE* fd1 = fopen("username.txt", "r");//open username.txt
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  char underscore[1] = "_";
+  char underscore[3] = "_\0";
   char *username;
 
   //retrieves username and password
@@ -29,7 +29,7 @@ void find_user() {
 
   username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char               
   strcat(username, user);                                                                                                                         
-  char *line = (char *)calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));                                                                 
+  char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(underscore) + 1, sizeof(char));                                                                 
   line = strsep(&username, "\n");                                                                                                                 
   strcat(line, underscore);
   strcat(line, pswd);                                                                                                                             
@@ -110,14 +110,3 @@ int main() {
   else
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
 }
-/*
-  int fd1 = open("username.txt", O_RDONLY | O_WRONLY | O_APPEND);
-  if (fd1 == -1)
-    printf("fd1 is broken: %s\n", strerror(errno));
-    int fd2 = write(fd1, usrname, sizeof(usrname));
-    if (fd2 == -1)
-    printf("fd2 is broken: %s\n", strerror(errno));
-    char *buffer = (char *)malloc(1024);
-    int readfile = scanf(fd1, buffer, sizeof(buffer));
-    printf("buffer: %s\n", buffer);
-*/

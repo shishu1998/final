@@ -28,6 +28,8 @@ int main(){
       printf("\nThat's nice...\n");
     }
     else printf ("\nNice!\n");
+    
+    printf("")
 }
 
     

@@ -19,16 +19,20 @@ static void sighandler(int signo){
 
 int handshake(int *from_player, card *redDeck, card *greenDeck){
   int freeID=0;
-  while(*ids){
+  while(!(*ids)){
     freeID++;
   }
+  printf("Ho Yin Ho\n");
   int to_player;
   char buffer[100];
   int counter = 0;
   card redCards[7];
   card greenCard = deal_greencard(greenDeck);
+
+  printf("Ho Yin went black\n");
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
+  printf("Now Ho Yin can't go back\n");
   remove("pipe");
   connectedPlayers += 1; 
   
@@ -45,10 +49,13 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
       counter++;
     }
     greenCard.owner=ids[freeID];
+    printf("Masa is slacking\n");
     write(to_player,&ids[freeID],sizeof(int));
     ids[freeID] = 0;
     write(to_player,&redCards,sizeof(card)*7);
+    printf("Masa likes Sandy\n");
     write(to_player,&greenCard,sizeof(card));
+    printf("I like Sandy, Kappa\n");
     return to_player;
   }
   else{
@@ -73,6 +80,7 @@ card deal_greencard(card* green_deck){
     pos++;
   }
   card green_card = green_deck[pos];
+  green_deck[pos] = 0;
   return green_card;
 }
 
@@ -82,6 +90,7 @@ card deal_redcard(card* red_deck){
     pos++;
   }
   card red_card = red_deck[pos];
+  red_deck[pos] = 0;
   return red_card;
 }
 //Receiving methods//

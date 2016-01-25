@@ -28,19 +28,35 @@ Result: creates the displayed boards for play
 
 ====================*/
 void makeBoards(){
+  //edges
   int d = 1;
   int a = 0;
-  while (d < 11){
-    uboard [d][a] = d;
-    obard [d][a] = d;
+  char c;
+  while (d < 6){
+    c=d;
+    uboard [d][a] = c;
+    obard [d][a] = c;
     d++;
   }
   d = 0;
   a = 1;
-  while (a<11){
-    uboard [d][a] = a;
-    oboard [d][a] = a;
+  while (a < 6){
+    c=a;
+    uboard [d][a] = c;
+    oboard [d][a] = c;
     a++;
+  }
+  //fill board
+  d = 1;
+  a = 1;
+  while (d<6){
+    while(a<6){
+      uboard[d][a] = ".";
+      oboard[d][a]=".";
+      a++;
+    }
+    d++;
+    a=1;
   }
 }
 

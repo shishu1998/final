@@ -48,7 +48,7 @@ int main() {
       if (listener) close(client);
     } else {
       e = handle_request(client);
-      if (e < 0) {
+      if (e <= 0) {
         running = 0;
       }
     }
@@ -84,7 +84,7 @@ int handle_request(int socket) {
   char * message = NULL;
 
   read_bytes = len_prefix_read(socket, (void **)&message);
-  if (read_bytes < 0) return read_bytes;
+  if (read_bytes <= 0) return read_bytes;
 
   printf("client[%d]: %s", socket, message);
 

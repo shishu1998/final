@@ -176,11 +176,10 @@ int main() {
 
   int moveon = 0;
   while (moveon == 0) {
-    printf("\nAre you a tutor or a tutee?\n");
-    char student[100];
-    fgets(student, sizeof(student), stdin);
-
-    if (strcmp(student,"tutor") >= 0) {
+    printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
+    int student;
+    scanf("%i",&student);
+    if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;
       while (loggedin == 0)
@@ -192,7 +191,7 @@ int main() {
 	  printf("There was an error while logging in.");
 	  printf("Please try again.\n");
 	}
-    } else if (strcmp(student, "tutee") >= 0) {
+    } else if (student == 2) {
       printf("\nWelcome tutee!\n");
       moveon =1;
     } else {

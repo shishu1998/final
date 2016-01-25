@@ -28,6 +28,12 @@ int main(){
   bind(socket_id,(struct sockaddr*)&sock,sizeof(sock));
   i=connect(socket_id,(struct sockaddr*)&sock,sizeof(sock));
   printf("Connected to socket:%d",i);
+  printf("Explanation of GAME HERE
+
+
+
+
+");
   while(1){
     read(socket_id,buffer,sizeof(buffer));
     if(buffer[0]){

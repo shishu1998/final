@@ -1,0 +1,5 @@
+To: Aidan Fitzgerald
+Subject: first_email_sent
+
+Look! It's sending!
+END

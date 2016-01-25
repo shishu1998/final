@@ -135,7 +135,7 @@ void server_talk(int socket_client) {
 
     else if (strstart(buffer, "GET")) {
       // Retrieve one email
-      
+      server_get(socket_client, session);
     }
 
     else if (strstart(buffer, "SEND")) {
@@ -293,30 +293,58 @@ printf("Uploaded email to %s\n", filename);
   free(filename);
 }
 
-void server_get(int client_socket, user *session) {
-// Open the user's remote mailbox directory
-char *dirname = server_dir(session->name);
-DIR *dir = opendir(dirname);
-
-// Read the first entry
- struct dirent *head;
+void server_get(int socket_client, user *session) {
+  // Open the user's remote mailbox directory
+  char *dirname = server_dir(session->name);
+  DIR *dir = opendir(dirname);
+  
+  // Read the first entry
+  struct dirent *head;
  get_head: head = readdir(dir);
- if (head->d_type != DT_REG && head->d_type != DT_LNK) {
-   goto get_head;
- }
+  if (head->d_type != DT_REG && head->d_type != DT_LNK) {
+    goto get_head;
+  }
+  
+  // Done with the directory
+  closedir(dir);
+  
+  if (head) {
+    // Generate file path
+    char *filename = realloc(dirname, strlen(dirname) + 1 + strlen(head->d_name) + 1);
+    strcat(filename, "/");
+    strcat(filename, head->d_name);
 
- // Done with the directory
- closedir(dir);
+    // Get file size
+    struct stat fileinfo;
+    if (stat(filename, &fileinfo)) die(1);
+    int filesize = fileinfo.st_size;
 
- if (head) {
-   // Read the file
-   
- }
- else {
-   // Report that no file was found
-   sock_write("NONE");
-   printf("User %s tried to find 
- }
+    printf("User %s tried to retrieve emails; found email at %s, size %lu\n", session->name, filename, filesize);
+
+    char *buffer = malloc(filesize + 3 + 1);
+
+    // Initialize with OK status
+    strcpy(buffer, "OK\n");
+
+    // Read the file
+    FILE *file = fopen(filename, "r");
+    if (!fgets(buffer + 3, filesize + 1, file)) die(1);
+    fclose(file);
+
+    // Write email to socket
+    sock_write_n(socket_client, buffer, filesize + 3);
+
+    free(buffer);
+    free(filename);
+  }
+
+  else {
+    // Report that no file was found
+    sock_write("NONE");
+    printf("User %s tried to retrieve emails; none were found\n", session->name);
+
+    free(dirname);
+  }
 }
 
 /* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */

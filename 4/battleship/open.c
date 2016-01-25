@@ -1,7 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <signal.h>
+#include <fcntl.h>
 
 int main(){
+  
+  int i,n,len_of_input;
+  time_t t;
+  
+  int p;
+  p = fork();
+  if (p != 0) {
+    int status = 1;
+    wait(&status);
+    //return hold;
+  }
+  else {
+    execlp("aplay", "aplay", "song.wav", 0);
+
+    srand((unsigned) time(&t));
+    n = rand() % 3;
+  
   printf("OOOOOO\n");
   printf("OO   OO\n");
   printf("OO  OO\n");
@@ -78,6 +100,22 @@ int main(){
   printf("                           OOOOOO    OOOOOO     OO       OO     OO       OOOO      OOOOOO   OOOOOO   OO   OOOO\n");
   printf("                           OO   OO   OO  OO     OO       OO     OO       OO           OOO   OO  OO   OO   OO \n");
   printf("                           OOOOOO    OO  OO     OO       OO     OOOOOO   OOOOOO    OOOOOO   OO  OO   OO   OO\n\n");
+  
+   sleep(1);
+   printf("WELCOME PLAYER\n");
+   sleep(1);
+   printf("ENTER YOUR NAME\n");
+   
+    char user_input[256];
+    fgets(user_input, sizeof(user_input), stdin);
+    len_of_input = strlen(user_input);
+    user_input[len_of_input-1] = 0;
+    
+    printf("SO YOUR NAME IS: %s ", user_input);
+    if (n == 1){
+      printf("\nThat's nice...\n");
+    }
+    else printf ("\nNice!\n");
   
   
   

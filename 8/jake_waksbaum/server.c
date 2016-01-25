@@ -45,7 +45,11 @@ int main() {
       client = accept(socket_id, NULL, NULL); // blocks here on connection
       printf("<server> connected: %d\n", client);
       listener = fork();
-      if (listener) close(client);
+      if (listener) {
+        close(client);
+      } else {
+        close(socket_id);
+      }
     } else {
       e = handle_request(client);
       if (e <= 0) {
@@ -54,8 +58,13 @@ int main() {
     }
   }
 
-  close(client);
-  close(socket_id);
+  if (listener) {
+    close(socket_id);
+  } else {
+    close(client);
+  }
+
+  return 0;
 }
 
 int setup_server(int port) {

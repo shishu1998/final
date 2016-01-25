@@ -1,5 +1,3 @@
-//http://stackoverflow.com/questions/7808331/how-to-connect-two-clients-from-the-server
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -73,11 +71,12 @@ int main(int argc, char **argv) {
   } else {
       hostname = argv[1];
   }
-  
-  int type = 0;  // 0 (tutor) or 1 (tutee)
-  
+    
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", i);
+	
+  int type = 0;  // 0 (tutor) or 1 (tutee)
+  // send type to server
 
   while(i >= 0){
 

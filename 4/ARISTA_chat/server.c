@@ -122,7 +122,7 @@ int main() {
 	 
   	printf("<server> listening: %d\n", socket_id);
   	socket_client = accept( socket_id, NULL, NULL );
-	sleep(2);
+//	sleep(2);
   	printf("<server> connected: %d\n", socket_client );
 	
 	int type; // = TUTOR_ID;  // get type from client

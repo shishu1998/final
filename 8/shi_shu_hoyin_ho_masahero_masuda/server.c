@@ -6,8 +6,6 @@
 #include <signal.h>
 #include "deck.h"
 
-int connectedPlayers = 0;
-int ids[8] = {1,2,3,4,5,6,7,8};
 
 static void sighandler(int signo){
   if(signo == SIGINT){
@@ -17,9 +15,9 @@ static void sighandler(int signo){
   }
 }
 
-int handshake(int *from_player, card *redDeck, card *greenDeck){
+int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
   int freeID=0;
-  while(*ids){
+  while(!(*ids)){
     freeID++;
   }
   int to_player;
@@ -30,7 +28,6 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
   remove("pipe");
-  connectedPlayers += 1; 
   
   int f = fork();
   if(f == 0){
@@ -42,6 +39,7 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
     while (counter < 7){
       redCards[counter] = deal_redcard(redDeck);
       redCards[counter].owner=ids[freeID];
+      printf("%s\n",redCards[counter].content);
       counter++;
     }
     greenCard.owner=ids[freeID];
@@ -94,7 +92,7 @@ void receive_redcard(int from_player){
 int main(){
 
   signal(SIGINT,sighandler);
-  
+  int ids[8] = {1,2,3,4,5,6,7,8};
   int to_player;
   int from_player;
   char buffer[100];
@@ -106,7 +104,7 @@ int main(){
 
   while(1){
     printf("waiting for players to connect\n");
-    to_player = handshake(&from_player,red,green);
+    to_player = handshake(&from_player,red,green,ids);
     
     if(to_player != 0){
       

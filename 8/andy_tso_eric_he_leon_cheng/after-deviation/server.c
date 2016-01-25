@@ -134,13 +134,11 @@ void doprocessing (int sock) {
     }
   
     int n;
-    card read_card;
-    n = read(sock, &read_card, sizeof(card));
+    card *read_card = (card*)malloc(sizeof(card));
+    n = read(sock, read_card, sizeof(card));
     printf("Bytes read: %d\n", n);
     printf("error #%d: %s\n", errno, strerror(errno));
-    printf("read_card: %d, %d\n",
-	   read_card.color,
-	   read_card.value);
+    printf("read_card: %d, %d\n", read_card.color, read_card.value);
     printf("\n");
 
     //bzero(buffer,256);

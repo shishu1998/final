@@ -75,6 +75,10 @@ int main(int argc, char **argv) {
   type = (int)argv[2][0] - 48;  // convert from ASCII value
   // send type to server
   write(socket_id, &type, sizeof(type));
+  /**
+  int subj;
+  subj = (int)argv[3][0] - 48;
+  */
 
   while(socket_id >= 0){
 

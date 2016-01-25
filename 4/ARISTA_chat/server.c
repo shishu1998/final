@@ -30,13 +30,13 @@
 int tutors[MAX_CLIENTS][5] = { 0 }; 
 int num_tutors = 0;
   
-  /* stores tutee client info
+/* stores tutee client info
   *		0: client socket id
   * 	1: availability - 0 (free), 1 (in chat)
   * 	2: subject - 2 (math), 3 (science), 4 (history)
   **/
-  int tutees[MAX_CLIENTS][3] = { 0 };
-  int num_tutees = 0;
+int tutees[MAX_CLIENTS][3] = { 0 };
+int num_tutees = 0;
 
 
 int create_server() {
@@ -57,13 +57,17 @@ int create_server() {
     return socket_id;
 }
 
-void relay_msg(int client_from, int client_to) {
+int relay_msg(int client_from, int client_to) {
 	char msg[100];
 	sleep(1);
 	read(client_from, msg, sizeof(msg));
 	printf("<server> received [%s]\n", msg);
+	if (strcmp(msg, "exit\n") == 0) {
+		return -1;
+	}
 	write(client_to, msg, sizeof(msg));
 	printf("<server> sent [%s]\n", msg);
+	return 1;
 }
 
 int find_tutor(int tutee_ind) {
@@ -80,6 +84,23 @@ int find_tutor(int tutee_ind) {
 		}
 	}
 	return tutor_ind;
+}
+
+void close_chat(int tutor_ind, int tutee_ind) {
+	int i;
+	
+	// set tutor to available
+	tutors[tutor_ind][1] = 0;
+
+	// close tutee connection
+	close(tutees[tutee_ind][0]);
+	num_tutees--;
+	for (i = tutee_ind; i < num_tutees; i++) {
+		int j;
+		for (j = 0; j < 3; j++) {
+			tutees[tutee_ind][j] = tutees[tutee_ind+1][j];	
+		}
+	}
 }
 
 static void sighandler(int signo) {
@@ -145,8 +166,10 @@ int main() {
 
 			while(1) {
 				relay_msg(tutors[0][0], tutors[1][0]);
-			//	sleep(2);
 				relay_msg(tutors[1][0], tutors[0][0]);
+				// relay tutee -> tutor
+				// if relay is -1, close chat
+				// relay tutor -> tutee
 			}
 		}
 

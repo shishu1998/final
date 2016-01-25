@@ -20,20 +20,33 @@ void create_new(){
   }
 }
 
-void send_email(char* buffer, int socket_id){
-  char final[256];
-  strip_add(buffer,final);
+void send_email(char* file_name, int socket_id, int fd){
+  printf("entered send_email");
+  char buffer[2048];
+  char final[2048];
+  final[0] = 'S';
+  final[1] = 'E';
+  final[2] = 'N';
+  final[3] = 'D';
+  final[4] = '\n';
+  int r = read(fd,buffer,2048);
+  if(r==-1){
+    perror("Failed to read from file");
+  }
+  strncat(final,buffer,strlen(buffer)+1);
   sock_write(socket_id,final);
+  close(fd);
+  printf("this is what you sent to the server:\n[\n%s\n]\n",final);
 }
 
-void open_file(char* buffer, char* final, int socket_id){
+void open_file(char* buffer, char* final, int socket_id, int fd){
   int f;
   f = fork();
   if(f==-1){
     perror("Failed to fork");
   }else if(f==0){
      int i;
-     i = execlp("open","open",final,NULL);
+     i = execlp("xdg-open","xdg-pen",final,NULL);
      if(i==-1){
        perror("Failed to open file");
      }
@@ -41,7 +54,7 @@ void open_file(char* buffer, char* final, int socket_id){
     printf("Start writing your email:\n");
     printf("When you are done, press any key to send\n");
     fgets(buffer,MAXLEN,stdin);
-    send_email(buffer, socket_id);
+    send_email(final, socket_id, fd);
   }
 }
 
@@ -69,9 +82,9 @@ void compose(int socket_id){
   if(fd==-1){
     perror("Failed to create file");
   }
-  close(fd);
+  //close(fd);
   
-  open_file(buffer,final,socket_id);
+  open_file(buffer,final,socket_id,fd);
 
 
 }
@@ -124,6 +137,7 @@ void change_location(char* location){
 }
 
 void execute(char* cmd, int socket_id){
+  printf("you typed this: [%s]\n",cmd);
   if(strncmp(cmd,"go_to",5)==0){
     char* location;
     strsep(&cmd," ");

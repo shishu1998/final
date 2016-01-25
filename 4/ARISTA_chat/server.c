@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define PORT 8532
+#include "connection.h"
 
 #define MAX_CLIENTS 10
 
@@ -17,21 +17,18 @@
 #define SCIENCE_ID 3
 #define HISTORY_ID 4
 
-#define TUTOR_ID 0
-#define TUTEE_ID 1
-
 /* stores tutor client info
   * 	0: client socket id
-  *		1: availability - 0 (free), 1 (in chat)
-  *		2: math skill
-  *		3: science skill
-  *		4: history skill
+  *	1: availability - 0 (free), 1 (in chat)
+  *	2: math skill
+  *	3: science skill
+  *	4: history skill
   **/
 int tutors[MAX_CLIENTS][5] = { 0 }; 
 int num_tutors = 0;
   
 /* stores tutee client info
-  *		0: client socket id
+  *	0: client socket id
   * 	1: availability - 0 (free), 1 (in chat)
   * 	2: subject - 2 (math), 3 (science), 4 (history)
   **/

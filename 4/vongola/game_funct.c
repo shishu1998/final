@@ -108,6 +108,23 @@ int mafia_action(player** player_list){
   }
 }
 
+int cop_action(player** player_list){
+  int size=sizeof(player_list);
+  int i=0;
+  while (i<size){
+    if (player_list[i]->status == ALIVE){
+      if (player_list[i]->role == COP){
+	int target=player_index(player_list[i]->target, player_list);
+	if (player_list[target]->status == DEAD){//if target is dead
+	  return -1;
+	}
+	return player_list[target]->role;//return target role
+      }
+    }
+    i++;
+  }
+}
+
 int night_action(player** player_list){
   int size=sizeof(player_list);
   int i=0;
@@ -122,6 +139,11 @@ int night_action(player** player_list){
     
     return -1;
   }
+  
+  if (cop_action(player_list) < 0){
+    return -1;
+  }
+
   while (i<size){
     if (player_list[i]->mark == KILL){
       player_list[i]->status=DEAD;
@@ -131,7 +153,36 @@ int night_action(player** player_list){
   
 }
 
+char* get_role(int role){
+  if (role == TOWNIE){
+    return "Townie";
 
+  }else if (role == MAFIASO){
+    return "Doctor";
+
+  }else if (role == DOCTOR){
+    return "Mafiaso";
+
+  }else if (role == COP){
+    return "Cop"
+  }
+}
+
+void print_DEAD(player** player_list){
+  int size=sizeof(player_list);
+  int i=0;
+
+  while (i<0){
+    if (player_list[i]->status == DEAD){
+      printf("Name: %s", player_list[i]->name);
+      
+      printf("Role: %s", get_role(player_list[i]->role));
+      printf("\n");
+      printf("\n");
+    }
+    i++;
+  }
+}
 
 int lynch_count( int i ){
   return i/2 + 1;

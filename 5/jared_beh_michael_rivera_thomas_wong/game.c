@@ -4,7 +4,7 @@
 #include <errno.h>
 
 #include "game.h"
-
+#include "shared.h"
 
 void board_init() {
   // initialize empty board
@@ -27,21 +27,47 @@ void board_init() {
 }
 
 
+int turn( char player, int R, int C, int r, int c) {
+  // react to player input
+  /* return zero on success, non-zero int as errno
+   * possible errors: R,C,r,c >= 3 or < 0
+   *                  super_board[R][C].full != 0 --> user can play anywhere
+   *                  super_board[R][C].mini_board[r][c] != 0
+   */
+  
+  if ( super_board.full ) {
+    return 3;
+  }
+  else if ( R>2 && C>2 && r>2 && c>2 &&
+       R<0 && C<0 && r<0 && c<0 ) {
+    //if the input is not in the domain
+    return 2;
+  }
+  else if ( super_board[R][C].mini_board[r][c] != 0 ) {
+    //if the space is already taken
+    return 1;
+  }
+  else {
+    super_board[R][C].mini_board[r][c] = player;
+  }
 
+  int i, j;
+  for ( i=0; i<3; i++ ) {
+    for ( j=0; j<3; j++ ) {
+      update_full( super_board[i][j].mini_board );
+      update_winner( super_board[i][j].mini_board );
+    }
+  }
+  check_win();
 
-
-int turn(  char R, char C, char r, char c) {
-  //react to player input
-
+  
   return 0;
 }
 
 
-
-
-char check_super_win() {
+char check_win() {
   //check to see if the super_board is won
-  //return 0,1,2 depending on who won
+  //return 0, X, O depending on who won
   int r, c;
 
   if ( ( super_board[1][1].winner == super_board[0][2].winner &&
@@ -70,17 +96,17 @@ char check_super_win() {
   }
 
   return 0;
-
 }
-
-
-
 
 
 void update_winner( board b ) {
   // check to see if a mini_board is won
   // update winner variable accordingly
   int r, c;
+
+  if ( b.winner != 0 ) {
+    return;
+  }
 
   if ( ( b.mini_board[0][2] == b.mini_board[1][1] &&
 	 b.mini_board[1][1] == b.mini_board[2][0] ) ||
@@ -92,16 +118,16 @@ void update_winner( board b ) {
   }
 
   for ( c = 0; c < 3; c++) {
-    if ( mb[0][c] == mb[1][c] &&
-	 mb[1][c] == mb[2][c] ) {
+    if ( b.mini_board[0][c] == b.mini_board[1][c] &&
+	 b.mini_board[1][c] == b.mini_board[2][c] ) {
       //if any column is all the same, return the winner
       b.winner = b.mini_board[0][c];
     }
   }
 
   for ( r = 0; r < 3; r++) {
-    if ( mb[r][0] == mb[r][1] &&
-	 mb[r][1] == mb[r][2] ) {
+    if ( b.mini_board[r][0] == b.mini_board[r][1] &&
+	 b.mini_board[r][1] == b.mini_board[r][2] ) {
       // if any row is all the same, return the winner
       b.winner = b.mini_board[r][0];
     }
@@ -110,9 +136,19 @@ void update_winner( board b ) {
 }
 
 
-void update_full( board ) {
+void update_full( board b ) {
   // update full variable
-  
+  int r, c;
+  b.full = 1;
+
+  for ( r = 0; r < 3; r++ ) {
+    for ( c = 0; c < 3; c++ ) {
+      if ( b.mini_board[r][c] == 0 ) {
+	b.full = 0;
+      }
+    }
+  }
+
 }
 
 /* for testing

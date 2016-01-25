@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define PORT 8532
+#include "connection.h"
 
 #define MAX_CLIENTS 10
 
@@ -17,23 +17,20 @@
 #define SCIENCE_ID 3
 #define HISTORY_ID 4
 
-#define TUTOR_ID 0
-#define TUTEE_ID 1
-
 /* stores tutor client info
-  * 	0: client socket id
-  *		1: availability - 0 (free), 1 (in chat)
-  *		2: math skill
-  *		3: science skill
-  *		4: history skill
+  * 0: client socket id
+  *	1: availability - 0 (free), 1 (in chat)
+  *	2: math skill
+  *	3: science skill
+  *	4: history skill
   **/
 int tutors[MAX_CLIENTS][5] = { 0 }; 
 int num_tutors = 0;
   
 /* stores tutee client info
-  *		0: client socket id
-  * 	1: availability - 0 (free), 1 (in chat)
-  * 	2: subject - 2 (math), 3 (science), 4 (history)
+  *	0: client socket id
+  * 1: availability - 0 (free), 1 (in chat)
+  * 2: subject - 2 (math), 3 (science), 4 (history)
   **/
 int tutees[MAX_CLIENTS][3] = { 0 };
 int num_tutees = 0;
@@ -103,6 +100,9 @@ void close_chat(int tutor_ind, int tutee_ind) {
 	}
 }
 
+void close_tutor(int tutor_ind) {
+}
+
 static void sighandler(int signo) {
 	if (signo == SIGINT) {
 		printf("Server closing\n");
@@ -122,14 +122,17 @@ int main() {
 	 
   	printf("<server> listening: %d\n", socket_id);
   	socket_client = accept( socket_id, NULL, NULL );
+//	sleep(2);
   	printf("<server> connected: %d\n", socket_client );
 	
-	int type = TUTOR_ID;  // get type from client
+	int type; // = TUTOR_ID;  // get type from client
+	read(socket_client, &type, sizeof(type));
+	printf("type - %d\n", type);
 	if (type == TUTOR_ID) {
 		if (num_tutors < MAX_CLIENTS) {
 			printf("Adding tutor - %d\n", socket_client);
 			tutors[num_tutors][0] = socket_client;
-			tutors[num_tutors][1] = 1;
+		//	tutors[num_tutors][1] = 1;
 			num_tutors++;
 			printf("# tutors %d\n", num_tutors);
 		}
@@ -142,9 +145,10 @@ int main() {
 	}
 	else {
 		if (num_tutees < MAX_CLIENTS) {
-			printf("Adding tutee\n");
+			printf("Adding tutee - %d\n", socket_client);
 			tutees[num_tutees][0] = socket_client;
 			tutees[num_tutees][1] = 1;
+			// insert tutee subject requested
 			num_tutees++;
 		}
 		else {
@@ -155,21 +159,23 @@ int main() {
 		}
 	}
 	
-	printf("%d\n", tutors[0][0]);
-	printf("%d\n", tutors[1][0]);
-
 	int pid = fork();
     if (pid == 0){
-		if (num_tutors >= 2) {  // find_tutor(tutors, num_tutors, tutees, num_tutees-1) 
-			char msg[] = "You have been connected to a tutor.";
-			write(tutors[0][0], msg, sizeof(msg));
+		if (type == TUTEE_ID) {  // find_tutor(num_tutees-1) 
+			int tutee_ind = num_tutees-1;
+			int tutor_ind = find_tutor(tutee_ind);
+			if (tutor_ind != -1) {
+				char msg[] = "You have been connected to a tutor.";
+				write(tutee_ind, msg, sizeof(msg));
+				tutors[tutor_ind][1] = 1;
 
-			while(1) {
-				relay_msg(tutors[0][0], tutors[1][0]);
-				relay_msg(tutors[1][0], tutors[0][0]);
-				// relay tutee -> tutor
-				// if relay is -1, close chat
-				// relay tutor -> tutee
+				while(1) {
+					relay_msg(tutees[tutee_ind][0], tutors[tutor_ind][0]);
+					relay_msg(tutors[tutor_ind][0], tutees[tutee_ind][0]);
+					// relay tutee -> tutor
+					// if relay is -1, close chat
+					// relay tutor -> tutee
+				}
 			}
 		}
 
@@ -189,7 +195,7 @@ int main() {
 
     } else {
 		// shift array down, adjust
-        close(socket_client);
+        // close(socket_client);
     }
   }
 

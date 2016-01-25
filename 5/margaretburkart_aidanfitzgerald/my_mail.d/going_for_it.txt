@@ -1,0 +1,6 @@
+SEND
+To: imaginary_friend
+Subject: going for it
+
+Text of email
+hello

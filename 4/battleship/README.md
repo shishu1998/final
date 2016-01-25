@@ -14,8 +14,8 @@ the win-loss record. One user can only access his/her board, not that of the opp
 He/she cannot fire a shot until the opponent has fired theirs.
 
 should incorporate:
-piping and server
-shared memory and semaphores
+//piping and server
+//shared memory and semaphores
 execution of inputs (using fgets to see what a user's shot is)
 parsing strings
 signals when closing /forfeiting game
@@ -23,5 +23,18 @@ using random (when creating a board with ships)
 writing to a file
 streches: 
 cheat codes??
-timer that calls for a forfeit if turn time is up
+//timer that calls for a forfeit if turn time is up
+
+Group Member Responsibilities
+Lian: 
+	-The colorful and appealing intro[welcome.c]
+	-basic incorporation of music play[ backgroundmusic.c]
+Kevin: 
+	-ability to write to file, commands from user input that lead into
+ a change in the opponent battleship board
+	-randomization of a person's batleship board
+	-ability to print a nice looking version of the battleship board at will
+	-[board.c]
+Max:
+	-a working socket connection[?]
 

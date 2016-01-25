@@ -30,8 +30,13 @@ int main(int argc, char **argv) {
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
 
-  read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
+  while(1) {
+    recv( socket_id, buffer, sizeof(buffer), 0);
+    printf("Received: %s\n", buffer);
+    printf("Enter A Message\n");
+    fgets(buffer, 256, stdin);
+    send( socket_id, buffer, sizeof(buffer), 0);
+  }
 
   return 0;
 }

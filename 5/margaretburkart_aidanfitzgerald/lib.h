@@ -9,8 +9,9 @@
 #include <arpa/inet.h>
 
 // File system libraries
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include <errno.h>
 #include <string.h>
@@ -27,6 +28,7 @@ void server_talk(int);
 user *server_login(char*);
 user *server_acct_setup(char*);
 void server_send(char*, user*);
+void server_get(int, user*);
 
 // User operations
 user *user_find(char*, FILE*);

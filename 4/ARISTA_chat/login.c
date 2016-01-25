@@ -9,6 +9,128 @@
 #include <fcntl.h>
 #include <termios.h>
 
+#define USERNAME_LEN 4
+#define PASSWORD_LEN 15
+
+int find_error(char* username, char* password) {
+  printf("Looking for user\n");
+  if (username == NULL || password || NULL) {
+    printf("Please enter a username/password that isn't null\n");
+    return 0;
+  }
+  strsep(&username,": ");
+  strsep(&password,": ");
+  printf("Your user name is: %s\n",username);
+  if (username == NULL && password == NULL) {
+    printf("Your username/password are set!\n");
+    return 1;
+  } else {
+    printf("Please don't have any newline, white space, or colon characters\n");
+    return 0;
+  }
+}
+
+int does_user_exist(char* username) {
+  FILE* fd = fopen("tutoraccounts.txt","r");
+  char user[USERNAME_LEN];
+  char pswd[PASSWORD_LEN];
+  char* buf = (char*)malloc(500*sizeof(char));
+  fread(buf,sizeof(char),500,fd);
+  username = strsep(&username,"\n");
+  printf("Your username is: %s\n",username);
+  if(strstr(buf,username) == NULL) { //username doesn't exist
+    printf("You don't already have an account with us. Continue registering!\n");
+    buf = "";
+    fclose(fd);
+    return 1;
+  } else {
+    printf("There is already an account with that username. Please try again.\n");
+    buf = "";
+    fclose(fd);
+    return 0;
+  }
+}
+
+void registered_user() {
+  FILE* fd = fopen("tutoraccounts.txt","r");
+  char username[USERNAME_LEN];
+  char password[PASSWORD_LEN];
+  char delimeter[3] = ":\0";
+  char *tutor;
+  printf("Please type in your username: \n");
+  fgets(username, USERNAME_LEN, stdin);
+  printf("Please type in your password: \n");
+  fgets(password, PASSWORD_LEN, stdin);
+  if(find_error(username, password)) {
+    tutor = calloc(strlen(username) + strlen(password) + 1 + 1, sizeof(char));
+    strcat(username, tutor);
+    char *line = (char*)calloc(strlen(tutor) + strlen(password) + strlen(delimeter) + 1, sizeof(char));
+    line = strsep(&username,"\n");
+    strcat(line,delimeter);
+    strcat(line,password);
+    char* buf = (char*)malloc(500*sizeof(char));
+    fread(buf,sizeof(char),500,fd);
+    if(strstr(buf,line) == NULL) {
+      printf("Your account information was incorrect. Please try again.\n");
+    } else {
+      print("You are logged in!\n");
+    }
+    buf = "";
+  } else if(!(find_error(username,password))) {
+    printf("Error logging in\n");
+  } else {
+    printf("Error finding account\n");
+  }
+}
+
+int main() {
+  char *line1 = "this is bad\n";
+  printf("testing strstr: %s\n", strstr(line1, "\n"));
+
+  char user[USERNAME_LEN]; char pswd[PASSWORD_LEN];
+  char underscore[1] = ":";
+  char *username;
+  char yes_no;
+  printf("Please type in 1 if you have an account or 2 if you'd like to make one\n");
+  fgets(&yes_no, 3, stdin);
+  printf("yes_no value:%c\n", yes_no);
+  
+  if (yes_no == '1') {
+    registered_user(); 
+  }
+  else if (yes_no == '2'){
+    FILE* fd1 = fopen("tutoraccounts.txt", "a+");
+    printf("Please create a username:\n");
+    fgets(user, USERNAME_LEN, stdin);
+    printf("Please create a password:\n");
+    fgets(pswd, PASSWORD_LEN, stdin);
+    printf("username array: %s\n", user);
+    printf("pswd array: %s\n", pswd);
+    username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char
+    strcat(username, user);
+    char *line = (char *)calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));
+    line = strsep(&username, "\n");
+    //printf("sizeof(username) = %lu\n", strlen(username));
+    strcat(line, underscore);
+    //printf("username: %s\n", username);
+    //strcat(password, pswd);
+    strcat(line, pswd);
+    printf("line: %s\n", line);
+    if (does_user_exist(user) == 0) {
+    fwrite(line, sizeof(char), strlen(line), fd1);
+    }
+    else if (does_user_exist(user) == 1)
+      printf("Please try again\n");
+    fclose(fd1);
+  }
+  
+  else
+    printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
+  return 0;
+}
+
+
+/*
 int newuser() {
   int moveon = 0;
   int username = 0000;
@@ -209,3 +331,4 @@ int main() {
 
   }
 }
+*/

@@ -50,8 +50,9 @@ JAN 22:
 - server/client out of sync, cause unknown.
 	- [UPDATE] JAN 22 seems that it is back in sync, though client oddly receives messages from server twice.
 	- [UPDATE] JAN 22 no longer gives messages to client twice, but Server does fail to react to client requests
+	- [FIXED] JAN 24 I believe it was an extra write floating around...
 - server does not return newly found bid price to client.
-	- [UPDATE] JAN 22 server returns price to client.
+	- [FIXED] JAN 22 server returns price to client.
 
 Possible changes to make?
 	- browser defaults to Chromium, add Firefox option later?

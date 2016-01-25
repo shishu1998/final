@@ -122,9 +122,12 @@ int main() {
 	 
   	printf("<server> listening: %d\n", socket_id);
   	socket_client = accept( socket_id, NULL, NULL );
+	sleep(2);
   	printf("<server> connected: %d\n", socket_client );
 	
-	int type = TUTOR_ID;  // get type from client
+	int type; // = TUTOR_ID;  // get type from client
+	read(socket_client, &type, sizeof(type));
+	printf("type - %d\n", type);
 	if (type == TUTOR_ID) {
 		if (num_tutors < MAX_CLIENTS) {
 			printf("Adding tutor - %d\n", socket_client);

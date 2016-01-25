@@ -166,13 +166,13 @@ void doprocessing (int sock) {
     //array[1] color
     //array[2] value
     /*char cvalue[100];
-    sprintf(cvalue, "%d", array[2]);
-    char svalue[100];
-    sprintf(svalue, "%d", array[1]);	
-    //printf("three (w)\n");
-    char *topcard = strcat( svalue, ",");
-    topcard = strcat( topcard, cvalue );
-    printf( "buffer: %s == %s topcard\n", buffer, topcard );
+      sprintf(cvalue, "%d", array[2]);
+      char svalue[100];
+      sprintf(svalue, "%d", array[1]);	
+      //printf("three (w)\n");
+      char *topcard = strcat( svalue, ",");
+      topcard = strcat( topcard, cvalue );
+      printf( "buffer: %s == %s topcard\n", buffer, topcard );
     */
     shmdt( (void *)array );
     n = write(sock,"I got your message",18);
@@ -355,7 +355,7 @@ int main( int argc, char *argv[] ) {
       write(newsockfd, "terminate", sizeof("terminate"));
       close(newsockfd);
       if (pid==0){
-	      close(sockfd);
+	close(sockfd);
       }
     }
 		

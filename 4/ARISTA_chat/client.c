@@ -67,8 +67,6 @@ int main(int argc, char **argv) {
   char buffer[256];
   int i;
   
-  int type = 0;  // 0 (tutor) or 1 (tutee)
-
   if (argc < 2) {
       printf("Usage: client <hostname>\n");
       exit(1);
@@ -76,7 +74,8 @@ int main(int argc, char **argv) {
       hostname = argv[1];
   }
   
-    
+  int type = 0;  // 0 (tutor) or 1 (tutee)
+  
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", i);
 

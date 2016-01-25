@@ -20,6 +20,25 @@
 #define TUTOR_ID 0
 #define TUTEE_ID 1
 
+/* stores tutor client info
+  * 	0: client socket id
+  *		1: availability - 0 (free), 1 (in chat)
+  *		2: math skill
+  *		3: science skill
+  *		4: history skill
+  **/
+int tutors[MAX_CLIENTS][5] = { 0 }; 
+int num_tutors = 0;
+  
+  /* stores tutee client info
+  *		0: client socket id
+  * 	1: availability - 0 (free), 1 (in chat)
+  * 	2: subject - 2 (math), 3 (science), 4 (history)
+  **/
+  int tutees[MAX_CLIENTS][3] = { 0 };
+  int num_tutees = 0;
+
+
 int create_server() {
     int socket_id;
 	
@@ -47,7 +66,7 @@ void relay_msg(int client_from, int client_to) {
 	printf("<server> sent [%s]\n", msg);
 }
 
-int find_tutor(int tutors[MAX_CLIENTS][5], int num_tutors, int tutees[MAX_CLIENTS][3], int tutee_ind) {
+int find_tutor(int tutee_ind) {
 	int subj = tutees[tutee_ind][2];
 	int tutor_ind = -1;
 	int max_skill = 0;
@@ -75,24 +94,7 @@ int main() {
 
   int socket_id, socket_client;
   
-  /* stores tutor client info
-  * 	0: client socket id
-  *		1: availability - 0 (free), 1 (in chat)
-  *		2: math skill
-  *		3: science skill
-  *		4: history skill
-  **/
-  int tutors[MAX_CLIENTS][5] = { 0 }; 
-  int num_tutors = 0;
-  
-  /* stores tutee client info
-  *		0: client socket id
-  * 	1: availability - 0 (free), 1 (in chat)
-  * 	2: subject - 2 (math), 3 (science), 4 (history)
-  **/
-  int tutees[MAX_CLIENTS][3] = { 0 };
-  int num_tutees = 0;
-  
+    
   socket_id = create_server();
 
   while(1) {
@@ -163,7 +165,8 @@ int main() {
 		**/
 
     } else {
-      close(socket_client);
+		// shift array down, adjust
+        close(socket_client);
     }
   }
 

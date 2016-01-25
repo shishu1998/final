@@ -172,37 +172,18 @@ int main(){
   int semid = semget(ftok("makefile", 47), 1, 0644);
   printf("Removing the semaphore...\n");
   int ret = semctl(semid, 0, IPC_RMID);
-  if (ret == -1){
-    printf("There was a problem in removing the semaphore\n");
-    printf("Error %d: %s\n", errno, strerror(errno));
-  }
+  
   int shmid = shmget(ftok("makefile", 13),sizeof(int), 0664);
   printf("Removing the shared memory...\n");
   ret = shmctl(shmid, IPC_RMID, 0);
-  if(ret == -1){
-    printf("There was a problem in removing the shared memory\n");
-    printf("Error %d: %s\n", errno, strerror(errno));
-  }
   //REMOVE END
   
   //create & initialize shared mem
   shmid = shmget(ftok("makefile",13),sizeof(int), 0664| IPC_CREAT | IPC_EXCL);
   printf("Trying to create the shared memory...\n");
-  if(shmid == -1){
-    printf("There was a problem in creating the shared memory\n");
-    printf("Error %d: %s\n", errno, strerror(errno));
-  } else{
-    printf("Success!\n");
-  }
+  
   int *currentcoordinate = (int *) shmat(shmid, 0, 0);
   printf("Trying to attach the shared memory to a variable...\n");
-  if(*currentcoordinate == -1){
-    printf("There was a problem in attaching the shared memory to a variable\n");
-    printf("Error: %d: %s\n", errno, strerror(errno));
-    return 0;
-  } else{
-    printf("Success!\n");
-  }
   *currentcoordinate = 0;
 
   //creating & initialize  semaphore
@@ -211,22 +192,11 @@ int main(){
   struct sembuf new = {0, -1, SEM_UNDO};
   semid = semget(ftok("makefile",47), 1, 0644 | IPC_CREAT);
   printf("Trying to create the semaphore...\n");
-  if (semid == -1){
-    printf("There was a problem in creating the semaphore\n");
-    printf("Error %d: %s\n", errno, strerror(errno));
-  } else{
-    printf("Success!\n");
-  }
-  union semun data;
+   union semun data;
   data.val = 1;
   printf("Trying to set the semaphore...\n");
   ret = semctl(semid,0,SETALL,&data);
-  if (ret == -1){
-    printf("There was a problem in setting the semaphore\n");
-    printf("Error %d: %s\n", errno, strerror(errno));
-  } else{
-    printf("Success!\n");
-  }
+ 
   
   
   //initialize game parameters
@@ -240,8 +210,7 @@ int main(){
     
     printf("Wating for your Sea-Faring Opponent to Connect\n");
     to_client  = server_handshake(&from_client);
-    
-
+ 
     //Game Actually Begins Once Client(Player 2) is connected
     int readpos = 0;
     int incoord = 0;
@@ -274,16 +243,16 @@ int main(){
     semid = semget(ftok("makefile", 47), 1, 0644);
     printf("Trying to up the semaphore...\n");
     ret = semop(semid, &new, 1);
-    if(ret == -1){
-      printf("There was a problem in upping the semaphore\n");
-      printf("Error %d: %s\n", errno, strerror(errno));
-    } 
     //shared memory is detached
     shmdt(currentcoordinate);
+
+
+
 
     //All Turns After First
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
+      sleep(5);
       printf("You Got Back from Opponent: %s\n", result);
       //Attempts to Down Semaphore to Access Shared Memory
       printf("Trying to down the semaphore...\n");
@@ -326,7 +295,6 @@ int main(){
 	write(to_client, result, sizeof(result) );
       }
       strncpy(result,"",sizeof(result));
-      
       //Player Gives Program a Ship Location                                                                                                      
       printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
       scanf("%d", &incoord);
@@ -351,12 +319,11 @@ int main(){
 	printf("There was a problem in upping the semaphore\n");
 	printf("Error %d: %s\n", errno, strerror(errno));
       }
-      else
+      else{
 	printf("Success!\n");
+      }
       //shared memory is detached
       shmdt(currentcoordinate);
-      readpos = 0;
-      incoord = 0;
     }
     printf("The Game has ended!\n");
     close( to_client);

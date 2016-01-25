@@ -57,12 +57,15 @@ void list_songs(int socket_id){
   }
 }
 
+
+
+
 void play_song(int socket_id){
   void * mp3 = calloc(10, 1048576); // 10mb
-  if (read(socket_id, mp3, 1048576 * 10) < 0){
+  if (recv(socket_id, mp3, 1048576 * 10, 0) < 0){
   	printf("erro readin\n");
   }
-  printf("Client:Message Received From Server -  %s\n", mp3);
+  //printf("Client:Message Received From Server -  %s\n", mp3);
   
   int song_file;
   song_file = open("temp.mp3", O_CREAT | O_RDWR | O_TRUNC , 0644);

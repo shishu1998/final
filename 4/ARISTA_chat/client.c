@@ -11,10 +11,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#define PORT 8532
-
-#define TUTOR_ID 0
-#define TUTEE_ID 1
+#include "connection.h"
 
 int connect_server(char *hostname) {
 	int socket_id;
@@ -77,6 +74,7 @@ int main(int argc, char **argv) {
 	
   int type = 0;  // 0 (tutor) or 1 (tutee)
   // send type to server
+  //i IS NOT A RETURN VALUE OF ANYTHING ? is it supposed to be the socket_id ?
 
   while(i >= 0){
 

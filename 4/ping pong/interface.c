@@ -32,10 +32,10 @@ void setup() {
   }
   int min_border_y = (max_y-distance)/2;
   int max_border_y = max_y - (max_y-distance)/2;
-  int min_border_x = (max_x-distance)/2;
+  int min_border_x = (max_x-(2* distance))/2;
   int max_border_x = max_x - (max_x-distance)/2;
 
-  WINDOW *env = newwin(distance, distance, min_border_y, min_border_x);
+  WINDOW *env = newwin(distance, 2 * distance, min_border_y, min_border_x);
 
   // Game Objects
   int paddle_length = distance * (1/8);

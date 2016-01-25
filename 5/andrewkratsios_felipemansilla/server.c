@@ -14,8 +14,11 @@ void error(const char *msg)
     exit(1);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
+    argv[2] = "5001";
+    printf("port: %s\n", argv[2]);
+
     int sockfd, newsockfd, portno, n;
     socklen_t clilen;
     char buffer[256];
@@ -35,11 +38,6 @@ int main(int argc, char *argv[])
     srand (time(NULL));
     integerRandom = (rand() % 100) + 1;
 
-    printf("What would you like to do?\n");
-    printf("1. Start a new odds-are game\n");
-    printf("2. Join a previously created odds-are game\n");
-    printf("Please enter the corressponding number: ");
-    fgets(option, sizeof(option), stdin);
     printf("Enter your odds are: ");
     fgets(question, sizeof(question), stdin);
     printf("Enter the number for your odds are: ");
@@ -57,10 +55,11 @@ int main(int argc, char *argv[])
         strcat(new_str,oddsInt);
     }
 
-    if (argc < 2) {
+    /*if (argc < 2) {
         fprintf(stderr,"ERROR, no port provided\n");
         exit(1);
     }
+    */
 
     // Creates the socket socket() --> endpoints of sockets
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -70,7 +69,7 @@ int main(int argc, char *argv[])
 
     // assign unique new address
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = atoi(argv[1]);
+    portno = 5001;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);

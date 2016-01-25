@@ -105,22 +105,93 @@ int main(){
   }
   //Opening file
   file=open(response, O_RDWR, 0644);
+  char buffer[1000];
+  char bufferm[1000];
+  char buffer2[1000];
   
   int ch;
+  int numread;
+  int ch2;
+
+  int cursorx = 0;
+  int cursory = 0;
+
   while(1){
     changemode(1);
     while(!kbhit()){
       //print whole file
-      int i = 0;
+      numread = read(file,buffer,1000);
+      printf("\e[1;1H\e[2J");
+      printf("\e[7mCursor X: %d\nCursor Y: %d\e[27m\n",cursorx,cursory);
+      printf("%s",buffer);
+      sleep(1);
     }
     ch = getchar();
+    //Do stuff when key is pressed
     printf("Entered %c\n",ch);
+    printf("Number: %d\n",ch);
+    if(ch == 27){
+      ch2 = getchar();
+      ch2 = getchar();
+      printf("Detail: %d\n",ch2);
+      if(ch2 == 65){
+	if(cursory > 0){
+	  cursory--;
+	}
+      }
+      else if(ch2 == 66){
+	cursory++;
+      }
+      else if(ch2 == 68){
+	if(cursorx > 0){
+	  cursorx--;
+	}
+      }
+      else if(ch2 == 67){
+	cursorx++;
+      }
+      //Up = 65 Down = 66 Right = 67 Left = 68
+    }
     changemode(0);
+    if(ch != 27){
+      //printf("%d",ch);
+      //break;
+      //cursorx, cursory
+      int currentx = 0;
+      int currenty = 0;
+      int overallid = 0;
+      int wedoneyet = 0;
+      while(!wedoneyet){
+	/*printf("overallid %d\n",overallid);
+        if(overallid == 6){
+	  printf("6 is %c = %d",buffer[overallid],buffer[overallid]);
+	  break;
+	  }*/
+	if(currentx == cursorx && currenty == cursory){
+	  wedoneyet = 1;
+	}
+	else if(buffer[overallid] == 10){
+	  currentx = 0;
+	  currenty++;
+	  if(currenty > cursory){
+	    break;
+	  }
+	}
+	else{
+	  currentx++;
+	}
+	overallid++;
+      }
+      //after while loop
+      overallid--;
+      printf("Overall ID of your cursor is %d\n",overallid);
+      printf("Which is %c\n\n",buffer[overallid]);
+      break;
+    }
   }
   
   //closing file
   close(file);
-  
   return 0;
 }
  

@@ -4,6 +4,11 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 char ** map_maker(char * mapfile) {
   char ** maparray = (char **)malloc(sizeof(char *));
   //  char ** maparray;
@@ -13,19 +18,19 @@ char ** map_maker(char * mapfile) {
 
   char * p = (char *)malloc(sizeof(char *) * 100);
   p = mapStr;
-  //  printf("MAP:\n%s\n", mapStr);
+  //  write( socket_client, "MAP:\n%s\n", mapStr);
 
   int i = 0;
 
   for (i = 0; p; i++) {
     char * mapLine = (char *)malloc(sizeof(char *));
     mapLine = strsep( &p, "\n" );
-    //printf("%s",p);
+    //write( socket_client, "%s",p);
     //sleep(1);
     maparray[i] = mapLine;
  
     // Next Line Prints the entire Map!!! ////////////
-    //    printf("maparray[%d]:\t%s\n",i, maparray[i]);   
+    //    write( socket_client, "maparray[%d]:\t%s\n",i, maparray[i]);   
 
   }
   return maparray;
@@ -36,17 +41,17 @@ void print_map(char ** maparray) {
   int x, y = 0;
   for (x = 0; x < 12; x++) {
     for (y = 0; y < 12; y++) {
-      printf("%c ", maparray[x][y]);
-      //printf("maparray[%d][%d]:%c\n", x, y, maparray[x][y]);
+      write( socket_client, maparray[x][y], sizeof(maparray[x][y]));
+      //write( socket_client, "maparray[%d][%d]:%c\n", x, y, maparray[x][y]);
     }
-    printf("\n");
+    write( socket_client, "\n", sizeof("\n"));
   }
 
   /*
   int fdMap = open("map.txt", O_RDONLY);
   char mapStr[10000];  
   read(fdMap, &mapStr, sizeof(mapStr));
-  printf("%s\n", mapStr);
+  write( socket_client, "%s\n", mapStr);
   */
 
   return;
@@ -59,12 +64,12 @@ void check_win (char ** map, int x, int y) {
   read( z, &printer, sizeof(printer));
   */
   if (map[x][y] == '$') {
-    printf("\n\n");
+    write( socket_client, "\n\n", sizeof("\n\n"));
     system("/bin/stty cooked");
     system("cat done.txt");
-    //    printf("\nDONE WITH THE QUEST\n");
+    //    write( socket_client, "\nDONE WITH THE QUEST\n");
     exit(0);
-    //    printf("%s", printer);
+    //    write( socket_client, "%s", printer);
       /*
 "\n
 |---   |-----| |\    / |-----  |  \n
@@ -79,24 +84,43 @@ void check_win (char ** map, int x, int y) {
 }
 
 int main() {
+  int socket_id, socket_client;
+
+  //create the socket                                                                
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+
+  //bind to port/address                                                             
+  struct sockaddr_in listener;
+  listener.sin_family = AF_INET;  //socket type IPv4                                 
+  listener.sin_port = htons(24601); //port #                                         
+  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address              
+  bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+
+  listen( socket_id, 1 );
+  write( socket_client, "<server> listening\n", 100);
+
+  socket_client = accept( socket_id, NULL, NULL );
+  //write( socket_client, "<server> connected: %d\n", socket_client );
+  //write( socket_client,  socket_client, "hello", 6 );
+
   char * clear = "\033[2J";
 
   char ** map = map_maker("map.txt");
   int coord[2] = {1, 1};
 
-  printf("%s\n", clear);
-  printf("%*s\n", 72, "Welcome, this is a Beta test of our new text based D&D game\n");
-  printf("%*s\n", 70, "Created by Jason Shin, David Veller, and Mayank Vanjani\n");
-  printf("%*s\n", 47, "Hope You Enjoy!!!\n");
-  printf("%*s\n", 50, "**Press Enter to continue**");
+  write( socket_client, clear, sizeof(clear));
+  write( socket_client, "\nWelcome, this is a Beta test of our new text based D&D game\n", 200);
+  write( socket_client, "Created by Jason Shin, David Veller, and Mayank Vanjani\n", 200);
+  write( socket_client, "Hope You Enjoy!!!\n", 200);
+  write( socket_client, "**Press Enter to continue**", 200);
 
   char s[100];
   fgets(s, sizeof(s), stdin);
 
   while (1) {
     char c;
-    printf("%s\n", clear);
-    printf("Use w,s,a,d to Move Around the Map and Space to Quit\n\n");
+    write( socket_client, clear, sizeof(clear));
+    write( socket_client, "Use w,s,a,d to Move Around the Map and Space to Quit\n\n", 200);
     print_map(map);
 
     int curX = coord[0];
@@ -113,7 +137,7 @@ int main() {
 	map[curX - 1][curY] = '@';
       }
       else {
-	printf("\tInvalid Move\n");
+	//write( socket_client, "\tInvalid Move\n", 50);
 	sleep(1);
       }
     }
@@ -126,7 +150,7 @@ int main() {
         map[curX + 1][curY] = '@';
       }
       else {
-	printf("\tInvalid Move\n");
+	//write( socket_client, "\tInvalid Move\n");
 	sleep(1);
       } 
     }
@@ -139,7 +163,7 @@ int main() {
         map[curX][curY - 1] = '@';
       }
       else {
-	printf("\tInvalid Move\n");
+	//write( socket_client, "\tInvalid Move\n");
 	sleep(1);
       } 
     }
@@ -152,7 +176,7 @@ int main() {
         map[curX][curY + 1] = '@';
       }
       else {
-	printf("\tInvalid Move\n");
+	//write( socket_client, "\tInvalid Move\n");
 	sleep(1);
       } 
     }

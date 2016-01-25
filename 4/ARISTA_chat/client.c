@@ -13,10 +13,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#define PORT 8532
-
-#define TUTOR_ID 0
-#define TUTEE_ID 1
+#include "connection.h"
 
 int connect_server(char *hostname) {
 	int socket_id;
@@ -78,6 +75,7 @@ int main(int argc, char **argv) {
   
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", i);
+  //i IS NOT A RETURN VALUE OF ANYTHING ? is it supposed to be the socket_id ?
 
   while(i >= 0){
 

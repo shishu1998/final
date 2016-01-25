@@ -30,22 +30,27 @@ int main() {
   sigemptyset(&action.sa_mask);
 
   sigaction(SIGINT, &action, NULL);
+
+  int listener = 1;
+
   socket_id = setup_server(PORT);
   if (socket_id < 0) {
     perror("Error setting up server");
     exit(-1);
   }
 
-  printf("<server> listening on %d\n", PORT);
-
-  client = accept(socket_id, NULL, NULL); // blocks here on connection
-
-  printf("<server> connected: %d\n", client);
-
   while (running) {
-    e = handle_request(client);
-    if (e < 0) {
-      running = 0;
+    if (listener) {
+      printf("<server> listening on %d\n", PORT);
+      client = accept(socket_id, NULL, NULL); // blocks here on connection
+      printf("<server> connected: %d\n", client);
+      listener = fork();
+      if (listener) close(client);
+    } else {
+      e = handle_request(client);
+      if (e < 0) {
+        running = 0;
+      }
     }
   }
 

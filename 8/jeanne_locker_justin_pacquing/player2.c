@@ -5,8 +5,13 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <errno.h>
 
-  int ships[5];
+int ships[5] = {0, 0, 0, 0, 0};
 
 int client_handshake(int *from_server){
   int to_server;
@@ -31,49 +36,16 @@ int client_handshake(int *from_server){
 
   return to_server;
 }
-/*
+
 static void sighandler(int signo){
   if(signo == SIGINT){
     printf("\nYou're done with %d\n", getpid());
     exit(0);
   }
 }
-*/
-
-/*======== int makeFleet() ==========
-Inputs: 
-int place: user's inputted placement of a ship
-int places[]: array holding all ship places
-
-Result:
-fills up places[] with user's inputs (sets coordinates of ships)
-
-====================*/
-int makeFleet(){
-
-  int pos;
-  
-  printf("Input where you want your first ship! Each ship is one unit.\nDon't use any spaces between the numbers: ");
-  scanf("%d", &pos);
-  ships[0] = pos;
-  printf("Input your second location: ");
-  scanf("%d", &pos);
-  ships[1] = pos;
-  printf("Your third: ");
-  scanf("%d", &pos);
-  ships[2] = pos;
-  printf("Your fourth: ");
-  scanf("%d", &pos);
-  ships[3] = pos;
-  printf("And your fifth: ");
-  scanf("%d", &pos);
-  ships[4] = pos;
-}
-
-
 
 int main(){
-  //signal(SIGINT, sighandler);
+  signal(SIGINT, sighandler);
 
   int to_server;
   int from_server;

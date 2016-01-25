@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
   
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", i);
+  //i IS NOT A RETURN VALUE OF ANYTHING ? is it supposed to be the socket_id ?
 
   while(i >= 0){
 

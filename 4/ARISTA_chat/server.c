@@ -18,7 +18,7 @@
 #define HISTORY_ID 4
 
 /* stores tutor client info
-  * 	0: client socket id
+  * 0: client socket id
   *	1: availability - 0 (free), 1 (in chat)
   *	2: math skill
   *	3: science skill
@@ -29,8 +29,8 @@ int num_tutors = 0;
   
 /* stores tutee client info
   *	0: client socket id
-  * 	1: availability - 0 (free), 1 (in chat)
-  * 	2: subject - 2 (math), 3 (science), 4 (history)
+  * 1: availability - 0 (free), 1 (in chat)
+  * 2: subject - 2 (math), 3 (science), 4 (history)
   **/
 int tutees[MAX_CLIENTS][3] = { 0 };
 int num_tutees = 0;
@@ -98,6 +98,9 @@ void close_chat(int tutor_ind, int tutee_ind) {
 			tutees[tutee_ind][j] = tutees[tutee_ind+1][j];	
 		}
 	}
+}
+
+void close_tutor(int tutor_ind) {
 }
 
 static void sighandler(int signo) {
@@ -186,7 +189,7 @@ int main() {
 
     } else {
 		// shift array down, adjust
-        close(socket_client);
+        // close(socket_client);
     }
   }
 

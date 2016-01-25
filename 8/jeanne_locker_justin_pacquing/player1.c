@@ -249,7 +249,7 @@ int main(){
       //Ship Location is Put Into Shared Memory Once Valid                                                                                                                         
       *currentcoordinate = incoord;
     }
-    printf("Captain! You have targetted possible opponent ship at coordinate:%d\n\n", *currentcoordinate);
+    printf("\nCaptain! You have targetted possible opponent ship at coordinate: %d\n", *currentcoordinate);
     strncpy(result,"First Shot Fired!",sizeof(result));
     write(to_client, result, sizeof(result) );
     strncpy(result,"",sizeof(result));
@@ -270,6 +270,8 @@ int main(){
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
       printf("You Got Back from Opponent: %s\n", result);
+      if (!strcmp(result,"All Ships Eliminated! We Surrender! You Win!\n"))
+	break;
       //Attempts to Down Semaphore to Access Shared Memory
       new.sem_op = -1;
       //printf("Trying to access the semaphore...\n");
@@ -309,18 +311,18 @@ int main(){
 	printf("Captain! Opponent Hit Your Ship at Coordinate: %d!\n\n", readpos);
 	if (isAllHit()){
 	  printf("Captain! Opponent has taken out all our ships! The war is lost!\n\n");
-	  strncpy(result,"All Ships Eliminated! We Surrender! You Win!",sizeof(result));
+	  strncpy(result,"All Ships Eliminated! We Surrender! You Win!\n",sizeof(result));
 	  write(to_client, result, sizeof(result) );
 	  break;
 	}
 	else{
-	  strncpy(result,"Ship Hit!" ,sizeof(result));
+	  strncpy(result,"Ship Hit!\n" ,sizeof(result));
 	  write(to_client, result, sizeof(result) );
 	}
       }
       else{
 	printf("Captain! Opponent was unsuccesful at hitting any of your ships!\n\n");
-	strncpy(result,"Ship Missed!",sizeof(result));
+	strncpy(result,"Ship Missed!\n",sizeof(result));
 	write(to_client, result, sizeof(result) );
       }
       strncpy(result,"",sizeof(result));
@@ -339,7 +341,7 @@ int main(){
 	//Ship Location is Put Into Shared Memory Once Valid   
 	*currentcoordinate = incoord;
       }
-      printf("Captain! You have targetted possible opponent ship at coordinate:%d\n", *currentcoordinate);
+      printf("\nCaptain! You have targetted possible opponent ship at coordinate: %d\n", *currentcoordinate);
       //Semaphore is Upped
       new.sem_op = 1;
       semid = semget(ftok("makefile", 47), 1, 0644);

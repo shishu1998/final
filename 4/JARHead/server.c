@@ -7,9 +7,19 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+void process( char *s ) {
+  while ( *s ) {
+    *s = (*s - 'a' + 13) % 26 + 'a';
+    s++;
+  }
+}
+
 int main() {
 
   int socket_id, socket_client;
+  char buffer[256];
+  int pid;
+  int status;
 
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -24,10 +34,22 @@ int main() {
   listen( socket_id, 1 );
   printf("<server> listening\n");
 
-  socket_client = accept( socket_id, NULL, NULL );
-  printf("<server> connected: %d\n", socket_client );
+  for ( ; ; ) {
+    socket_client = accept( socket_id, NULL, NULL );
+    printf("<server> connected: %d\n", socket_client );
 
-  write( socket_client, "hello", 6 );
-
+    if ( (pid = fork()) == 0 ) {
+      send( socket_client, "hello", 6, 0 );
+      while(1) {
+        recv(socket_client, buffer, sizeof(buffer), 0 );
+        strtok(buffer, "\n");
+        process(buffer);
+        send(socket_client, buffer, sizeof(buffer), 0 );
+      }
+    }
+    else {
+      close(socket_client);
+    }
+  }
   return 0;
 }

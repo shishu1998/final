@@ -9,9 +9,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
+#include "players.c"
 
-
-
+player p;
 
 static void sighandler(int signo) {
   if (signo == SIGINT) {
@@ -20,9 +20,12 @@ static void sighandler(int signo) {
   }
 }
 
-
 int main(int argc, char *argv[]) {
 
+  p = generate_hand(p);
+  printf("p.num_cards: %d\n", p.num_cards);
+  //player_action(p);
+  
   signal(SIGINT, sighandler);
 
   int sockfd, portno, n;
@@ -64,19 +67,20 @@ int main(int argc, char *argv[]) {
   }
 
   while (1) {
+    
+    player_action(p);
 
     /* Now ask for a message from the user, this message
      * will be read by server
      */
 
-  
-
     /* Server determines turn */
-    char buffer2[256];
+    char *buffer2;
     //printf("four (r)\n");
-    int p = read(sockfd, buffer2, 255);
+    int a = read(sockfd, buffer2, 255 );
+    //printf ( "debug\n" );
     //printf("able to get pass four\n");
-    if (p < 0) {
+    if (a < 0) {
       perror("ERROR reading");
       printf("error: %s \n", strerror(errno));
       exit(1);
@@ -86,20 +90,55 @@ int main(int argc, char *argv[]) {
     if ( !strcmp(buffer2, "terminate") ) {
       break;
     }
+
     if ( !strcmp(buffer2, "go") ) {
       printf("Please enter the message: ");
       bzero(buffer,256);
       fgets(buffer,255,stdin);
-    
+
+      char * scard1;
+      char * scard2;
+      int num = atoi(buffer);
+      printf( "debugging\n");
+      if (num==p.num_cards){
+        printf( "debugging\n");
+	      p.cards[p.num_cards] = draw_card();
+	      printf( "debugging\n");
+	      p.num_cards++;
+	      printf( "debugging\n");
+	      scard1 = "draw";
+	      scard2 = "draw";
+      }
+      else{
+      	card c = p.cards[num];
+      	int value = c.value;
+      	int color = c.color;
+      	char svalue[100];
+      	sprintf(svalue, "%d", value);
+      	char cvalue[100];
+      	scard1 = svalue;
+      	sprintf(cvalue, "%d", color);
+      	scard2 = cvalue;
+      	p = remove_card(p, num);
+      	printf("tried to stringify a card in client: %s %s\n", scard1, scard2);
+      }
+
       /* Send message to the server */
       //printf("five (w)\n");
-      n = write(sockfd, buffer, strlen(buffer));
+      //n = write(sockfd, buffer, strlen(buffer));
+      n = write(sockfd, scard1, strlen(scard1));
+    
+    if (n < 0) {
+      perror("ERROR writing to socket");
+      exit(1);
+    }
+      sleep(1);
+      n = write(sockfd, scard2, strlen(scard2));
     }  
     if (n < 0) {
       perror("ERROR writing to socket");
       exit(1);
     }
-    
    
     /* Now read server response */
     bzero(buffer,256);

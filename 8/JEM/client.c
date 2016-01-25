@@ -11,7 +11,7 @@
 #include "server.h"
 
 int send_note(int socket_client) {
-  char input = (char *)calloc( 256, size_of(char) );
+  char input = (char *)calloc( 256, sizeof(char) );
   printf( "Send to <other_client> : " );
   fgets(input, sizeof(input), stdin);
   input = strsep( &input, "\n" );
@@ -50,9 +50,11 @@ int main(int argc, char **argv) {
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
-  //Send & recive from server here!!!
-  
+  //Send & receive from server here!!!
+  while(1) {
+    sleep(1);
+    read( socket_id, buffer, sizeof(buffer));
+    printf("<client> received: [%s]\n", buffer );
+  }
   return 0;
 }
-
-

@@ -101,14 +101,12 @@ int main(int argc, char *argv[]) {
       int num = atoi(buffer);
       printf( "debugging\n");
       if (num==p.num_cards){
-        printf( "debugging\n");
       	p.cards[p.num_cards] = draw_card();
       	p.num_cards++;
-      	printf( "debugging\n");
-      	p.num_cards++;
-      	printf( "debugging\n");
-      	scard1 = "draw";
-      	scard2 = "draw";
+	card *write_card;
+	write_card->color = -1;
+	write_card->value = -1;
+	int n = write( sockfd, write_card, sizeof(write_card) );
       }
       else{
       	card c = p.cards[num];

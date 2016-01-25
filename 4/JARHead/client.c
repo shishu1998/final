@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
   int socket_id;
   char buffer[256];
   int i;
+  int errno;
 
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -30,8 +31,14 @@ int main(int argc, char **argv) {
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
 
-  read( socket_id, buffer, sizeof(buffer));
-  printf("<client> received: [%s]\n", buffer );
+  while(1) {
+    errno = recv( socket_id, buffer, sizeof(buffer), 0);
+    printf("Error: %s\n", strerror(errno));
+    printf("Received: %s\n", buffer);
+    printf("Enter A Message\n");
+    fgets(buffer, 256, stdin);
+    send( socket_id, buffer, sizeof(buffer), 0);
+  }
 
   return 0;
 }

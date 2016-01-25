@@ -5,26 +5,21 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <errno.h>
+
 
 int ships[5] = {0, 0, 0, 0, 0};
 
-//semaphore will control who's turn it is
-//player will have to wait for sempahore access to be given to program before being prompted by program
-
-//performs game functions
-//will recieve info on own/player 2 attacks and adjust board accordingly
-
-void client_connect (int to_client, int from_client) {
-  char comms[100];
-
-  while( read(from_client, comms, sizeof(comms)) ){
-      printf("Server got this: %s\n", comms);
-      strcat(comms, " in this Spaghetti\n");
-      write(to_client, comms, sizeof(comms) );
-
-      strncpy(comms, "",sizeof(comms));
-    }
-}
+union semun {
+   int val;
+   struct semid_ds *buf;
+   unsigned short *array;
+   struct seminfo *_buf;
+};
 
 int server_handshake(int *from_client){
 
@@ -33,15 +28,14 @@ int server_handshake(int *from_client){
 
   mkfifo( "popeye", 0644 );
   *from_client = open( "popeye", O_RDONLY );
-  printf("At Last! My Client in shining armor\n");
 
   remove("popeye");
   
   read(*from_client, buff, sizeof(buff));
-  printf("My Client in Shining armor is Client %s, has arrived!\n", buff);
+  printf("Sea-Faring Opponent %s, has been spotted!\n", buff);
   to_client = open( buff, O_WRONLY );
   
-  strncpy( buff, "Server Loves You!", sizeof(buff) );
+  strncpy( buff, "Prepare for War!", sizeof(buff) );
   write(to_client, buff, sizeof(buff));
    
   return to_client;
@@ -66,68 +60,22 @@ fills up places[] with user's inputs (sets coordinates of ships)
 
 ====================*/
 int makeFleet(){
-
   int pos;
-  
-  printf("Input where you want your first ship! Each ship is one unit.\nDon't use any spaces between the numbers: ");
-  scanf("%d", &pos);
-  if (dontBreak(pos) == 1)
-    ships[0] = pos;
-  else{
-    while (dontBreak(pos) != 1){
-      printf("Please enter a valid location: ");
-      scanf("%d", &pos);
+  int i;
+  for(i = 0; i<ships.length;i++){
+    printf("Input a ship location on the grid (Note input as two-digit e.g 11 instead of 1,1):");
+    scanf("%d", &pos);
+    if (dontBreak(pos) == 1)
+      ships[i] = pos;
+    else{
+      while (dontBreak(pos) != 1){
+	printf("Please enter a valid location: ");
+	scanf("%d", &pos);
+      }
+      ships[i] = pos;
     }
-    ships[0] = pos;
   }
   
-  printf("Input your second location: ");
-  scanf("%d", &pos);
-  if (dontBreak(pos) == 1)
-    ships[1] = pos;
-  else{
-    while (dontBreak(pos) != 1){
-      printf("Please enter a valid location: ");
-      scanf("%d", &pos);
-    }
-    ships[1] = pos;
-  }
-
-  printf("Your third: ");
-  scanf("%d", &pos);
-  if (dontBreak(pos) == 1)
-    ships[2] = pos;
-  else{
-    while (dontBreak(pos) != 1){
-      printf("Please enter a valid location: ");
-      scanf("%d", &pos);
-    }
-    ships[2] = pos;
-  }
-  
-  printf("Your fourth: ");
-  scanf("%d", &pos);
-  if (dontBreak(pos) == 1)
-    ships[3] = pos;
-  else{
-    while (dontBreak(pos) != 1){
-      printf("Please enter a valid location: ");
-      scanf("%d", &pos);
-    }
-    ships[3] = pos;
-  }
-  
-  printf("And your fifth: ");
-  scanf("%d", &pos);
-  if (dontBreak(pos) == 1)
-    ships[4] = pos;
-  else{
-    while (dontBreak(pos) != 1){
-      printf("Arrrr! Please enter a valid location, matey: ");
-      scanf("%d", &pos);
-    }
-    ships[4] = pos;
-  }
 }
 
 /*======== int dontBreak()  ==========
@@ -155,6 +103,13 @@ int dontBreak(int pos){
   }
 
   //check to see no double entries
+  okay = isInShips(pos)
+  
+  return okay;
+}
+
+int isInShips(int pos){
+  int okay = 1;
   if (pos == ships[0] ||
       pos == ships[1] ||
       pos == ships[2] ||
@@ -162,28 +117,185 @@ int dontBreak(int pos){
       pos == ships[4]){
     okay = 0;
   }
-
   return okay;
 }
 
+int isHit(int pos){
+  int hit =  isInShips(pos);
+
+  if (hit){
+    int i;
+    for (i = 0; i < ships.length; i++)
+      if (ships[i] == pos)
+	ships[i] = 0;
+  }
+
+  return hit;
+}
+
+int isAllHit(){
+  int allhit = 0;
+
+  if (0 == ships[0] &&
+      0 == ships[1] &&
+      0 == ships[2] &&
+      0 == ships[3] &&
+      0 == ships[4]){
+    allhit = 1;
+  }
+
+  return allhit;
+}
+
+//THIS GONNA HAVE TO BE MOVED TO MAIN
+void server_game_control(int to_client, int from_client, int *currentcoordinate) {
+  int coord;
+  char result[100];
+    
+  while( read(from_client, result, sizeof(result) )){
+    //Reads from Opponent Whether or Not Your Hit was successful
+    printf("You Got Back from Opponent: %s\n", result);
+    //Attempts to Down Semaphore to Access Shared Memory
+    //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote 
+    coord = *currentcordinate;
+    if (isHit(coord)){
+      if (isAllHit()){
+	strncpy(result,"All Ships Eliminated!",sizeof(result));
+	write(to_client, result, sizeof(result) );
+      }
+      else{
+	strncpy(result,"Ship Hit!",sizeof(result));
+	write(to_client, result, sizeof(result) );
+      }
+    }
+    else{
+      strncpy(result,"Ship Missed!",sizeof(result));
+      write(to_client, result, sizeof(result) );
+    }
+    strncpy(result,"",sizeof(result));
+    //Player 1 Gives Program a Ship Location
+    printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
+    scanf("%d", &pos);
+    //Ship Location is Put Into Shared Memory
+    //Semaphore is Upped
+  }
+}
+
+
+
 int main(){
-
   signal( SIGINT, sighandler );
-  
-  //establish game parameters
-  //function for choosing player setting (ship placements, etc.)
-  //handshake to establish connection with Player 2
+  //creating & initializing shared memory and semaphore
+  //create & initialize shared mem
+  int shmid = shmget(ftok("makefile",13),sizeof(int), 0664| IPC_CREAT | IPC_EXCL);
+  printf("Trying to create the shared memory...\n");
+  if(shmid == -1){
+    printf("There was a problem in creating the shared memory\n");
+    printf("Error %d: %s\n", errno, strerror(errno));
+  } else{
+    printf("Success!\n");
+  }
+  int *currentcoordinate = (int *) shmat(shmid, 0, 0);
+  printf("Trying to attach the shared memory to a variable...\n");
+  if(*currentcoordinate == -1){
+    printf("There was a problem in attaching the shared memory to a variable\n");
+    printf("Error: %d: %s\n", errno, strerror(errno));
+    return;
+  } else{
+    printf("Success!\n");
+  }
+  *currentcoordinate = 0;
 
+  //creating & initialize  semaphore
+  int semid;
+  int ret;
+  struct sembuf new = {0, -1, SEM_UNDO};
+  semid = semget(ftok("makefile",47), 1, 0644 | IPC_CREAT);
+  printf("Trying to create the semaphore...\n");
+  if (semid == -1){
+    printf("There was a problem in creating the semaphore\n");
+    printf("Error %d: %s\n", errno, strerror(errno));
+  } else{
+    printf("Success!\n");
+  }
+  union semun data;
+  data.val = 1;
+  printf("Trying to set the semaphore...\n");
+  ret = semctl(semid,0,SETALL,&data);
+  if (ret == -1){
+    printf("There was a problem in setting the semaphore\n");
+    printf("Error %d: %s\n", errno, strerror(errno));
+  } else{
+    printf("Success!\n");
+  }
+  
+  //initialize game parameters
   makeFleet();
   
   int to_client;
   int from_client;
   while(1){
-    printf("Will a Client in shining armor complete me?\n");
+    printf("Trying to down the semaphore...\n");
+    ret = semop(semid, &new, 1);
+
+    printf("Wating for your Sea-Faring Opponent to Connect\n");
     to_client  = server_handshake(&from_client);
+    
+    int coord;
+    char result[100];
+    //Player 1 Takes the First Turn
+    
+    //All Turns After First
+    while( read(from_client, result, sizeof(result) )){
+      //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
+      printf("You Got Back from Opponent: %s\n", result);
+      //Attempts to Down Semaphore to Access Shared Memory
+      printf("Trying to down the semaphore...\n");
+      ret = semop(semid, &new, 1);
+      if(ret == -1){
+	printf("There was a problem in downing the semaphore\n");
+	printf("Error: %d: %s\n", errno, strerror(errno));
+	return;
+      }
+      else
+	printf("Success!\n");
+      //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote                                                                                    
+      coord = *currentcordinate;
+      if (isHit(coord)){
+	if (isAllHit()){
+	  strncpy(result,"All Ships Eliminated!",sizeof(result));
+	  write(to_client, result, sizeof(result) );
+	  break;
+	}
+	else{
+	  strncpy(result,"Ship Hit!",sizeof(result));
+	  write(to_client, result, sizeof(result) );
+	}
+      }
+      else{
+	strncpy(result,"Ship Missed!",sizeof(result));
+	write(to_client, result, sizeof(result) );
+      }
+      strncpy(result,"",sizeof(result));
+      //Player 1 Gives Program a Ship Location                                                                                                      
+      printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
+      scanf("%d", &pos);
+      //Ship Location is Put Into Shared Memory
+      *currentcoordinate = pos;
+      //Semaphore is Upped
+      new.sem_op = 1;
+      semid = semget(ftok("makefile", 47), 1, 0644);
+      printf("Trying to up the semaphore...\n");
+      ret = semop(semid, &new, 1);
+      if(ret == -1){
+	printf("There was a problem in upping the semaphore\n");
+	printf("Error %d: %s\n", errno, strerror(errno));
+      }
+      else
+	printf("Success!\n");
 
-    client_connect( to_client, from_client);
-
+    }
+    printf("The Game has ended!\n")
     close( to_client);
   }
 

@@ -1,3 +1,5 @@
+const char underscore = '_';
+
 int find_error(char*, char*);
 
 int find_user_match(char*);

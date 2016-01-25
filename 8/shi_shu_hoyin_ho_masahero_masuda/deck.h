@@ -15,6 +15,15 @@ struct card* makecard(char* content,char* type){
   return out;
 }
 
+card deal_greencard(card *green_deck);
+card deal_redcard(card *red_deck);
+void printdeck(card* deck){
+  int i = 0;
+  while(deck[i].content){
+    printf("%s\n",deck[i].content);
+    i++;
+  }
+}
 int getsize(card* deck){
   int counter = 0;
   while(deck[counter].content){
@@ -38,32 +47,27 @@ void shuffle(card* deck){
   //  card* temp = (card*)malloc(sizeof(card));
   card *temp;
   int counter = 0;
-  while(counter < 20){
+  while(counter < 1000){
     rand1 = randNum() % len;
     rand2 = randNum() % len;
-    printf("%s SWAP %s\n",deck[rand1].content,deck[rand2].content);
     temp = &deck[rand1];
     deck[rand1] = deck[rand2];
     deck[rand2] = *temp;
     counter ++;
   }
-  printf("%d\n",len);
 }
 
 struct card* makedeck(char* type){
   card* deck;
   int descriptor;
   char buffer[20000];
-  char* maketype = (char*)malloc(sizeof("green"));
   if(type == "red"){
     descriptor = open("reddeck",O_RDONLY);
     deck = (card*)malloc(sizeof(card)*746);
-    maketype = "red";
   }
   if(type == "green"){
     descriptor = open("greendeck",O_RDONLY);
     deck = (card*)malloc(sizeof(card)*250);
-    maketype = "green";
   }
   read(descriptor,buffer,sizeof(buffer));
   char* cards = buffer;
@@ -71,16 +75,10 @@ struct card* makedeck(char* type){
   int i = 0;
   while(cards){
     temp = strsep(&cards,"\n");
-    deck[i] = *makecard(temp,maketype);
+    deck[i] = *makecard(temp,type);
     i ++;
   }
   return deck;
 }
 
-void printdeck(card* deck){
-  int i = 0;
-  while(deck[i].content){
-    printf("%s\n",deck[i].content);
-    i++;
-  }
-}
+

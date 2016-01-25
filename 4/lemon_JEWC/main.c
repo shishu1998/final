@@ -8,18 +8,46 @@
 #include <string.h>
 
 int main(){
+  int file;
   printf("\e[7mPlease enter the name of the file you are creating or editing.\e[27m\n");
   char response[100];
   fgets(response,100,stdin);
   strtok(response,"\n");
   if(access(response,F_OK)!=-1){
     printf("\e[7m%s\e[27m exists. Now opening.\n\n",response);
+
+    int pid1 = fork();
+    if(!pid1){ 
     execlp("cat","cat",response,NULL);
+    }
   }
   else{
     printf("\e[7m%s\e[27m does not exist. Now creating.\n",response);
+    file=open(response, O_CREAT, 0644);
+    close(file);
   }
-
-
+  int pid2 = fork();                                                          
+  if(!pid2){                                                                  
+    execlp("stty","stty","raw",NULL);                                          
+  }
+  //Opening file
+  file=open(response, O_RDWR, 0644);
+  
+  printf("RAW MODE INITIATED\n\n");
+  char *line = NULL;
+  size_t len;
+  //while(fgets(buf, sizeof(buf), stdin)){
+  //while(getline(&line, &len, stdin) >= 0){
+  //printf("I got: %s",line);
+  //if(line[0] == 'x'){
+  printf("\nRAW MODE TERMINATED\n");
+  execlp("stty","stty","-raw",NULL);
+  //}
+  //}
+  
+  //closing file
+  close(file);
+  
   return 0;
 }
+ 

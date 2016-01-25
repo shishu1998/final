@@ -34,9 +34,11 @@ Timeline:
 	DESIGN file -> Jan 5
 	Display stats of different lots by entering into shell (lots in file as input), work on bidding (altering bidding history etc)
 		-> Jan 13
-	Join to parts of fserver code
-		-> Jan 16 (? will probably take longer than this...)
 	Test single-computer bidding
-		-> Jan 
+		-> Jan 15
 	Introduce sockets to make multicomputer bidding (or else merely do different accounts for different bidders and hope for the best)
-		-> Jan 
+		-> Jan 16, fixing happened well into 21st
+	Make bidding more informative, make sure of no bugs (see BUGS file for details...)
+		-> Jan 18
+	Finish everything ('cuz that's what's going to happen)
+		-> Jan 24/25

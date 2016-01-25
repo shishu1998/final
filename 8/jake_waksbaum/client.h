@@ -4,8 +4,6 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-#define HOSTNAME "bart.stuy.edu"
-
 int connect_to_server(char * ip, int port);
 int is_exit(char *);
 int send_request(char *req, size_t len, int socket_id);

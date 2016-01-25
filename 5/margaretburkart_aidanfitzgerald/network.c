@@ -4,7 +4,7 @@ int sock_write_n(int sock, char *str, int n) {
   int status;
 
   // Write four bytes for size
-  n = htoni(n);
+  n = htonl(n);
   status = write(sock, &n, sizeof(n));
 
   if (status < sizeof(n)) {

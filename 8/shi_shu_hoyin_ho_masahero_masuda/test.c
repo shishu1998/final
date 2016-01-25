@@ -5,11 +5,20 @@
 int main(){
   card* red = makedeck("red");
   card* green = makedeck("green");
-  printdeck(red);
+  // printf("content: %s\n",red[80].content);
   //printdeck(green);
-  shuffle(red);
+  //printdeck(green);
+  shuffle(green);
+  printdeck(green);
+  /*int randN;
+  int counter = 30;
+  while (counter){
+    randN=randNum()%getsize(green);
+    printf("Index: %d content: %s\n",randN,green[randN].content);
+    counter--;
+    }*/
   //  printdeck(red);
-  //  shuffle(green);
+  //shuffle(green);
   //printdeck(red);
   //shuffle(&green);
   return 0;

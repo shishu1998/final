@@ -9,27 +9,6 @@
 #include <errno.h>
 #include "players.c"
 
-int desired_total;
-int player_count;
-char player_ids[100];
-
-void ask_for_total(){
-  player_count = 0;
-
-  printf("<server> How many players? ");
-  scanf ("%d",&desired_total);
-  printf("desired_total: %d\n", desired_total);
-}
-
-void players_connect(){
-  player_count++;
-  if (player_count==desired_total){
-    printf("Desired total has been reached!\n\n");
-  }
-  printf("a player has joined\n");
-  printf("players connected: %d\n", player_count);
-}
-
 
 void process( char *s ) {
   while ( *s ) {
@@ -62,6 +41,19 @@ int server_handshake( int *from_client ) {
     printf( "<server> connection established: [%s]\n", buffer );
     to_client = open(buffer, O_WRONLY);
 
+
+    /* strcpy(player_ids[player_count-1],buffer); //buffer should hopefully be the pid of child */
+    /* int i = 0; */
+    /* /\* printf("player_ids[0]: %s, ", player_ids[0]); *\/ */
+    /* /\* printf("player_ids[1]: %s, ", player_ids[1]); *\/ */
+    /* /\* printf("player_ids[2]: %s, ", player_ids[2]); *\/ */
+    /* while(i<desired_total){ */
+    /*   printf("player_ids[%d]: %s, ", i, player_ids[i]); */
+    /*   i++; */
+    /* } */
+    /* printf("\n"); */
+  
+
     strncpy( buffer, "its-a-me, mario!", sizeof(buffer) );
     write( to_client, buffer, sizeof(buffer) ); //send initial message
 
@@ -74,15 +66,29 @@ int server_handshake( int *from_client ) {
 
 void client_connection( int to_client, int from_client ) {
   char buffer[100];
-  printf("before client_connection while loop\n");
-  printf("to_client: %d\n", to_client);
+
   printf("from_client: %d\n", from_client);
-  player_ids[from_client/3]=(char *)from_client;
-  printf("player_ids: %s\n", player_ids);
+  printf("player_count: %d\n", player_count);
+  if (from_client != 0)
+    player_ids[player_count-1] = from_client;
+  int i = 0;
+  while(i<desired_total){
+    //printf("player_ids[%d]: %d, ", i, player_ids[i]);
+    i++;
+  }
+  printf("\n");
+
+  printf("before client_connection while loop\n");
   while( read( from_client, buffer, sizeof(buffer) ) ) {
     printf( "<server> received [%s]\n", buffer );
     process( buffer );
     write( to_client, buffer, sizeof(buffer) ); //HERE IS WHERE YOU WRITE TO CLIENT
+    
+    /*********************************************************************/
+    /* char foo[100] = "helllo!\n\n";					 */
+    /* write( 4, foo, sizeof(foo) ); //HERE IS WHERE YOU WRITE TO CLIENT */
+    /*********************************************************************/
+
     strncpy( buffer, "", sizeof(buffer) );
   }
 }
@@ -95,17 +101,29 @@ int main() {
   int to_client;
   int from_client;
 
-  while (1) {
+  int i = 0;
+  while(i<desired_total){
+    printf("player_ids[%d]: %d, ", i, player_ids[i]);
+    i++;
+  }
+
+  while (1) {   
+
     if(player_count<desired_total){ //stops connecting to more clients once desired_total has been reached
       printf("<server> waiting for connection\n");
-      
+
       to_client = server_handshake(&from_client);
-      
+
       if (to_client != 0) {
-	client_connection(to_client, from_client);
-	close(to_client);
+        client_connection(to_client, from_client);
+        close(to_client);
       }
     }
+    else{
+      // printf("Game start!\n");
+
+    }
+    
   }
 
   return 0;

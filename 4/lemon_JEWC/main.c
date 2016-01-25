@@ -194,9 +194,9 @@ int main(){
       strcat(buffer3,buffer2);
       printf(buffer2);
       
-
-
-
+      
+      
+      
       break;
     }
   }

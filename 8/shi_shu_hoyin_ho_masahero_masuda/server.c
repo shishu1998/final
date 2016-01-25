@@ -78,7 +78,7 @@ card deal_greencard(card* green_deck){
     pos++;
   }
   card green_card = green_deck[pos];
-  green_deck[pos] = NULL;
+  green_deck[pos].content = NULL;
   return green_card;
 }
 
@@ -88,7 +88,7 @@ card deal_redcard(card* red_deck){
     pos++;
   }
   card red_card = red_deck[pos];
-  red_deck[pos] = NULL;
+  red_deck[pos].content = NULL;
   return red_card;
 }
 //Receiving methods//

@@ -20,8 +20,11 @@ void cerror(const char *msg)
     exit(0);
 }
 
-int server(int argc, char *argv[])
-{
+int server(int argc, char *argv[]) {
+
+    argv[2] = "5001";
+    printf("port: %s\n", argv[2]);
+
     int sockfd, newsockfd, portno, n;
     socklen_t clilen;
     char buffer[256];
@@ -41,11 +44,6 @@ int server(int argc, char *argv[])
     srand (time(NULL));
     integerRandom = (rand() % 100) + 1;
 
-    printf("What would you like to do?\n");
-    printf("1. Start a new odds-are game\n");
-    printf("2. Join a previously created odds-are game\n");
-    printf("Please enter the corressponding number: ");
-    fgets(option, sizeof(option), stdin);
     printf("Enter your odds are: ");
     fgets(question, sizeof(question), stdin);
     printf("Enter the number for your odds are: ");
@@ -63,10 +61,11 @@ int server(int argc, char *argv[])
         strcat(new_str,oddsInt);
     }
 
-    if (argc < 2) {
+    /*if (argc < 2) {
         fprintf(stderr,"ERROR, no port provided\n");
         exit(1);
     }
+    */
 
     // Creates the socket socket() --> endpoints of sockets
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -76,7 +75,7 @@ int server(int argc, char *argv[])
 
     // assign unique new address
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = atoi(argv[1]);
+    portno = 5001;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
@@ -108,7 +107,7 @@ int server(int argc, char *argv[])
         // reads the data being received
         bzero(buffer,256);
         n = read(newsockfd,buffer,255);
-        if (n < 0) error("ERROR reading from socket");
+        if (n < 0) serror("ERROR reading from socket");
         // reads the data being received
 
         //printf("Buffer from client: <%s>\n", buffer);
@@ -163,8 +162,14 @@ int server(int argc, char *argv[])
     return 0; 
 }
 
-int client(int argc, char *argv[])
-{
+int client(int argc, char *argv[]){    
+
+    argv[1] = "localhost";
+    argv[2] = "5001";
+    printf("hostname: %s\n", argv[1]);
+    printf("port: %s\n", argv[2]);
+
+
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -178,10 +183,11 @@ int client(int argc, char *argv[])
     char* delimiter = "\\n";
 
 
-    if (argc < 3) {
+    /*if (argc < 3) {
        fprintf(stderr,"usage %s hostname port\n", argv[0]);
        exit(0);
     }
+    */
     portno = atoi(argv[2]);
 
     // Creates the socket socket() --> endpoints of sockets
@@ -288,24 +294,30 @@ int client(int argc, char *argv[])
 }
 
 int main(int argc, char *argv[]) {
-  char option[4];
+    char option[4];
 
-  printf("Welcome to the wondorous game of odd-are!!\n");
-  printf("This game was brought to you by Andrew Kratsios and Felipe Mansilla\n");
-  while((strcmp(option,"1")!=0) && (strcmp(option, "2")!=0)) {
-    printf("\nWhat would you like to do?\n");
-    printf("1. Create an odd-are\n");
-    printf("2. Join and odds-are game\n");
-    printf("Type your selections here: ");
-    fgets(option, sizeof(option), stdin);
-  }
-  if (strcmp(option, "1")==0) {
-    server(argc, argv);
-  }
-  else if (strcmp(option,"2")==0) {
-    client(argc, argv);
-  }
-  else {
-    printf("Invalid option...chose 1 or 2!\n");
-  }
+    printf("\nWelcome to the wondorous game of odd-are!!\n");
+    printf("This game was brought to you by Andrew Kratsios and Felipe Mansilla\n");
+    //while((strcmp(option,"1")!=0) || (strcmp(option, "2")!=0)) {
+    while((strcmp(option,"1\n") != 0) && (strcmp(option,"2\n") != 0)) {
+        printf("\nWhat would you like to do?\n");
+        printf("1. Create an odd-are\n");
+        printf("2. Join an odds-are game\n");
+        printf("Type your selections here: ");
+        fgets(option, sizeof(option), stdin);
+        //printf("%s\n",option );
+        //printf("%d\n",(strcmp(option,"1\n") != 0));
+
+        if (strcmp(option,"1\n") == 0) {
+            printf("\nYou chose create an odds-are!\n");
+            server(argc, argv);
+        }
+        else if (strcmp(option,"2\n")==0) {
+            printf("\nYou chose join an odds-are!\n");
+            client(argc, argv);
+        }    
+        else {
+            printf("Invalid option...chose 1 or 2!\n");
+        }
+    }
 }

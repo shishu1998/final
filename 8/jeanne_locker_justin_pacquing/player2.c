@@ -157,7 +157,6 @@ int main(){
   //Access Semaphore Created by Player1
   int semid;
   int ret;
-  struct sembuf new = {0, -1, SEM_UNDO};
   printf("Trying to access the semaphore...\n");
   semid = semget(ftok("makefile", 47), 1, 0644);
   if(semid == -1){
@@ -180,52 +179,61 @@ int main(){
   to_server = client_handshake(&from_server);
 
   while( read(from_server, result, sizeof(result) )){
-      //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
+    //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
     printf("You Got Back from Opponent: %s\n", result);
-      //Attempts to Down Semaphore to Access Shared Memory
-      printf("Trying to down the semaphore...\n");
-      ret = semop(semid, &new, 1);
-      if(ret == -1){
-	printf("There was a problem in downing the semaphore\n");
+    //Attempts to Down Semaphore to Access Shared Memory
+    struct sembuf new = {0, -1, SEM_UNDO};
+    printf("Trying to access the semaphore...\n");
+    semid = semget(ftok("makefile", 47), 1, 0644);
+    if(semid == -1){
+      printf("There was a problem in accessing the semaphore\n");
+      printf("Error %d: %s\n", errno, strerror(errno));
+    } 
+    else
+      printf("Access granted!\n");
+    printf("Trying to down the semaphore...\n");
+    ret = semop(semid, &new, 1);
+    if(ret == -1){
+      printf("There was a problem in downing the semaphore\n");
       printf("Error: %d: %s\n", errno, strerror(errno));
       return 0;
-      }
-      else
-	printf("Success!\n");
-      //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote                                                                                    
-      int shmid = shmget(ftok("makefile", 13), sizeof(int), 0664);
-      if(shmid == -1){
+    } 
+    else
+      printf("Success!\n");
+    //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote                                                                                    
+    int shmid = shmget(ftok("makefile", 13), sizeof(int), 0664);
+    if(shmid == -1){
 	printf("There was a problem getting the shared memory\n");
 	printf("Error: %d: %s\n", errno, strerror(errno));
 	return 1;
-      }
-      int *currentcoordinate = (int *) shmat(shmid,0,0);
-      if(*currentcoordinate == -1){
-	printf("There was a problem in attaching the shared memory to a variable\n");
-	printf("Error %d: %s\n", errno, strerror(errno));
-	return 1;
-      }
-      printf("shared memory current reads as:%d\n", *currentcoordinate);
-      readpos = *currentcoordinate;
-      if (isHit(readpos)){
-	if (isAllHit()){
-	  strncpy(result,"All Ships Eliminated!",sizeof(result));
-	  write(to_server, result, sizeof(result) );
-	  break;
-	}
-	else{
-	  strncpy(result,"Ship Hit!",sizeof(result));
-	  write(to_server, result, sizeof(result) );
-	}
+    }
+    int *currentcoordinate = (int *) shmat(shmid,0,0);
+    if(*currentcoordinate == -1){
+      printf("There was a problem in attaching the shared memory to a variable\n");
+      printf("Error %d: %s\n", errno, strerror(errno));
+      return 1;
+    }
+    printf("shared memory current reads as:%d\n", *currentcoordinate);
+    readpos = *currentcoordinate;
+    if (isHit(readpos)){
+      if (isAllHit()){
+	strncpy(result,"All Ships Eliminated!",sizeof(result));
+	write(to_server, result, sizeof(result) );
+	break;
       }
       else{
-	strncpy(result,"Ship Missed!",sizeof(result));
+	strncpy(result,"Ship Hit!",sizeof(result));
 	write(to_server, result, sizeof(result) );
       }
-      strncpy(result,"",sizeof(result));
-      
-      //Player Gives Program a Ship Location                                                                                                      
-      printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
+    }
+    else{
+      strncpy(result,"Ship Missed!",sizeof(result));
+      write(to_server, result, sizeof(result) );
+    }
+    strncpy(result,"",sizeof(result));
+    
+    //Player Gives Program a Ship Location                                                                                                      
+    printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
     scanf("%d", &incoord);
     if (isInRange(incoord) == 1){
       //Ship Location is Put Into Shared Memory if Valid the First Time

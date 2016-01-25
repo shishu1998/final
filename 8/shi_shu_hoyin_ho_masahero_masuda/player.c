@@ -14,15 +14,18 @@ int player_handshake(int *from_server,card *red_hand, card *green_hand, int id){
 
   sprintf(buffer,"%d",getpid());
   mkfifo(buffer,0644);
-
+  printf("Ho Yin IS gay\n");
   to_server = open("pipe",O_WRONLY);
   write(to_server,buffer,sizeof(buffer));
-  
+  printf("Ho Yin IS gay\n");
+  printf("%s\n",buffer);
   *from_server = open(buffer,O_RDONLY);
   remove(buffer);
-  
+  printf("Ho Yin IS definitely Gay\n");
   read(*from_server,red_hand,sizeof(card)*7);
+  printf("Ho Yin likes ma dick\n");
   read(*from_server,green_hand,sizeof(card));
+  printf("Ho Yin thinks he's straight\n");
   read(*from_server,&id,sizeof(int));
   printf("Player connection established: %s\n",buffer);
   int counter = 0;
@@ -38,6 +41,7 @@ int player_handshake(int *from_server,card *red_hand, card *green_hand, int id){
 
 //Card methods//
 void send_redcard(int to_server, card *red_hand){
+  printf("ho yin sucks dick\n");
   char buffer[100];
   int i = 0;
   while(i < 7){
@@ -131,9 +135,18 @@ int main(){
     write(to_server,buffer, sizeof(buffer));
     read(from_server,buffer,sizeof(buffer));
     printf("Player received: %s\n",buffer);
-  */
-  //}
-  
+
+  }
+  /*
+  int i = 0;
+  while(i<7){
+    printf("%d.%s\n",i,red_hand[i].content);
+    i ++;
+  }
+  while(i < 8){
+    printf("%d.%s\n",i,green_hand[i].content);
+    i ++;
+    } */
   close(to_server);
   close(from_server);
   return 0;

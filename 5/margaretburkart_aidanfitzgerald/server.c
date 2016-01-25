@@ -101,7 +101,7 @@ void server_talk(int socket_client) {
     }
     else {
       buffer[r] = 0;
-      printf("Read input: %s\n", buffer);
+      printf("Read input: %10s\n", buffer);
     }
 
     // TODO: parse input
@@ -135,7 +135,7 @@ void server_talk(int socket_client) {
 
     else if (strstart(buffer, "GET")) {
       // Retrieve one email
-      
+      server_get(socket_client, session);
     }
 
     else if (strstart(buffer, "SEND")) {
@@ -256,16 +256,27 @@ user *server_acct_setup(char *buffer) {
 void server_send(char *buffer, user *session) {
   // Skip past the newline
   char *content = strchr(buffer, '\n') + 1;
+
+  // Get recipient info
+  char *recipient = malloc(256 + 1);
+  memset(recipient, 0, 256 + 1);
+  sscanf(buffer, "To: %255s", recipient);
+
+  // Append a slash, replacing the terminating null (there's another one right after it)
+  recipient[255] = '/';
   
   // Initialize filename
-  char *filename = server_dir(session->name);
+  char *filename = server_dir(recipient);
   filename = realloc(filename, strlen(filename) + 9);
+
+  // Done with sender ID buffer
+  free(recipient);
   
   // Append hashcode to filename
   char *hashcode = hash_code(content);
   strcat(filename, hashcode);
   free(hashcode);
-  
+
   // Write!
   FILE *mail = fopen(filename, "w");
   
@@ -273,11 +284,67 @@ void server_send(char *buffer, user *session) {
   fprintf(mail, "From: %s\n", session->name);
   // Write mail content
   fputs(content, mail);
+printf("Uploaded email to %s\n", filename);
+
   // Done with the file
   fclose(mail);
 
   // Done with the filename buffer
   free(filename);
+}
+
+void server_get(int socket_client, user *session) {
+  // Open the user's remote mailbox directory
+  char *dirname = server_dir(session->name);
+  DIR *dir = opendir(dirname);
+  
+  // Read the first entry
+  struct dirent *head;
+ get_head: head = readdir(dir);
+  if (head->d_type != DT_REG && head->d_type != DT_LNK) {
+    goto get_head;
+  }
+  
+  // Done with the directory
+  closedir(dir);
+  
+  if (head) {
+    // Generate file path
+    char *filename = realloc(dirname, strlen(dirname) + 1 + strlen(head->d_name) + 1);
+    strcat(filename, "/");
+    strcat(filename, head->d_name);
+
+    // Get file size
+    struct stat fileinfo;
+    if (stat(filename, &fileinfo)) die(1);
+    int filesize = fileinfo.st_size;
+
+    printf("User %s tried to retrieve emails; found email at %s, size %lu\n", session->name, filename, filesize);
+
+    char *buffer = malloc(filesize + 3 + 1);
+
+    // Initialize with OK status
+    strcpy(buffer, "OK\n");
+
+    // Read the file
+    FILE *file = fopen(filename, "r");
+    if (!fgets(buffer + 3, filesize + 1, file)) die(1);
+    fclose(file);
+
+    // Write email to socket
+    sock_write_n(socket_client, buffer, filesize + 3);
+
+    free(buffer);
+    free(filename);
+  }
+
+  else {
+    // Report that no file was found
+    sock_write("NONE");
+    printf("User %s tried to retrieve emails; none were found\n", session->name);
+
+    free(dirname);
+  }
 }
 
 /* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */

@@ -34,4 +34,7 @@ void shuffle(player** player_list);
 int night_action(player** player_list);
 int doctor_action(player** player_list);
 int mafia_action(player** player_list);
+int cop_action(player** player_list);
 int player_index(char* name, player** player_list);
+void print_DEAD(player** player_list);
+char* get_role(int role);

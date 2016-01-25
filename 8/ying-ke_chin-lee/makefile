@@ -1,7 +1,4 @@
-all: main control server_socket client_socket
-
-main: main.c
-	gcc -o main main.c
+all: control server_socket client_socket
 
 control: control.c
 	gcc -o control control.c
@@ -13,10 +10,9 @@ client_socket: client_socket.c
 	gcc -o client_socket client_socket.c
 
 clean:
-	rm main
 	rm control
 	rm server_socket
 	rm client_socket
 
 run:
-	./main
+	./client_socket

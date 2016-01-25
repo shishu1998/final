@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -16,10 +17,36 @@
 
 int running = 1;
 
-int main() {
-  int socket_id, e;
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    running = 0;
+  } else if (signo == SIGUSR1) {
+    printf("\nThe server has shutdown.\n");
+    running = 0;
+  }
+}
 
-  socket_id = connect_to_server(HOSTNAME, PORT);
+int main(int argc, char * argv[]) {
+  int socket_id, e;
+  char * hostname;
+
+  struct sigaction action = {
+    .sa_handler = sighandler,
+    .sa_flags = 0
+  };
+  sigemptyset(&action.sa_mask);
+
+  sigaction(SIGINT, &action, NULL);
+  sigaction(SIGUSR1, &action, NULL);
+
+  if (argc < 2) {
+    printf("Usage: client <hostname>\n");
+    exit(1);
+  } else {
+    hostname = argv[1];
+  }
+
+  socket_id = connect_to_server(hostname, PORT);
 
   while (running) {
     int bytes_read;
@@ -53,11 +80,15 @@ int connect_to_server(char * hostname, int port) {
   // create socket
   socket_id = socket(AF_INET, SOCK_STREAM, 0);
 
+  struct in_addr *addr;
+  e = hostname_to_ip(hostname, &addr);
+  printf("%s\n", inet_ntoa(*addr));
+
   // bind to port/address
   struct sockaddr_in sock = {
     .sin_family = AF_INET,
     .sin_port = htons(port),
-    .sin_addr = hostname_to_ip(hostname);
+    .sin_addr = *addr
   };
 
   bind(socket_id, (struct sockaddr *)&sock, sizeof(sock));
@@ -94,14 +125,15 @@ int handle_response(int socket_id) {
 /*
  * Credit http://www.binarytides.com/hostname-to-ip-address-c-sockets-linux/
  */
-struct in_addr hostname_to_ip(char * hostname) {
-  struct hostent *he;
+int hostname_to_ip(char * hostname, struct in_addr** addr) {
+  struct hostent *he = (void *)123456789;
 
   he = gethostbyname(hostname);
   if (he == NULL) {
-    //struct in_addr fail;
-    //return fail;
+    return -1;
   }
 
-  return (struct in_addr) *(he->h_addr);
+  *addr = (struct in_addr *) he->h_addr;
+
+  return 0;
 }

@@ -1,0 +1,6 @@
+From: aidan // first line added by the server
+To: maggie
+Subject: HEllo world!
+
+content here
+whatev

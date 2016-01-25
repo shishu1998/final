@@ -26,6 +26,8 @@ int auction_started = 0;
 
 void dostuff(int); /* function prototype */
 void write_bid(char *, char *); // check if you can write the new bid, and then do the sem/shmem stuff
+void create_bid_history(); // puts together the bid history in a nice way
+
 void error(const char *msg)
 {
 	perror(msg);
@@ -35,6 +37,7 @@ void error(const char *msg)
 static void sighandler(int signo) {
 	if (signo == SIGINT) {
 		printf("ctrl c was hit\n");
+		create_bid_history();
 		exit(0);
 	}
 }
@@ -197,4 +200,27 @@ void write_bid(char *offer, char* pno) {
 	} else {
 		wait(&status);
 	} 
+}
+
+void create_bid_history() {
+	char line1[256];
+	char line2[256];
+	char line3[256];
+
+	FILE *bh_p = fopen("bid_history.txt", "a");
+	FILE *bp = fopen(bidderfile, "r");
+	FILE *cbp = fopen(bidfile, "r");
+
+	// read 0 and newline
+	fscanf(cbp, "%s", line2);
+	fscanf(cbp, "%s", line2);
+	
+	while (fscanf(bp, "%s", line1) != EOF) {
+		fscanf(cbp, "%s", line2);
+		fprintf(bh_p, "%s: %s\n", line1, line2);
+	}
+
+	fclose(bh_p);
+	fclose(bp);
+	fclose(cbp);
 }

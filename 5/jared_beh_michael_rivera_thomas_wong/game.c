@@ -27,25 +27,42 @@ void board_init() {
 }
 
 
-
-
-
-int turn(  int R, int C, int r, int c) {
+int turn( char player, int R, int C, int r, int c) {
   // react to player input
   /* return zero on success, non-zero int as errno
    * possible errors: R,C,r,c >= 3 or < 0
    *                  super_board[R][C].full != 0 --> user can play anywhere
    *                  super_board[R][C].mini_board[r][c] != 0
    */
+  
+  if ( super_board.full ) {
+    return 3;
+  }
+  else if ( R>2 && C>2 && r>2 && c>2 &&
+       R<0 && C<0 && r<0 && c<0 ) {
+    //if the input is not in the domain
+    return 2;
+  }
+  else if ( super_board[R][C].mini_board[r][c] != 0 ) {
+    //if the space is already taken
+    return 1;
+  }
+  else {
+    super_board[R][C].mini_board[r][c] = player;
+  }
 
+  int i, j;
+  for ( i=0; i<3; i++ ) {
+    for ( j=0; j<3; j++ ) {
+      update_full( super_board[i][j].mini_board );
+      update_winner( super_board[i][j].mini_board );
+    }
+  }
+  check_win();
 
-
-
-
+  
   return 0;
 }
-
-
 
 
 char check_win() {
@@ -80,9 +97,6 @@ char check_win() {
 
   return 0;
 }
-
-
-
 
 
 void update_winner( board b ) {

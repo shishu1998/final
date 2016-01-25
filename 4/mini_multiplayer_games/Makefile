@@ -1,11 +1,9 @@
 all: server client
 
-server: server.c
-	gcc -o server fserver.c
+server: server.c server.h client_relations.c
+	gcc -o server server.c client_relations.c
 
-client: client.c
-	gcc -o client fclient.c
+client: client.c client_relations.c
+	gcc -o client client.c client_relations.c
 
-clean:
-	rm server
-	rm client
+

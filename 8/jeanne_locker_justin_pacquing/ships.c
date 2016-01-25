@@ -83,6 +83,41 @@ int checkMatey(int guess, int places[]){
   return result;
 }
 
+/*======== void printBoards() ==========
+Inputs:
+none
+
+Result:
+prints them boards
+
+====================*/
+void printBoards(){
+  int d=0;
+  int a=0;
+  printf("Your Board");
+  while (d<6){
+    while (a<6){
+      printf(uboard[d][a]);
+      a++;
+    }
+    printf("\n");
+    d++;
+  }
+  printf("\n");
+
+  int d=0;
+  int a=0;
+  printf("Your Opponent's Board");
+  while (d<6){
+    while (a<6){
+      printf(oboard[d][a]);
+      a++;
+    }
+    printf("\n");
+    d++;
+  }
+}
+
 
 int play(){
 

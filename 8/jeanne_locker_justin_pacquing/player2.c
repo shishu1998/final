@@ -181,6 +181,8 @@ int main(){
   while( read(from_server, result, sizeof(result) )){
     //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
     printf("You Got Back from Opponent: %s\n", result);
+    if (!strcmp(result,"All Ships Eliminated!"))
+      break;
     //Attempts to Down Semaphore to Access Shared Memory
     struct sembuf new = {0, -1, SEM_UNDO};
     printf("Trying to access the semaphore...\n");

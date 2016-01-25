@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", socket_id);
 	
-  int type = 0;  // 0 (tutor) or 1 (tutee) - get this from login
+  int type = 1;  // 0 (tutor) or 1 (tutee) - get this from login
   // send type to server
   write(socket_id, &type, sizeof(type));
 

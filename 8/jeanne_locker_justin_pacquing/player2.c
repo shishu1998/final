@@ -27,7 +27,7 @@ int client_handshake(int *from_server){
   //client recieves server's message, removes private pipe
   read(*from_server, buffer, sizeof(buffer));
 
-  printf("Hey Client %d, the Server says: %s\n", getpid(),buffer);
+  printf("Captian %d, Enemy Message Incoming: %s\n", getpid(),buffer);
 
   return to_server;
 }

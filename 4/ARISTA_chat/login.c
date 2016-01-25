@@ -114,59 +114,15 @@ int find_user_match(char *username) {
 
 int registereduser() {
   FILE* fd = fopen("tutoraccounts.txt","r");
-  char* user;
+  int username = 0000;
   
   printf("Type in your 4-digit ID for the username.\n");
   int username;
   char str[100];
   scanf("%[^1000-9999]%d",str,&username);  
   
-  printf("Enter your password:\n");
-  char *in = passwd;
-  struct termios  tty_orig;
-  char c;
-  tcgetattr( STDIN_FILENO, &tty_orig );
-  struct termios  tty_work = tty_orig;
-  puts("Please input password:");
-  tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
-  tty_work.c_cc[ VMIN ]  = 1;
-  tty_work.c_cc[ VTIME ] = 0;
-  tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+   return 1;
   
-  while (1) {
-    if (read(STDIN_FILENO, &c, sizeof c) > 0) {
-      if ('\n' == c) {
-	break;
-	  }
-      *in++ = c;
-      write(STDOUT_FILENO, "*", 1);
-    }
-  }
-  
-  tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
-  
-  *in = '\0';
-  fputc('\n', stdout);
-  
-  user = calloc(strlen(username) + strlen(password) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char               
-    strcat(user, username);                                                                                                                         
-    char *line = (char *)calloc(strlen(username) + strlen(password) + strlen(": ") + 1, sizeof(char));                                                                 
-    line = strsep(&user, "\n");                                                                                                                 
-    strcat(line, ": ");
-    strcat(line, password);                                                                                                                             
-    printf("line: %s\n", line); 
-    
-    char *buffer = (char *)malloc(500*sizeof(char));
-    fread(buffer, sizeof(char), 500, fd);
-    //printf("strlen(buffer) = %lu\n", strlen(buffer));
-    printf("buffer: %s\n", buffer);
-    if (strstr(buffer, line) == NULL)
-      printf("find_user() returned NULL. You typed incorrectly.\n");
-    else
-      printf("HUZZAH. You are a valid user! \n");
-    buffer = "";
-    printf("buffer after fread/fwrite: %s\n", buffer);
-  }
 }
 
 int tutorlogin() {

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +11,8 @@
 #include "jukebox.h"
 #include <sys/uio.h>
 #include <sys/stat.h>
+#include <unistd.h>
+
 
 
 
@@ -76,6 +77,7 @@ int send_song(char * user_input, int socket_client){
     	write(socket_client, "-1", 3);
     	return -1;
     }
+
     printf("alreadt found the right file [%s]\n", song_title);
     closedir(music_dir);
     char file_path[64] = "music/";
@@ -95,7 +97,12 @@ int send_song(char * user_input, int socket_client){
     	return -1;
     }
     struct stat st;
-    stat(song, &st);
+    if (stat(file_path, &st) < 0){
+        printf("unable to stat the file\n");
+    	printf("errno %s\n", strerror(errno));
+    	write(socket_client, "-1", 3);
+    	return -1;
+    }
     int file_size = st.st_size;
     printf("file size: %d\n", file_size);
     if (read(song_file, song, file_size) < 0){
@@ -104,16 +111,17 @@ int send_song(char * user_input, int socket_client){
     	write(socket_client, "-1", 3);
     	return -1;
     }
-    printf("read in : [%s] \n", song);
-    // printf("boutta write song to client\n");
-    // if( sendfile(song_file, socket_client, 0, 0, 0, 0) < 0){
-    // 	printf("unable to send? \n");
-    // 	printf("errno %s\n", strerror(errno));
-    // 	write(socket_client, "-1", 3);
-    // 	return -1;
 
-    // }
-    write(socket_client, song, strlen(song) +1);
+    //printf("read in : [%s] \n", song);
+     printf("boutta write song to client\n");
+     if( sendfile( socket_client, song_file, 0, file_size) < 0){
+     	printf("unable to send? \n");
+     	printf("errno %s\n", strerror(errno));
+     	write(socket_client, "-1", 3);
+     	return -1;
+
+     }
+    // write(socket_client, song, file_size + 1);
     printf("finished writing song\n");
     return 0;
 }

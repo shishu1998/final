@@ -161,6 +161,11 @@ int tutorlogin() {
   return username;
 }
 
+int clean_stdin() {
+	while (getchar() != '\n');
+		return 1;
+}
+
 int main() {
   int tutoraccounts = open("tutoraccounts.txt", O_CREAT | O_TRUNC, 0644);
   if (tutoraccounts < 0) {
@@ -174,10 +179,15 @@ int main() {
   printf("Hello and welcome to ARISTA chat!\n");
 
   int moveon = 0;
+  char student;
+  int rows;
   while (moveon == 0) {
+	//((scanf("%d%c",&rows,&student)!=2 || student!='\n') && clean_stdin()) || rows==1 || rows==2) {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
     int student;
-    scanf("%i",&student);
+    char str[100];
+    scanf("%[^1-2]%d",str,&student);
+  //  while (((scanf("%d%c",&rows,&student)!=2 || student!='\n') && clean_stdin()) || rows==1 || rows==2) {
     if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;
@@ -196,5 +206,6 @@ int main() {
     } else {
       printf("We didn't understand your response. Please try again.\n");
     }
+
   }
 }

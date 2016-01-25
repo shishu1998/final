@@ -125,10 +125,9 @@ int main(){
   while(!(red_hand[counter].content)){
     printf("%s\n",red_hand[counter].content);
   }
-  //while(1){
-  //send_redcard(to_server);
-  //send_greencard(to_server);
-  /*
+  /*while(1){
+    send_redcard(to_server);
+    send_greencard(to_server);
     printf("type something: ");
     fgets(buffer,sizeof(buffer),stdin);
     *strchr(buffer,'\n') = 0;
@@ -136,14 +135,13 @@ int main(){
     read(from_server,buffer,sizeof(buffer));
     printf("Player received: %s\n",buffer);
 
-  }
-  /*
-  int i = 0;
-  while(i<7){
+    }
+    int i = 0;
+    while(i<7){
     printf("%d.%s\n",i,red_hand[i].content);
     i ++;
-  }
-  while(i < 8){
+    }
+    while(i < 8){
     printf("%d.%s\n",i,green_hand[i].content);
     i ++;
     } */

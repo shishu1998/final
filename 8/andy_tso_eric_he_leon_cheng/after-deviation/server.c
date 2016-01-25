@@ -135,22 +135,34 @@ void doprocessing (int sock) {
   
     int n;
     char buffer[256];
+    char buffer3[256];
     bzero(buffer,256);
     //printf("two (r)\n");
     n = read(sock,buffer,255);
     //printf("able to get pass two\n");
-    
-    
-  
-  
+    if (n < 0) {
+      perror("ERROR reading from socket");
+      exit(1);
+    }
+    sleep(1);
+    n = read(sock,buffer3,255);
     if (n < 0) {
       perror("ERROR reading from socket");
       exit(1);
     }
   
-    printf("Here is the message: %s\n",buffer);
+    printf("Here is the message: %s %s\n",buffer, buffer3 );
+    //printf("Here is the message: %s\n",buffer3);
     
     array = (int *)shmat( shmid, 0, 0 );
+    //Need to turn buffer and buffer3 into ints
+    /*************************************************************
+    if ( array[1] == buffer || array[2] == buffer3 ) {
+      array[1] = buffer;
+      array[2] = buffer3;
+    }
+    *************************************************************/
+    printf( "%d %d\n", array[1], array[2] );
     //array[1] color
     //array[2] value
     /*char cvalue[100];

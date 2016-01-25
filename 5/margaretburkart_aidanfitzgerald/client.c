@@ -2,6 +2,80 @@
 #define MAXLEN 256
 #define PATH_MAX 2048
 
+void create_new(){
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("fork failed");
+  }else if(f==0){
+    int r;
+    r = execlp("touch","touch","new_email.txt",NULL);
+    if(r==-1){
+      perror("this is what's wrong");
+    }
+    exit(0);
+  }else{
+    int exit;
+    int pid = wait(&exit);
+  }
+}
+
+void send_email(char* buffer, int socket_id){
+  char final[256];
+  strip_add(buffer,final);
+  sock_write(socket_id,final);
+}
+
+void open_file(char* buffer, char* final, int socket_id){
+  int f;
+  f = fork();
+  if(f==-1){
+    perror("Failed to fork");
+  }else if(f==0){
+     int i;
+     i = execlp("open","open",final,NULL);
+     if(i==-1){
+       perror("Failed to open file");
+     }
+  }else{
+    printf("Start writing your email:\n");
+    printf("When you are done, press any key to send\n");
+    fgets(buffer,MAXLEN,stdin);
+    send_email(buffer, socket_id);
+  }
+}
+
+void compose(int socket_id){
+  printf("Composing...\n");
+  change_location("Drafts.d");
+  create_new();
+  int fd;
+  char buffer[256];
+  char final[256];
+  int done = 0;
+
+  printf("Type your subject line:\n");
+  fgets(buffer,MAXLEN,stdin);
+  strip_add(buffer,final);
+  int len = strlen(final);
+  final[len] = '.';
+  final[len+1] = 't';
+  final[len+2] = 'x';
+  final[len+3] = 't';
+  final[len+4] = '\0';
+  printf("final: [%s]\n",final);
+  
+  fd = open(final,O_CREAT|O_RDWR,0644);
+  if(fd==-1){
+    perror("Failed to create file");
+  }
+  close(fd);
+  
+  open_file(buffer,final,socket_id);
+
+
+}
+
 void strip_add(char* source, char* dest){
   char* leftovers;
   int overall_len = strlen(source);
@@ -47,26 +121,32 @@ void change_location(char* location){
    for(i=0;i<20;i++){
      printf("\n");
    }
-   take_directions();
 }
 
-void execute(char* cmd){
+void execute(char* cmd, int socket_id){
   if(strncmp(cmd,"go_to",5)==0){
     char* location;
     strsep(&cmd," ");
     location = cmd;
     change_location(location);
+    take_directions(socket_id);
+  }else if(strncmp(cmd,"compose",7)==0){
+    printf("You typed 'compose'\n");
+    compose(socket_id);
+    take_directions(socket_id);
+  }else{
+    printf("Not a valid command\n");
   }
 }
 
-void take_directions(){
+void take_directions(int socket_id){
   char buffer[256];
   char final[256];
 
   printf("Enter your command: ");
   fgets(buffer,MAXLEN,stdin);
   strip_add(buffer,final);
-  execute(final);
+  execute(final, socket_id);
 }
 
 void my_ls(){
@@ -108,7 +188,7 @@ void enter_mail(int socket_id){
     for(i=0;i<10;i++){
       printf("\n");
     } 
-    take_directions();
+    take_directions(socket_id);
 }
 
 void sign_in(int socket_id){

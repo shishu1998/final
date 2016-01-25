@@ -20,45 +20,6 @@ static void sighandler(int signo) {
   }
 }
 
-int count_tokens( char *line, char *delim ) {
-  int tokens = 0;
-  char *dup = strdup( line );
-  while ( dup ) {
-    //char *del = (char *)delim;
-    strsep( &dup, delim );
-    tokens++;
-  }
-  return tokens;
-}
-
-/*======== char ** parse_line() ==========
-  Inputs:  char *line 
-  Returns: Array of strings where each entry is a token 
-  separated by delim
-  If line contains multiple tokens separated by delim, this 
-  function will put each token into an array of strings
-  ====================*/
-
-char **parse_line( char *line, char *delim ) {
-  
-  int i;
-  char *dup = strdup( line );
-  int len = count_tokens( dup, delim );
-  //printf( "len[%d] \n", len );
-  char **array_tokens = malloc( sizeof(*array_tokens) * len+1 );
-  char *token;
-  if ( array_tokens ) {
-    for ( i = 0; i < len; i++ ) {
-      token = strsep( &line, delim );
-      array_tokens[i] = malloc( sizeof( *array_tokens[i] * 11 ) );
-      strcpy( array_tokens[i], token );
-      //printf( "array_tokens: %s\n", token );
-    }
-  }
-  array_tokens[i++] = NULL;
-  return array_tokens;
-}
-
 int main(int argc, char *argv[]) {
 
   p = generate_hand(p);
@@ -135,7 +96,8 @@ int main(int argc, char *argv[]) {
       bzero(buffer,256);
       fgets(buffer,255,stdin);
 
-      char * scard;
+      char * scard1;
+      char * scard2;
       int num = atoi(buffer);
       printf( "debugging\n");
       if (num==p.num_cards){
@@ -144,7 +106,8 @@ int main(int argc, char *argv[]) {
 	      printf( "debugging\n");
 	      p.num_cards++;
 	      printf( "debugging\n");
-	      scard = "draw";
+	      scard1 = "draw";
+	      scard2 = "draw";
       }
       else{
       	card c = p.cards[num];
@@ -153,24 +116,29 @@ int main(int argc, char *argv[]) {
       	char svalue[100];
       	sprintf(svalue, "%d", value);
       	char cvalue[100];
-      	sprintf(cvalue, "%d", color);	
-      	scard = strcat(svalue, ",");
-      	scard = strcat(scard, cvalue);
+      	scard1 = svalue;
+      	sprintf(cvalue, "%d", color);
+      	scard2 = cvalue;
       	p = remove_card(p, num);
-      	printf("tried to stringify a card in client: %s \n", scard);
+      	printf("tried to stringify a card in client: %s %s\n", scard1, scard2);
       }
 
       /* Send message to the server */
       //printf("five (w)\n");
       //n = write(sockfd, buffer, strlen(buffer));
-      n = write(sockfd, scard, strlen(scard));
-      //char **crd = parse_line( scard, "," );
-    }
+      n = write(sockfd, scard1, strlen(scard1));
+    
     if (n < 0) {
       perror("ERROR writing to socket");
       exit(1);
     }
-    
+      sleep(1);
+      n = write(sockfd, scard2, strlen(scard2));
+    }  
+    if (n < 0) {
+      perror("ERROR writing to socket");
+      exit(1);
+    }
    
     /* Now read server response */
     bzero(buffer,256);

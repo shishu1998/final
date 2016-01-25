@@ -27,9 +27,7 @@ void clean_stdin(void)
     int c;
     do {
         c = getchar();
-//	printf("cl:getchar hang?\n");
     } while (c != '\n' && c != EOF);
-//	printf("cl:out of getchar\n");
 }
 
 int main(int argc, char *argv[])
@@ -68,7 +66,7 @@ int main(int argc, char *argv[])
 		old_main();
 
 		if (BID_MODE != 0) {
-			n = write(sockfd, my_paddle, strlen(my_paddle)+1); //tbh does nothing but sync read/write in client/socket
+			n = write(sockfd, my_paddle, strlen(my_paddle)+1);
 
 			memset(buffer, 0, sizeof(buffer)); // better than bzero
 			printf("Your bid: ");
@@ -82,13 +80,7 @@ int main(int argc, char *argv[])
 			if (n < 0) 
 				 error("ERROR writing to socket");
 			bzero(buffer,SIZEBUFF);
-/*
-			n = read(sockfd,buffer,SIZEBUFF-1);
-			if (n < 0) 
-				 error("ERROR reading from socket");
-//			printf("client buffer: %s\n",buffer);
-			printf("%s\n", buffer);
-*/
+
 			//check for errors
 			if (errno) printf("error %d: %s\n", errno, strerror(errno));
 		} else if (REQ_MODE != 0) {

@@ -1,7 +1,9 @@
-/* A simple server in the internet domain using TCP
+/* 
+	CODE ADAPTED FROM http://www.linuxhowtos.org/C_C++/socket.htm
+	"A TCP server in the internet domain
 	The port number is passed as an argument 
 	This version runs forever, forking off a separate 
-	process for each connection
+	process for each connection"
 */
 #include <stdio.h>
 #include <unistd.h>
@@ -14,10 +16,6 @@
 
 #include "writing.h"
 
-/*
-	CODE ADAPTED FROM http://www.linuxhowtos.org/C_C++/socket.htm
-*/
-
 #define SIZEBUFF 256
 
 /* potential ending condition: all bidders leave */
@@ -26,6 +24,8 @@ int auction_started = 0;
 
 void dostuff(int); /* function prototype */
 void write_bid(char *, char *); // check if you can write the new bid, and then do the sem/shmem stuff
+void create_bid_history(); // puts together the bid history in a "nicer" way
+
 void error(const char *msg)
 {
 	perror(msg);
@@ -35,6 +35,7 @@ void error(const char *msg)
 static void sighandler(int signo) {
 	if (signo == SIGINT) {
 		printf("ctrl c was hit\n");
+		create_bid_history();
 		exit(0);
 	}
 }
@@ -90,8 +91,9 @@ int main(int argc, char *argv[])
 
 /******** DOSTUFF() *********************
  There is a separate instance of this function 
- for each connection.  It handles all communication
- once a connection has been established.
+ for each connection.  It deals with the client's
+ request, whether for bidding, viewing data, or
+ quitting.
  *****************************************/
 void dostuff (int sock)
 {
@@ -197,4 +199,26 @@ void write_bid(char *offer, char* pno) {
 	} else {
 		wait(&status);
 	} 
+}
+
+void create_bid_history() {
+	char line1[256];
+	char line2[256];
+	char line3[256];
+
+	FILE *bh_p = fopen("bid_history.txt", "a");
+	FILE *bp = fopen(bidderfile, "r");
+	FILE *cbp = fopen(bidfile, "r");
+
+	// read 0
+	fscanf(cbp, "%s", line2);
+	
+	while (fscanf(bp, "%s", line1) == 1) {
+		fscanf(cbp, "%s", line2);
+		fprintf(bh_p, "%s: %s\n", line1, line2);
+	}
+
+	fclose(bh_p);
+	fclose(bp);
+	fclose(cbp);
 }

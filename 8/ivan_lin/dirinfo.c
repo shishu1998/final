@@ -31,8 +31,9 @@ int read_top_level(char *path, int map_file, int level){
 
     if (strcmp(temp,"/..")!=0 && strcmp(temp,"/.")!=0){
       int i;
-      for (i=0;i<level;i++)
-	printf("  "); 
+      /*for (i=0;i<level;i++){
+        printf("  ");
+        }*/ 
       if (dir_file->d_type == DT_DIR){
 	printf("%s\n",name);
 	read_top_level(name, map_file, level+1);

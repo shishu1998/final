@@ -106,8 +106,9 @@ int main(){
   //Opening file
   file=open(response, O_RDWR, 0644);
   char buffer[1000];
-  char bufferm[1000];
   char buffer2[1000];
+  char buffer3[1000];
+  char buffer4[1000];
   
   int ch;
   int numread;
@@ -186,6 +187,16 @@ int main(){
       overallid--;
       printf("Overall ID of your cursor is %d\n",overallid);
       printf("Which is %c\n\n",buffer[overallid]);
+      //this strncpy causes a segmentation fault
+      strncpy(buffer2,buffer,overallid+1); //copy first part of buffer to buffer2
+      strcat(buffer[overallid],buffer2); //add new char to buffer2
+      strcpy(buffer3,buffer+overallid); //copy rest of string to buffer3
+      strcat(buffer3,buffer2);
+      printf(buffer2);
+      
+
+
+
       break;
     }
   }

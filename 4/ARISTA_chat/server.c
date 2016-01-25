@@ -132,7 +132,7 @@ int main() {
 		if (num_tutors < MAX_CLIENTS) {
 			printf("Adding tutor - %d\n", socket_client);
 			tutors[num_tutors][0] = socket_client;
-			tutors[num_tutors][1] = 1;
+		//	tutors[num_tutors][1] = 1;
 			num_tutors++;
 			printf("# tutors %d\n", num_tutors);
 		}
@@ -145,9 +145,10 @@ int main() {
 	}
 	else {
 		if (num_tutees < MAX_CLIENTS) {
-			printf("Adding tutee\n");
+			printf("Adding tutee - %d\n", socket_client);
 			tutees[num_tutees][0] = socket_client;
 			tutees[num_tutees][1] = 1;
+			// insert tutee subject requested
 			num_tutees++;
 		}
 		else {
@@ -158,21 +159,23 @@ int main() {
 		}
 	}
 	
-	printf("%d\n", tutors[0][0]);
-	printf("%d\n", tutors[1][0]);
-
 	int pid = fork();
     if (pid == 0){
-		if (num_tutors >= 2) {  // find_tutor(num_tutees-1) 
-			char msg[] = "You have been connected to a tutor.";
-			write(tutors[0][0], msg, sizeof(msg));
+		if (type == TUTEE_ID) {  // find_tutor(num_tutees-1) 
+			int tutee_ind = num_tutees-1;
+			int tutor_ind = find_tutor(tutee_ind);
+			if (tutor_ind != -1) {
+				char msg[] = "You have been connected to a tutor.";
+				write(tutee_ind, msg, sizeof(msg));
+				tutors[tutor_ind][1] = 1;
 
-			while(1) {
-				relay_msg(tutors[0][0], tutors[1][0]);
-				relay_msg(tutors[1][0], tutors[0][0]);
-				// relay tutee -> tutor
-				// if relay is -1, close chat
-				// relay tutor -> tutee
+				while(1) {
+					relay_msg(tutees[tutee_ind][0], tutors[tutor_ind][0]);
+					relay_msg(tutors[tutor_ind][0], tutees[tutee_ind][0]);
+					// relay tutee -> tutor
+					// if relay is -1, close chat
+					// relay tutor -> tutee
+				}
 			}
 		}
 

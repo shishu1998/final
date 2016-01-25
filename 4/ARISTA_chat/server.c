@@ -18,7 +18,7 @@
 #define HISTORY_ID 4
 
 /* stores tutor client info
-  * 	0: client socket id
+  * 0: client socket id
   *	1: availability - 0 (free), 1 (in chat)
   *	2: math skill
   *	3: science skill
@@ -29,8 +29,8 @@ int num_tutors = 0;
   
 /* stores tutee client info
   *	0: client socket id
-  * 	1: availability - 0 (free), 1 (in chat)
-  * 	2: subject - 2 (math), 3 (science), 4 (history)
+  * 1: availability - 0 (free), 1 (in chat)
+  * 2: subject - 2 (math), 3 (science), 4 (history)
   **/
 int tutees[MAX_CLIENTS][3] = { 0 };
 int num_tutees = 0;
@@ -100,6 +100,9 @@ void close_chat(int tutor_ind, int tutee_ind) {
 	}
 }
 
+void close_tutor(int tutor_ind) {
+}
+
 static void sighandler(int signo) {
 	if (signo == SIGINT) {
 		printf("Server closing\n");
@@ -119,9 +122,12 @@ int main() {
 	 
   	printf("<server> listening: %d\n", socket_id);
   	socket_client = accept( socket_id, NULL, NULL );
+	sleep(2);
   	printf("<server> connected: %d\n", socket_client );
 	
-	int type = TUTOR_ID;  // get type from client
+	int type; // = TUTOR_ID;  // get type from client
+	read(socket_client, &type, sizeof(type));
+	printf("type - %d\n", type);
 	if (type == TUTOR_ID) {
 		if (num_tutors < MAX_CLIENTS) {
 			printf("Adding tutor - %d\n", socket_client);
@@ -186,7 +192,7 @@ int main() {
 
     } else {
 		// shift array down, adjust
-        close(socket_client);
+        // close(socket_client);
     }
   }
 

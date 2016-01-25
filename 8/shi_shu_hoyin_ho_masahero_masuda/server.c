@@ -25,8 +25,8 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
   int to_player;
   char buffer[100];
   int counter = 0;
-  card *redCards = (card *)malloc(sizeof(card)*7);
-  card *greenCard = (card *)malloc(sizeof(card));
+  card redCards[7];
+  card greenCard = deal_greencard(greenDeck);
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
   remove("pipe");
@@ -40,16 +40,15 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
     to_player = open(buffer,O_WRONLY);
     remove(buffer);
     while (counter < 7){
-      redCards[counter] = *deal_redcard(redDeck);
+      redCards[counter] = deal_redcard(redDeck);
       redCards[counter].owner=ids[freeID];
       counter++;
     }
-    greenCard = *deal_greencard(greenDeck);
-    greenCard->owner=ids[freeID];
-    write(to_player,ids[freeID],size(int));
+    greenCard.owner=ids[freeID];
+    write(to_player,&ids[freeID],sizeof(int));
     ids[freeID] = 0;
-    write(to_player,redCards,sizeof(card)*7);
-    write(to_player,greenCard,sizeof(card));
+    write(to_player,&redCards,sizeof(card)*7);
+    write(to_player,&greenCard,sizeof(card));
     return to_player;
   }
   else{
@@ -107,7 +106,7 @@ int main(){
 
   while(1){
     printf("waiting for players to connect\n");
-    to_player = handshake(&from_player);
+    to_player = handshake(&from_player,red,green);
     
     if(to_player != 0){
       

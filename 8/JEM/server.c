@@ -9,6 +9,14 @@
 
 #include "server.h"
 
+int pass_note( int client_from, int client_to, char* note ) {
+  read(client_from, note, sizeof(note));
+  printf("<server> received [%s]\n", note);
+  write(client_to, note, sizeof(note));
+  printf("<server> sent [%s]\n", note);
+  return 0;
+}
+
 int main() {
 
   char input[256];
@@ -36,12 +44,12 @@ int main() {
 
     if ( pid == 0 ) { //check for child this is the subserver now!!
       printf("<server> connected: %d\n", socket_client );
-      write( socket_client, "success", 8 );
+      while(1){
+	sleep(1);
+	write( socket_client, "success", 8 );
+      }
       close(socket_client);
       exit(0); 
     }
   }
 }
- 
-
-

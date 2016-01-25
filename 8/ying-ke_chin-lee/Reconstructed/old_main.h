@@ -5,7 +5,9 @@
 #include "lot_struct.h"
 #include "display.h"
 
-int BID_MODE = 0;
+int BID_MODE = 0; /* ya know, I probably should have done these three in binary... */
+int REQ_MODE = 0;
+int QUIT_MODE = 0;
 //#include "writing.h"
 
 /*
@@ -19,19 +21,19 @@ void init_lots(Lot *lots) {
 	strcpy(lots[0].url, "http://pre04.deviantart.net/05eb/th/pre/f/2015/134/b/f/the_scream_minion_by_ying_min-d8tc8rf.jpg");
 	strcpy(lots[0].description, "masterpiece by Munck");
 	lots[0].number = 1;
-	lots[0].hi_bid = 0;
+	lots[0].curr_bid = 0;
 
 	strcpy(lots[1].name, "The Scream");
 	strcpy(lots[1].url, "http://pre04.deviantart.net/05eb/th/pre/f/2015/134/b/f/the_scream_minion_by_ying_min-d8tc8rf.jpg");
 	strcpy(lots[1].description, "masterpiece by Munck");
 	lots[1].number = 1;
-	lots[1].hi_bid = 0;
+	lots[1].curr_bid = 0;
 
 	strcpy(lots[2].name, "The Scream");
 	strcpy(lots[2].url, "http://pre04.deviantart.net/05eb/th/pre/f/2015/134/b/f/the_scream_minion_by_ying_min-d8tc8rf.jpg");
 	strcpy(lots[2].description, "masterpiece by Munck");
 	lots[2].number = 1;
-	lots[2].hi_bid = 0;
+	lots[2].curr_bid = 0;
 }
 
 int old_main() {
@@ -51,25 +53,25 @@ int old_main() {
 	scanf("%s", b);
 	if (strcmp(b, "?") == 0) {
 		BID_MODE = 0;
+		REQ_MODE = 1;
+		QUIT_MODE = 0;
 		print(*pcurr_lot);
 		display(lots[0]);
 		//free(pcurr_lot);
 	} else if (strcmp(b, "b") == 0) {
 		BID_MODE = 1;
+		REQ_MODE = 0;
+		QUIT_MODE = 0;
 		printf("Bidmode = %d\n", BID_MODE);
 	} else {
 		BID_MODE = 0;
+		REQ_MODE = 0;
+		QUIT_MODE = 1;
 		if (strcmp(b, "x") == 0) printf("You chose to exit, exiting!\n");
 		else printf("Invalid entry; exiting.\n");
 		
 		// tell server someone has left
-/*
-		// nah leave til later you have other problems lol
-		char *buffer = "gone";
-		portno = atoi(gettheportno);
-		sockfd
-*/
-		exit(0);
+	//	exit(0);
 	}
 //	} //okay once I comment out the while loop, it doesn't let me enter a new bid but it doesn't hang.
 	return 0;

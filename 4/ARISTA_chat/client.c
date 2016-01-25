@@ -5,6 +5,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -36,13 +37,12 @@ int connect_server(char *hostname) {
 	printf("%s\n", hostname);
 	if (h == NULL) {
 		printf("ERROR - cannot find hostname.\n");
+		//127.0.0.1 is the "loopback" address of any machine
+		inet_aton( "127.0.0.1", &(sock.sin_addr) );
 		return -1;
 	}
 	addr = (struct in_addr *) h->h_addr;
 	inet_ntoa(*addr);
-//	printf("%s\n",*addr);
-    //127.0.0.1 is the "loopback" address of any machine
-//    inet_aton( "127.0.0.1", &(sock.sin_addr) );
 	sock.sin_addr = *addr;
     bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   

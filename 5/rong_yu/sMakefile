@@ -1,0 +1,6 @@
+build: client.c control.c
+	gcc -o control.out control.c
+	gcc -o client.out client.c
+
+clean:
+	rm *.out

@@ -7,71 +7,74 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 
 #include "len_prefix.h"
+#include "hostname.h"
 #include "shared.h"
 #include "client.h"
 
-int running = 1;
-
-static void sighandler(int signo) {
-  if (signo == SIGINT) {
-    running = 0;
-  } else if (signo == SIGUSR1) {
-    printf("\nThe server has shutdown.\n");
-    running = 0;
-  }
-}
+static int running = 1;
 
 int main(int argc, char * argv[]) {
   int socket_id, e;
   char * hostname;
 
-  struct sigaction action = {
-    .sa_handler = sighandler,
-    .sa_flags = 0
-  };
-  sigemptyset(&action.sa_mask);
+  hostname = check_args(argc, argv);
 
-  sigaction(SIGINT, &action, NULL);
-  sigaction(SIGUSR1, &action, NULL);
-
-  if (argc < 2) {
-    printf("Usage: client <hostname>\n");
-    exit(1);
-  } else {
-    hostname = argv[1];
-  }
+  setup_sig_handler();
 
   socket_id = connect_to_server(hostname, PORT);
 
   while (running) {
-    int bytes_read;
-    char input[256];
-    printf("> ");
-    fflush(stdout);
-
-    e = bytes_read = read(STDIN_FILENO, input, sizeof(input)-1);
-    check_errors_except("Error reading input", e, EINTR);
-    input[bytes_read++] = '\0';
-
-    if (!running) {
-      continue; // we usually C-c during input
-    } else if (is_exit(input)) {
-      running = 0;
-      continue;
-    }
-
-    e = send_request(input, bytes_read, socket_id);
-    check_errors("Error sending request", e);
-
-    e = handle_response(socket_id);
-    check_errors("Error handling response", e);
+    e = run(socket_id);
+    if (e <= 0) running = 0;
   }
+
   close(socket_id);
+}
+
+char * check_args(int argc, char * argv[]) {
+  if (argc < 2) {
+    printf("Usage: client <hostname>\n");
+    exit(1);
+  } else {
+    return argv[1];
+  }
+}
+
+int run(int socket_id) {
+  int bytes_read, e;
+  char input[256];
+
+  e = get_input(input, sizeof(input), &bytes_read);
+  if (e < 0 && errno == EINTR) return e;
+
+  if (!running) {
+    return 0; // we usually C-c or exit during input
+  }
+
+  e = send_request(input, bytes_read, socket_id);
+  if (e < 0) return e;
+
+  e = handle_response(socket_id);
+
+  return e;
+}
+
+int get_input(char * input, int input_size, int *bytes_read) {
+  int e;
+  printf("> ");
+  fflush(stdout);
+
+  e = *bytes_read = read(STDIN_FILENO, input, input_size-1);
+  input[*bytes_read++] = '\0';
+
+  if (*bytes_read == 1) {
+    running = 0;
+  }
+
+  return e;
 }
 
 int connect_to_server(char * hostname, int port) {
@@ -100,10 +103,6 @@ int connect_to_server(char * hostname, int port) {
   return socket_id;
 }
 
-int is_exit(char *input) {
-  return strcmp(input, "exit\n") == 0;
-}
-
 int send_request(char *req, size_t len, int socket_id) {
   return len_prefix_write(socket_id, req, len);
 }
@@ -122,18 +121,19 @@ int handle_response(int socket_id) {
   return e;
 }
 
-/*
- * Credit http://www.binarytides.com/hostname-to-ip-address-c-sockets-linux/
- */
-int hostname_to_ip(char * hostname, struct in_addr** addr) {
-  struct hostent *he = (void *)123456789;
 
-  he = gethostbyname(hostname);
-  if (he == NULL) {
-    return -1;
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    running = 0;
   }
+}
 
-  *addr = (struct in_addr *) he->h_addr;
+void setup_sig_handler() {
+  struct sigaction action = {
+    .sa_handler = sighandler,
+    .sa_flags = 0
+  };
+  sigemptyset(&action.sa_mask);
 
-  return 0;
+  sigaction(SIGINT, &action, NULL);
 }

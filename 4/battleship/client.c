@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv) {
 
-  int socket_id;
+  int socket_id, socket_server;
   char buffer[256];
   int i;
 
@@ -27,13 +27,19 @@ int main(int argc, char **argv) {
   bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   
   //attempt a connection
-  i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
-  printf("<client> connect returned: %d\n", i);
-
-  write( socket_id, "hello", 256 );
+  socket_server = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  printf("<client> connect returned: %d\n", socket_server);
 
   read( socket_id, buffer, sizeof(buffer));
   printf("<client> received: [%s]\n", buffer );
+  
+  i = write( socket_id, "hello", 6 );
+  //printf( "%d\n", i);
+
+  read( socket_id, buffer, sizeof(buffer) );
+  printf("<client> received: [%s]\n", buffer);
+  
+  //need a loop to keep prompting for more info after each player has gone.
   
   return 0;
 }

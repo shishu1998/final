@@ -256,16 +256,27 @@ user *server_acct_setup(char *buffer) {
 void server_send(char *buffer, user *session) {
   // Skip past the newline
   char *content = strchr(buffer, '\n') + 1;
+
+  // Get recipient info
+  char *recipient = malloc(256 + 1);
+  memset(recipient, 0, 256 + 1);
+  sscanf(buffer, "To: %255s", recipient);
+
+  // Append a slash, replacing the terminating null (there's another one right after it)
+  recipient[255] = '/';
   
   // Initialize filename
-  char *filename = server_dir(session->name);
+  char *filename = server_dir(recipient);
   filename = realloc(filename, strlen(filename) + 9);
+
+  // Done with sender ID buffer
+  free(recipient);
   
   // Append hashcode to filename
   char *hashcode = hash_code(content);
   strcat(filename, hashcode);
   free(hashcode);
-  
+
   // Write!
   FILE *mail = fopen(filename, "w");
   

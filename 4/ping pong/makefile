@@ -1,7 +1,11 @@
 run: ./interface
 
-./interface: interface.c
-	gcc -o interface interface.c -lncurses
+./interface: interface.o
+	gcc -o interface interface.o -lncurses
+
+interface.o: interface.c
+	gcc -c interface.c
 
 clean:
 	rm ./interface
+	rm interface.o

@@ -83,8 +83,41 @@ int main() {
   	socket_client = accept( socket_id, NULL, NULL );
   	printf("<server> connected: %d\n", socket_client );
 	
+	int type = TUTOR_ID;  // get type from client
+		if (type == TUTOR_ID) {
+			if (num_tutors < MAX_CLIENTS) {
+				printf("Adding tutor - %d\n", socket_client);
+				tutors[num_tutors][0] = socket_client;
+				num_tutors++;
+				printf("# tutors %d\n", num_tutors);
+			}
+			else {
+				char msg[100];
+				sprintf(msg, "XSorry, too many clients. Come back later.\n");
+				write(socket_client, msg, sizeof(msg));
+				close(socket_client);
+			}
+		}
+		else {
+			if (num_tutees < MAX_CLIENTS) {
+				printf("Adding tutee\n");
+				tutees[num_tutees][0] = socket_client;
+				num_tutees++;
+			}
+			else {
+				char msg[100];
+				sprintf(msg, "XSorry, too many clients. Come back later.\n");
+				write(socket_client, msg, sizeof(msg));
+				close(socket_client);
+			}
+		}
+		
+		printf("%d\n", tutors[0][0]);
+		printf("%d\n", tutors[1][0]);
+
 	int pid = fork();
     if (pid == 0){
+		/**
     	int type = TUTOR_ID;  // get type from client
 		if (type == TUTOR_ID) {
 			if (num_tutors < MAX_CLIENTS) {
@@ -116,6 +149,7 @@ int main() {
 		
 		printf("%d\n", tutors[0][0]);
 		printf("%d\n", tutors[1][0]);
+		**/
 		if (num_tutors >= 2) {
 			char msg[] = "You have been connected to a tutor.";
 			write(tutors[0][0], msg, sizeof(msg));

@@ -76,18 +76,7 @@ int main(int argc, char **argv) {
       hostname = argv[1];
   }
   
-  //create the socket
-  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
-  
-  //bind to port/address
-  struct sockaddr_in sock;
-  sock.sin_family = AF_INET;   
-  sock.sin_port = htons(PORT);
-  //Set the IP address to connect to
-  //127.0.0.1 is the "loopback" address of any machine
-  inet_aton( "127.0.0.1", &(sock.sin_addr) );
-  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
-  
+    
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", i);
 

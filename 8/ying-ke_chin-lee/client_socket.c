@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 			fgets(buffer, sizeof(buffer)-1, stdin);
 
 			n = write(sockfd,buffer,strlen(buffer));
-			printf("buffer is %s\n", buffer);
+//			printf("buffer is %s\n", buffer);
 			if (n < 0) 
 				 error("ERROR writing to socket");
 			bzero(buffer,SIZEBUFF);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 			n = write(sockfd, "2", 2); // I'm just taking 2 to mean REQ_MODE for server
 			if (n < 0) error("ERROR writing to socket");
 
-			printf("attempting a request at info, n = %d\n", n);
+//			printf("attempting a request at info, n = %d\n", n);
 			printf("CURRENT BID AT: ");
 
 			//check for errors

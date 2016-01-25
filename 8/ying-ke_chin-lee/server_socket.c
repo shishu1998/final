@@ -211,7 +211,6 @@ void create_bid_history() {
 	FILE *cbp = fopen(bidfile, "r");
 
 	// read 0
-//	fscanf(cbp, "%s", line2);
 	fscanf(cbp, "%s", line2);
 	
 	while (fscanf(bp, "%s", line1) == 1) {

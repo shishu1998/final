@@ -189,10 +189,9 @@ int main(){
   //creating & initialize  semaphore
   //int semid;
   //int ret;
-  struct sembuf new = {0, -1, SEM_UNDO};
   semid = semget(ftok("makefile",47), 1, 0644 | IPC_CREAT);
   printf("Trying to create the semaphore...\n");
-   union semun data;
+  union semun data;
   data.val = 1;
   printf("Trying to set the semaphore...\n");
   ret = semctl(semid,0,SETALL,&data);
@@ -205,9 +204,6 @@ int main(){
   int from_client;
 
   while(1){
-    printf("Trying to down the semaphore...\n");
-    ret = semop(semid, &new, 1);
-    
     printf("Wating for your Sea-Faring Opponent to Connect\n");
     to_client  = server_handshake(&from_client);
  
@@ -218,6 +214,24 @@ int main(){
     
     //Player 1 Takes the First Turn
     printf("first turn\n");
+    struct sembuf new = {0, -1, SEM_UNDO};
+    printf("Trying to access the semaphore...\n");
+    semid = semget(ftok("makefile", 47), 1, 0644);
+    if(semid == -1){
+      printf("There was a problem in accessing the semaphore\n");
+      printf("Error %d: %s\n", errno, strerror(errno));
+    } else{
+      printf("Access granted!\n");
+    } 
+    printf("Trying to down the semaphore...\n");
+    ret = semop(semid, &new, 1);
+    if(ret == -1){
+      printf("There was a problem in downing the semaphore\n");
+      printf("Error: %d: %s\n", errno, strerror(errno));
+      return 0;
+    } 
+    else
+      printf("Success!\n");
     printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
     scanf("%d", &incoord);
     if (isInRange(incoord) == 1){
@@ -252,18 +266,27 @@ int main(){
     //All Turns After First
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
-      sleep(5);
       printf("You Got Back from Opponent: %s\n", result);
       //Attempts to Down Semaphore to Access Shared Memory
+      new.sem_op = -1;
+      printf("Trying to access the semaphore...\n");
+      semid = semget(ftok("makefile", 47), 1, 0644);
+      if(semid == -1){
+	printf("There was a problem in accessing the semaphore\n");
+	printf("Error %d: %s\n", errno, strerror(errno));
+      } else{
+	printf("Access granted!\n");
+      } 
       printf("Trying to down the semaphore...\n");
       ret = semop(semid, &new, 1);
       if(ret == -1){
 	printf("There was a problem in downing the semaphore\n");
 	printf("Error: %d: %s\n", errno, strerror(errno));
 	return 0;
-      }
-      else
+      } 
+      else{
 	printf("Success!\n");
+      }
       //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote                                                                                    
       shmid = shmget(ftok("makefile", 13), sizeof(int), 0664);
       if(shmid == -1){

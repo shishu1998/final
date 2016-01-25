@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 typedef struct {int rows; int cols; int moves[20][20][2]; int shipnum; int ships[10];} board;
 
@@ -129,7 +132,7 @@ void printMyBoard(board *b){
 }
 
 void printOtherBoard(board *b){
-  char out[66]; //printing largest board
+  char out[66]; //printing largest possible board
   out[0]=' ';
   out[1]=' ';
   out[2]=' ';
@@ -223,6 +226,99 @@ void setBoard(board *new){
     }
   }
 }
+
+int random_int(int n) {
+  int urandom_handle = open("/dev/urandom", O_RDONLY);
+  int random;
+  read(urandom_handle, &random, 4);
+  close(urandom_handle);
+  return random%n;
+}
+
+void cpuSetBoard(board *new){
+  int sort[new->shipnum];
+  int i;
+  int count = 0;
+  for(i=7; i>1; i--){
+    int j;
+    for(j=0; j<new->shipnum; j++){
+      if(new->ships[j]==i){
+	sort[count]=j;
+	count++;
+      }
+    }
+  }
+
+  int hor[new->rows][new->cols];
+  int ver[new->rows][new->cols];
+  
+  for(i=0; i<new->rows; i++){
+    int j;
+    for(j=0; j<new->cols; j++){
+      new->moves[i][j][0]=-1;
+      new->moves[i][j][1]=0;
+      hor[i][j]=(new->cols)-j;
+      ver[i][j]=(new->rows)-i;
+    }
+  }
+
+  for(i=0;i<new->shipnum;i++){
+      int c=0;
+      int j;
+      for(j=0; j<new->rows; j++){
+	int k;
+	for(k=0; k<new->cols; k++){
+	  if(hor[j][k]>=(new->ships)[sort[i]]) c++;
+	  if(ver[j][k]>=(new->ships)[sort[i]]) c++;
+	}
+      }
+      
+      if(!c){
+	printf("The CPU is taking a while to find a random setup.  Consider using a larger board or fewer ships.\n");
+	cpuSetBoard(new);
+	return;
+      }
+      
+      int d = random_int(c);
+      int xcor;
+      int ycor;
+      int isHor;
+      for(j=0; j<new->rows; j++){
+	int k;
+	for(k=0; k<new->cols; k++){
+	  if(hor[j][k]>=(new->ships)[sort[i]]){
+	    d--;
+	    if(!d){
+	      xcor = j;
+	      ycor = k;
+	      isHor = 1;
+	    }
+	  }
+	}
+      }
+      for(j=0; j<new->rows; j++){
+	int k;
+	for(k=0; k<new->cols; k++){
+	  if(ver[j][k]>=(new->ships)[sort[i]]){
+	    d--;
+	    if(!d){
+	      xcor = j;
+	      ycor = k;
+	      isHor = 0;
+	    }
+	  }
+	}
+      }
+
+      if(isHor){
+	for(j=0; j<(new->ships)[sort[i]]; j++){
+	  new->moves[xcor][ycor+j][0]=sort[i];
+	  int k;
+	  for(k=xcor; k>=0 && hor[][]
+	}
+      }else{
+	
+      }
 
 void move(board *b){
   printf("Enter the coordinates of your guess, like 'A1' with the A capitalized.\n");

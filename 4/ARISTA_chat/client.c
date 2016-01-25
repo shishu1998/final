@@ -60,7 +60,6 @@ int main(int argc, char **argv) {
   int socket_id;
   char *hostname;
   char buffer[256];
-  int i;
   
   if (argc < 2) {
       printf("Usage: client <hostname>\n");
@@ -70,13 +69,13 @@ int main(int argc, char **argv) {
   }
     
   socket_id = connect_server(hostname);
-  printf("<client> connect returned: %d\n", i);
+  printf("<client> connect returned: %d\n", socket_id);
 	
   int type = 0;  // 0 (tutor) or 1 (tutee)
   // send type to server
   //i IS NOT A RETURN VALUE OF ANYTHING ? is it supposed to be the socket_id ?
 
-  while(i >= 0){
+  while(socket_id >= 0){
 
     printf("<client> waiting\n");
     char s[100];

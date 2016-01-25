@@ -13,11 +13,7 @@
 #include <signal.h>
 #include "players.c"
 
-typedef struct
-{
-  card top_card;
-  int position;
-} data;
+int *response;
 
 union semun {
   int val;
@@ -28,6 +24,7 @@ union semun {
 
 void sig_handler( int signo ) {
   
+  int *array;
   int shm_key, sem_key, shmid, semid;
   shm_key = ftok( "makefile", '2' );
   //sem_key = ftok( "makefile", '1' );
@@ -40,7 +37,7 @@ void sig_handler( int signo ) {
     //printf( "[Remove_SEMCTL]Errno: %d Error: %s\n\n", errno, strerror( errno ) );
 
     printf( "REMOVED SHARED MEMORY\n" );
-    shmid = shmget( shm_key, sizeof(int), 0644 );
+    shmid = shmget( shm_key, 3 * sizeof(int), 0644 );
     
     if ( shmctl( shmid, IPC_RMID, 0 ) == -1 )
       printf( "[Remove_SHMCTL]Errno: %d Error: %s\n\n", errno, strerror( errno ) );
@@ -51,7 +48,7 @@ void sig_handler( int signo ) {
 
 void incre_pos() {
 
-  int *current_pos;
+  int *array;
   int semid;
   //int semkey = ftok( "makefile", '1' ); //semaphore key
   int shmemkey = ftok("makefile", '2' ); //shared memory key
@@ -68,9 +65,9 @@ void incre_pos() {
     semop(semid, &sb, 1);
   */
   /* Get the key and attach */
-  int check = shmget(shmemkey, sizeof(int), 0644);
+  int check = shmget(shmemkey, 3 * sizeof(int), 0644);
   if(check != -1) {
-    current_pos = shmat(check, 0, 0);
+    array = (int *)shmat(check, 0, 0);
   } 
   else {
     printf( "%d, %s\n", errno, strerror( errno ) );
@@ -85,14 +82,14 @@ void incre_pos() {
   //fgets(input, 256, stdin);
   
   /* Change the int in the shared memory */
-  if ( *current_pos < desired_total + 3  )
-    (*current_pos)+=1;  
+  if ( array[0] < desired_total + 3  )
+    array[0] = array[0] + 1;  
   else 
-    *current_pos = 4;
+    array[0] = 4;
   
   /* Detach the shared memory*/
   //printf("Your new pos in the shared memory is: %d\n", *current_pos);
-  shmdt(current_pos);
+  shmdt( (void *)array );
 
   //sb.sem_op = 1;
   //semop(semid, &sb, 1);
@@ -102,11 +99,11 @@ void incre_pos() {
 void doprocessing (int sock) {
   //printf( "debugging\n" );
   /* Reach into shared memory */
-  int *x;
+  int *array;
   int shmemkey = ftok("makefile", '2' ); //shared memory key
   //printf( "%d\n", shmemkey );
-  int shmid = shmget( shmemkey, sizeof(int), 0644 );
-  x = shmat( shmid, 0, 0 );
+  int shmid = shmget( shmemkey, 3 * sizeof(int), 0644 );
+  array = (int *)shmat( shmid, 0, 0 );
   //printf( "debugging\n" );
 
   //printf("current_position: %d\n", current_position);
@@ -122,12 +119,11 @@ void doprocessing (int sock) {
   //if (sock==player_ids[current_position]){
   
   /* Check the pos in shared mem against sockfd */
-  sleep(2);
-  printf( "sock:%d == %d:mem\n", sock, *x );
-  if ( *x == sock ) {
+  sleep(1);
+  printf( "sock:%d == %d:mem\n", sock, array[0] );
+  if ( array[0] == sock ) {
     //printf( "debugging\n" );
-    shmdt(x);
-  
+    shmdt( (void *)array );
     sleep(1); //GO TO SLEEP and wait for read to happen first    
     int p = write(sock, "go", sizeof("go"));
     
@@ -137,25 +133,53 @@ void doprocessing (int sock) {
       exit(1);
     }
   
-  
-    
     int n;
-    char buffer[256];
-    bzero(buffer,256);
+    card read_card;
+    n = read(sock, &read_card, sizeof(card));
+    printf("Bytes read: %d\n", n);
+    printf("error #%d: %s\n", errno, strerror(errno));
+    printf("read_card: %d, %d\n",
+	   read_card.color,
+	   read_card.value);
+    printf("\n");
+
+    //bzero(buffer,256);
     //printf("two (r)\n");
-    n = read(sock,buffer,255);
+    //n = read(sock,scard,sizeof(card));
+    //printf( "Color:%d Value:%d\n", scard->color, scard->value );
+    //printf("Here is the message: %s\n",buffer3);
     //printf("able to get pass two\n");
-  
-  
     if (n < 0) {
       perror("ERROR reading from socket");
       exit(1);
     }
+    sleep(1);
   
-    printf("Here is the message: %s\n",buffer);
-    //printf("three (w)\n");
+    
+    array = (int *)shmat( shmid, 0, 0 );
+    //Need to turn buffer and buffer3 into ints
+    /*************************************************************
+    if ( array[1] == buffer || array[2] == buffer3 ) {
+      array[1] = buffer;
+      array[2] = buffer3;
+    }
+    *************************************************************/
+    printf( "%d %d\n", array[1], array[2] );
+    //array[1] color
+    //array[2] value
+    /*char cvalue[100];
+      sprintf(cvalue, "%d", array[2]);
+      char svalue[100];
+      sprintf(svalue, "%d", array[1]);	
+      //printf("three (w)\n");
+      char *topcard = strcat( svalue, ",");
+      topcard = strcat( topcard, cvalue );
+      printf( "buffer: %s == %s topcard\n", buffer, topcard );
+    */
+    shmdt( (void *)array );
     n = write(sock,"I got your message",18);
-  
+    
+    
     //current_position++;
   
     if (n < 0) {
@@ -188,7 +212,7 @@ int main( int argc, char *argv[] ) {
   /* Shared memory */
   
   int shm_key, sem_key, shmid, semid;
-  int *x;
+  int *array;
   //char *access;
   //struct sembuf sb;
   //sb.sem_flg = SEM_UNDO;
@@ -203,17 +227,19 @@ int main( int argc, char *argv[] ) {
     
   //union semun su;
   printf( "CREATE SHARED MEMORY\n\n" );
-  shmid = shmget( shm_key, sizeof(int), 0644 | IPC_CREAT );
+  shmid = shmget( shm_key, 3 * sizeof(int), 0644 | IPC_CREAT );
 
   if ( shmid == -1 )
     printf( "[SHMGET]Errno: %d Error: %s\n", errno, strerror( errno ) );
   
-  x = shmat(shmid, 0, 0);
+  array = (int *)shmat(shmid, 0, 0);
   //if ( *x == -1 )
   //printf( "[shmat]Errno: %d Error: %s", errno, strerror( errno ) );
-  *x = 4;
-  printf( "<server> Set int to %d\n", *x );
-  shmdt(x);
+  array[0] = 4;
+  array[1] = 20; //any color
+  array[2] = 20; //any value
+  printf( "<server> Set int to %d\n", array[0] );
+  shmdt( (void *)array );
       
   //printf( "CREATE SEMAPHORE\n\n" );
   //semid = semget( sem_key, 1, 0644 | IPC_CREAT | IPC_EXCL);

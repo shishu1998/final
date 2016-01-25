@@ -16,9 +16,9 @@ LIST OF FILES IN REPO (and brief description):
 		Statement of project, description of user interface and technical design, loose timeline.
 	README
 		See "README" file.
-		(This file right here that explains the other files as well as itself.  It's very recursive.)
+		(This file right here that explains the other files as well as itself.  It's very philosophical.)
 	TODO
-		Things...to do.  At this moment, still needs cleanup because it has also been very updated as I completed some parts of it.
+		Things...to do.
 	makefile
 		run "make" to make it make executables.
 
@@ -36,7 +36,9 @@ THE CODE FILES and description of functions therein:
 
 	server_socket.c
 		- includes "writing.h"
-		- void sighandler(int signo) -> exits upon Ctrl-C but does nothing special as of yet.
+		- void sighandler(int signo) -> exits upon Ctrl-C, no longer strictly needed (replaced by...)
+		- void quitter() -> activates on signal when all the bidders have left the auction 
+		- end_auction() -> actually ends the auction and creates bidding history file
 		- int main() -> connects to client, forks
 		- dostuff() -> responds and does what client wants
 		- void write_bid(char *) -> tries to write bid, uses shared memory

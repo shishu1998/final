@@ -9,8 +9,9 @@
 #include <arpa/inet.h>
 
 // File system libraries
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include <errno.h>
 #include <string.h>
@@ -27,6 +28,7 @@ void server_talk(int);
 user *server_login(char*);
 user *server_acct_setup(char*);
 void server_send(char*, user*);
+void server_get(int, user*);
 
 // User operations
 user *user_find(char*, FILE*);
@@ -48,8 +50,8 @@ void strip_add(char*, char*);
 
 //File navigation functions
 void change_location(char*); //moves between subfolders
-void execute(char*); //executes user's command
-void take_directions(); //prompts user for a command, then reads it
+void execute(char*,int); //executes user's command
+void take_directions(int); //prompts user for a command, then reads it
 void my_ls(); //lists contents of current location
 void enter_mail(int); //starting screen for file navigation
 

@@ -13,14 +13,14 @@
 
 
 int ships[5] = {0, 0, 0, 0, 0};
-
+/*
 union semun {
    int val;
    struct semid_ds *buf;
    unsigned short *array;
    struct seminfo *_buf;
 };
-
+*/
 int server_handshake(int *from_client){
 
   int to_client;
@@ -49,33 +49,16 @@ static void sighandler(int signo){
   }
 }
 
-
-/*======== int makeFleet() ==========
-Inputs: 
-int place: user's inputted placement of a ship
-int places[]: array holding all ship places
-
-Result:
-fills up places[] with user's inputs (sets coordinates of ships)
-
-====================*/
-int makeFleet(){
-  int pos;
-  int i;
-  for(i = 0; i<ships.length;i++){
-    printf("Input a ship location on the grid (Note input as two-digit e.g 11 instead of 1,1):");
-    scanf("%d", &pos);
-    if (dontBreak(pos) == 1)
-      ships[i] = pos;
-    else{
-      while (dontBreak(pos) != 1){
-	printf("Please enter a valid location: ");
-	scanf("%d", &pos);
-      }
-      ships[i] = pos;
-    }
+int isInShips(int pos){
+  int okay = 1;
+  if (pos == ships[0] ||
+      pos == ships[1] ||
+      pos == ships[2] ||
+      pos == ships[3] ||
+      pos == ships[4]){
+    okay = 0;
   }
-  
+  return okay;
 }
 
 /*======== int dontBreak()  ==========
@@ -91,41 +74,26 @@ if okay = 0, then there's a problem.
 
 ====================*/
 int dontBreak(int pos){
-  int okay = 0;
-  //check to see within range
-  
-  if ( ((pos > 10)&&(pos < 16)) ||
-       ((pos > 20)&&(pos < 26)) ||
-       ((pos > 30)&&(pos < 36)) ||
-       ((pos > 40)&&(pos < 46)) ||
-       ((pos > 50)&&(pos < 56)) ){
-    okay = 1;
+  if ( !( ((pos > 10)&&(pos < 16)) ||
+	 ((pos > 20)&&(pos < 26)) ||
+	 ((pos > 30)&&(pos < 36)) ||
+	 ((pos > 40)&&(pos < 46)) ||
+	 ((pos > 50)&&(pos < 56))  )){
+    return 0;
   }
 
   //check to see no double entries
-  okay = isInShips(pos)
-  
-  return okay;
-}
+  int okay = isInShips(pos);
 
-int isInShips(int pos){
-  int okay = 1;
-  if (pos == ships[0] ||
-      pos == ships[1] ||
-      pos == ships[2] ||
-      pos == ships[3] ||
-      pos == ships[4]){
-    okay = 0;
-  }
   return okay;
 }
 
 int isHit(int pos){
-  int hit =  isInShips(pos);
+  int hit = isInShips(pos);
 
   if (hit){
     int i;
-    for (i = 0; i < ships.length; i++)
+    for (i = 0; i < 5 ; i++)
       if (ships[i] == pos)
 	ships[i] = 0;
   }
@@ -146,48 +114,61 @@ int isAllHit(){
 
   return allhit;
 }
-
-//THIS GONNA HAVE TO BE MOVED TO MAIN
-void server_game_control(int to_client, int from_client, int *currentcoordinate) {
-  int coord;
-  char result[100];
-    
-  while( read(from_client, result, sizeof(result) )){
-    //Reads from Opponent Whether or Not Your Hit was successful
-    printf("You Got Back from Opponent: %s\n", result);
-    //Attempts to Down Semaphore to Access Shared Memory
-    //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote 
-    coord = *currentcordinate;
-    if (isHit(coord)){
-      if (isAllHit()){
-	strncpy(result,"All Ships Eliminated!",sizeof(result));
-	write(to_client, result, sizeof(result) );
-      }
-      else{
-	strncpy(result,"Ship Hit!",sizeof(result));
-	write(to_client, result, sizeof(result) );
-      }
-    }
-    else{
-      strncpy(result,"Ship Missed!",sizeof(result));
-      write(to_client, result, sizeof(result) );
-    }
-    strncpy(result,"",sizeof(result));
-    //Player 1 Gives Program a Ship Location
-    printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
+/*======== int makeFleet() ==========                                                                                                                                                
+Inputs:                                                                                                                                                                              
+int place: user's inputted placement of a ship                                                                                                                                       
+int places[]: array holding all ship places                                                                                                                                          
+                                                                                                                                                                                     
+Result:                                                                                                                                                                              
+fills up places[] with user's inputs (sets coordinates of ships)                                                                                                                     
+                                                                                                                                                                                     
+====================*/
+void makeFleet(){
+  int pos;
+  int i;
+  for(i = 0; i < 5;i++){
+    printf("Input a ship location on the grid (Note: Grid is 5x5 and Input as coordinate as one number e.g 11 instead of 1,1): ");
     scanf("%d", &pos);
-    //Ship Location is Put Into Shared Memory
-    //Semaphore is Upped
+    printf ("%d\n",pos);
+    if (dontBreak(pos) == 1)
+      ships[i] = pos;
+    else{
+      while (dontBreak(pos) != 1){
+	printf("Please enter a valid location: ");
+	scanf("%d", &pos);
+      }
+      ships[i] = pos;
+    }
   }
+
 }
 
 
-
 int main(){
+
   signal( SIGINT, sighandler );
   //creating & initializing shared memory and semaphore
   //create & initialize shared mem
-  int shmid = shmget(ftok("makefile",13),sizeof(int), 0664| IPC_CREAT | IPC_EXCL);
+  
+  //REMOVE START
+  int semid = semget(ftok("makefile", 47), 1, 0644);
+  printf("Removing the semaphore...\n");
+  int ret = semctl(semid, 0, IPC_RMID);
+  if (ret == -1){
+    printf("There was a problem in removing the semaphore\n");
+    printf("Error %d: %s\n", errno, strerror(errno));
+  }
+  int shmid = shmget(ftok("makefile", 13),sizeof(int), 0664);
+  printf("Removing the shared memory...\n");
+  ret = shmctl(shmid, IPC_RMID, 0);
+  if(ret == -1){
+    printf("There was a problem in removing the shared memory\n");
+    printf("Error %d: %s\n", errno, strerror(errno));
+  }
+  //REMOVE END
+  
+
+  shmid = shmget(ftok("makefile",13),sizeof(int), 0664| IPC_CREAT | IPC_EXCL);
   printf("Trying to create the shared memory...\n");
   if(shmid == -1){
     printf("There was a problem in creating the shared memory\n");
@@ -200,15 +181,15 @@ int main(){
   if(*currentcoordinate == -1){
     printf("There was a problem in attaching the shared memory to a variable\n");
     printf("Error: %d: %s\n", errno, strerror(errno));
-    return;
+    return 0;
   } else{
     printf("Success!\n");
   }
   *currentcoordinate = 0;
 
   //creating & initialize  semaphore
-  int semid;
-  int ret;
+  //int semid;
+  //int ret;
   struct sembuf new = {0, -1, SEM_UNDO};
   semid = semget(ftok("makefile",47), 1, 0644 | IPC_CREAT);
   printf("Trying to create the semaphore...\n");
@@ -229,25 +210,49 @@ int main(){
     printf("Success!\n");
   }
   
+  
   //initialize game parameters
   makeFleet();
-  
   int to_client;
   int from_client;
+
   while(1){
     printf("Trying to down the semaphore...\n");
     ret = semop(semid, &new, 1);
-
+    
     printf("Wating for your Sea-Faring Opponent to Connect\n");
     to_client  = server_handshake(&from_client);
     
-    int coord;
+
+    //Game Actually Begins Once Client(Player 2) is connected
+    int readpos;
+    int incoord;
     char result[100];
-    //Player 1 Takes the First Turn
     
+    //Player 1 Takes the First Turn
+    printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
+    scanf("%d", &incoord);
+    if (dontBreak(incoord) == 1){
+      //Ship Location is Put Into Shared Memory if Valid the First Time                                                                                                            
+      *currentcoordinate = incoord;
+    }
+    else{
+      while (dontBreak(incoord) != 1){
+	printf("Please enter a valid location: ");
+	scanf("%d", &incoord);
+      }
+      //Ship Location is Put Into Shared Memory Once Valid                                                                                                                         
+      *currentcoordinate = incoord;
+    }
+    strncpy(result,"First Shot fired",sizeof(result));
+    write(to_client, result, sizeof(result) );
+    strncpy(result,"",sizeof(result));
+    
+    incoord = 0;
     //All Turns After First
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
+      //sleep(2);
       printf("You Got Back from Opponent: %s\n", result);
       //Attempts to Down Semaphore to Access Shared Memory
       printf("Trying to down the semaphore...\n");
@@ -255,13 +260,13 @@ int main(){
       if(ret == -1){
 	printf("There was a problem in downing the semaphore\n");
 	printf("Error: %d: %s\n", errno, strerror(errno));
-	return;
+	return 0;
       }
       else
 	printf("Success!\n");
       //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote                                                                                    
-      coord = *currentcordinate;
-      if (isHit(coord)){
+      readpos = *currentcoordinate;
+      if (isHit(readpos)){
 	if (isAllHit()){
 	  strncpy(result,"All Ships Eliminated!",sizeof(result));
 	  write(to_client, result, sizeof(result) );
@@ -277,11 +282,22 @@ int main(){
 	write(to_client, result, sizeof(result) );
       }
       strncpy(result,"",sizeof(result));
-      //Player 1 Gives Program a Ship Location                                                                                                      
+      
+      //Player Gives Program a Ship Location                                                                                                      
       printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
-      scanf("%d", &pos);
-      //Ship Location is Put Into Shared Memory
-      *currentcoordinate = pos;
+      scanf("%d", &incoord);
+      if (dontBreak(incoord) == 1){
+	//Ship Location is Put Into Shared Memory if Valid the First Time
+	*currentcoordinate = incoord;
+      }
+      else{
+	while (dontBreak(incoord) != 1){
+	  printf("Please enter a valid location: ");
+	  scanf("%d", &incoord);
+	}
+	//Ship Location is Put Into Shared Memory Once Valid   
+	*currentcoordinate = incoord;
+      }
       //Semaphore is Upped
       new.sem_op = 1;
       semid = semget(ftok("makefile", 47), 1, 0644);
@@ -293,9 +309,10 @@ int main(){
       }
       else
 	printf("Success!\n");
-
+      readpos = 0;
+      incoord = 0;
     }
-    printf("The Game has ended!\n")
+    printf("The Game has ended!\n");
     close( to_client);
   }
 

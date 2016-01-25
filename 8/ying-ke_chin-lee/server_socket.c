@@ -40,9 +40,23 @@ static void sighandler(int signo) {
 	}
 }
 
+void end_auction() {	/* Parent process */
+	printf("The auction has ended.\nAt this time a file of bidding history will be created.\n");
+	create_bid_history();
+	exit(0);
+}
+
+void quitter() {	/* Parent process */
+	num_bidders--;
+	if(num_bidders == 1) printf("1 bidder remaining\n");
+	else printf("%d bidders remaining\n", num_bidders);
+	if(num_bidders < 1) end_auction();
+}
+
 int main(int argc, char *argv[])
 {
 	signal(SIGINT, sighandler);
+	signal(SIGCHLD, quitter);
 
 	auction_started = 1;
 
@@ -78,12 +92,16 @@ int main(int argc, char *argv[])
 			error("ERROR on fork");
 		if (pid == 0)  {
 			close(sockfd);
+			ppid = getppid();
+			cpid = getpid();
 			printf("\nA new user has connected to the auction.\n");
-			num_bidders++;
 			while (1) dostuff(newsockfd);
 			exit(0);
+		} else {
+			close(newsockfd);
+			if (num_bidders < 0) num_bidders = 1;
+			num_bidders++;
 		}
-		else close(newsockfd);
 	} /* end of while */
 	close(sockfd);
 	return 0; /* we never get here */
@@ -140,9 +158,10 @@ void dostuff (int sock)
 
 	} else if (strcmp(buffer, "3") == 0) {
 		printf("in quit mode; a user has left the bidding\n");
-		num_bidders--;
-		printf("remaining bidders: %d\n", num_bidders);
+	//	num_bidders--;
+	//	printf("remaining bidders: %d\n", num_bidders);
 		// here keep track of users still around, for end-of-auction condition.
+
 	} else {
 		strcpy(paddleno, buffer);
 		//retrieve new bid
@@ -169,6 +188,7 @@ void dostuff (int sock)
 }
 
 void write_bid(char *offer, char* pno) {
+	signal(SIGCHLD, SIG_IGN);
 	int status;
 	int fd;
 	// now start writing.
@@ -199,6 +219,7 @@ void write_bid(char *offer, char* pno) {
 	} else {
 		wait(&status);
 	} 
+	signal(SIGCHLD, quitter);
 }
 
 void create_bid_history() {

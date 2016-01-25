@@ -5,39 +5,70 @@
 #include <ncurses.h>
 #include <curses.h>
 
+#include "interface.h"
+
 #define DELAY 30000
 
-int main(int argc, char *argv[]) {
+int main() {
+  setup();
+}
+
+void setup() {
 
   initscr();
   noecho();
   curs_set(FALSE);
 
-  //environment variables
+/* ENVIRONMENT VARIABLES */
+
+  // Scale the Environment to a square
   int max_y = 0, max_x = 0;
-  getmaxyx(stdscr, max_y, max_x); // size of the terminal
-  int paddle_length = (max_y - 3) * (1/8); // how long the paddles are
-  int distance = max_x * (7/8); // how far the paddles are from each other
+  getmaxyx(stdscr, max_y, max_x);
+  int distance = 0;
+  if(max_y > max_x) {
+    distance = max_x;
+  } else {
+    distance = max_y;
+  }
+  int min_border_y = (max_y-distance)/2;
+  int max_border_y = max_y - (max_y-distance)/2;
+  int min_border_x = (max_x-distance)/2;
+  int max_border_x = max_x - (max_x-distance)/2;
 
-  int server = 0; // The player who is currently serving
-  int points1 = 0; // Player 1's points
-  int points2 = 0; // Player 2's points
+  WINDOW *env = newwin(distance, distance, min_border_y, min_border_x);
 
+  // Game Objects
+  int paddle_length = distance * (1/8);
+
+  // Points
+  int myNumber = 0; // Which player are you?
+  int points1 = 0; // Your points
+  int points2 = 0; // Other's points
+
+/* SETTING UP THE ENVIRONMENT */
   while(1) {
-    clear();
-
-    /* Header
-        Displays who is currently serving
-        Displays points for each player
-    */
-    mvprintw(0, 0, "Player %d is serving", server);
-    mvprintw(1, 0, "Player 1: %d", points1);
-    mvprintw(2, 0, "Player 2: %d", points2);
-
-    refresh();
-
-    usleep(DELAY);
+    wclear(env);
+    draw_borders(env);
+    wrefresh(env);
   }
 
+  delwin(env);
   endwin();
+}
+
+void draw_borders(WINDOW *w) {
+  int x, y, i;
+  getmaxyx(w, y, x);
+  for(i = 1; i < (y - 1); i++) {
+    mvwprintw(w, i, 0, "|");
+    mvwprintw(w, i, x - 1, "|");
+  }
+  for(i = 1; i < (x - 1); i++) {
+    mvwprintw(w, 0, i, "-");
+    mvwprintw(w, y - 1, i, "-");
+  }
+  mvwprintw(w, 0, 0, "+");
+  mvwprintw(w, y - 1, 0, "+");
+  mvwprintw(w, 0, x - 1, "+");
+  mvwprintw(w, y - 1, x - 1, "+");
 }

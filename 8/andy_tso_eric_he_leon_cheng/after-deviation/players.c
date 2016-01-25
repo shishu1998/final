@@ -57,7 +57,6 @@ card draw_card() {
   new_card.value = num % 15;//[0,14]
   return new_card;
 }
-
 void update_top_card( card c ) {
   top_card.color = c.color;
   top_card.value = c.value;
@@ -110,11 +109,9 @@ player remove_card(player p, int i) {
   ret.color = p.cards[i].color;
   ret.value = p.cards[i].value;
   p.cards[i] = p.cards[p.num_cards-1];
-  p.num_cards -= 1;
   card nll;
-  nll.color = -1;
-  nll.value = -1;
   p.cards[p.num_cards-1] = nll;
+  p.num_cards -= 1;
   return p;
 }
 /*
@@ -190,7 +187,8 @@ void player_action(player p) {
 
 
 player generate_hand(player p){
-  for (p.num_cards = 0; p.num_cards<7; p.num_cards++){
+  p.num_cards = 0;
+  for (p.num_cards; p.num_cards<7; p.num_cards++){
     p.cards[p.num_cards] = draw_card();
     //printf("p.cards[p.num_cards].value: %d \n", p.cards[p.num_cards].value);
     //printf("p.cards[p.num_cards].color: %d \n", p.cards[p.num_cards].color);

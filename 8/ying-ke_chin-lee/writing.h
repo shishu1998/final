@@ -8,12 +8,11 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
-//char *fname = "bids.txt"; // will have to make one bid file per item later on
 char *bidfile = "curr_bid.txt";
 char *bidderfile = "bidders.txt";
 int fd;
 int success_write = 1;
-
+int ppid, cpid;
 
 char entered_bid[256];
 
@@ -41,9 +40,7 @@ void clean_stdin(void)
     int c;
     do {
         c = getchar();
-//	printf("w:getchar hang?\n");
     } while (c != '\n' && c != EOF);
-//	printf("w:out of getchar\n");
 }
 
 char *del_newline(char *in) {
@@ -69,7 +66,7 @@ int file_write(char *to_write, char *pno) {
 	int shid = shmget(shmkey, sizeof(int), 0644);
 //	printf("shid = %d\n", shid);
 
-	char* shmem = shmat(shid, 0, 0); // took out of below commented section
+	char* shmem = shmat(shid, 0, 0); 
 	FILE *fp, *fp_bidder;
 
 	/* CHECK WHAT WAS THE LAST BID */
@@ -80,7 +77,6 @@ int file_write(char *to_write, char *pno) {
 	int index = 0;
 	new_char = fgetc(fp);
 	while (new_char != '\n') {
-//		printf("I am inside the loop, new_char = %c\n", new_char);
 		last_bid[index] = new_char;
 		index++;
 
@@ -89,7 +85,6 @@ int file_write(char *to_write, char *pno) {
 	}
 	fclose(fp);
 	last_bid[index] = '\0';
-//	printf("last_bid (backwards) is %s\n", last_bid);
 	
 	/* FLIP THE STRING AAAAACK *flips table* */
 	reverse(last_bid);
@@ -124,11 +119,10 @@ int file_write(char *to_write, char *pno) {
 
 	char *line_del_newline = del_newline(line);
 
-//	printf("strlen = %zu, to_write = %s\n", strlen(to_write), to_write);
 	char *str = del_newline(to_write);
 	int check1 = fprintf(fp, "\n");
-	int check = fprintf(fp, "%s", str);//to_write);
-//	printf("is check negative? %d\n", check);
+	int check = fprintf(fp, "%s", str);
+	if ((check1 < 0) || (check < 0)) printf("error fprint-ing\n");
 
 	fclose(fp);
 	close(fd);

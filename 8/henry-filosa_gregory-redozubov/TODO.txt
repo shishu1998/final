@@ -1,0 +1,2 @@
+1. Add authenticate and add_user functions
+2. Integrate the above into the client-server relationship

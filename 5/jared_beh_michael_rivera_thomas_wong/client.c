@@ -28,6 +28,12 @@ int main(){
   bind(socket_id,(struct sockaddr*)&sock,sizeof(sock));
   i=connect(socket_id,(struct sockaddr*)&sock,sizeof(sock));
   printf("Connected to socket:%d",i);
+  printf("Explanation of GAME HERE
+
+
+
+
+");
   while(1){
     read(socket_id,buffer,sizeof(buffer));
     if(buffer[0]){
@@ -35,37 +41,41 @@ int main(){
     }
     int i = 1;
     int c = 0;
+    int q = 0;
     char outpu[612];
-    while(i < 82){
-      int q = 0;
-      while(q < 17){
-	if((i % 2) == 0){
-	  if(((q + 1) % 4) == 0){
-	    if(((q + 1) % 12) == 0){
-	      outpu[c] = '=';
-	    }else{
-	      outpu[c] = '+';
-	    }
+    while(q < 17){
+      if((q % 2) == 1){
+	if(((c + 1) % 4) == 0){
+	  if(((c + 1) % 12) == 0){
+	    outpu[c] = '=';
 	  }else{
-	    outpu[c] = '-';
+	    outpu[c] = '+';
 	  }
 	}else{
-	  if((q % 2) == 0){
-	    outpu[c] = ' ';
+	  outpu[c] = '-';
+	}
+      }else{
+	if((c % 2) == 0){
+	  outpu[c] = ' ';
+	}else{
+	  if(((c + 1) % 12) == 0){
+	    outpu[c] = '=';
+	  }else if(((c + 1) % 4) == 0){
+	    outpu[c] = '|';
 	  }else{
-	    if(((q + 1) % 12) == 0){
-	      outpu[c] = '=';
-	    }else if(((q + 1) % 4) == 0){
-	      outpu[c] = '|';
-	    }else{
-	      outpu[c] = buffer[i];
-	      i++;
-	    }
+	    outpu[c] = buffer[i];
+	    i++;
 	  }
-	} 
+	}
+      }
+      c++;
+      if(c == 35){
+	q++;
+	c = 0;
       }
     }
   }
+
   /*
   printf("%s",clear);
   printf("%s",hide);

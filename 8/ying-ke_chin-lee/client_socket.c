@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 			printf("Your bid: ");
 			bzero(buffer,SIZEBUFF);
 			
-			clean_stdin();//getchar();
+			clean_stdin();
 			fgets(buffer, sizeof(buffer)-1, stdin);
 
 			n = write(sockfd,buffer,strlen(buffer));
@@ -111,7 +111,6 @@ int main(int argc, char *argv[])
 
 		n = read(sockfd,buffer,SIZEBUFF-1);
 		if (n < 0) error("ERROR reading from socket");
-//		printf("client buffer: %s\n", buffer);
 		printf("%s\n", buffer);
 
 	}

@@ -1,11 +1,11 @@
-mary: mary.c
-	gcc mary.c -o mary
+all: server client
 
-suitor: suitor.c
-	gcc suitor.c -o suitor
+server: server.c
+	gcc server.c -o server
+
+client: client.c
+	gcc client.c -o client
 
 clean: 
-	rm *~
-	rm *?
-	rm *#
+	rm -rf *~ *# *.o client suitor
 	clear

@@ -5,7 +5,10 @@
 #include "client_relations.h"
 
 char * understand(char * user_input) {
-  if (strcmp("help", user_input) == 0) {
+  printf("WHAT\n");
+  char * compareme = "help";
+  if (strcmp(compareme, user_input) == 0) {
+    printf("WHAT\n");
     return print_help();
   }
   return NULL;
@@ -17,4 +20,10 @@ void initiate_text() {
 
 char * print_help() {
   return "To initiate a new game:\nType 1 for Connect 4\nType 2 for Tic-Tac-Toe\nType 3 for Connect the Dots\n";
+}
+
+int main () {
+  
+  printf("%s", understand("help"));
+  return 0;
 }

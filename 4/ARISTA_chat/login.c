@@ -7,55 +7,126 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-
 #include <termios.h>
-#include <unistd.h>
 
-int getch() {
-  struct termios oldt, newt;
-  int ch;
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-  ch = getchar();
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-  return ch;
-}
+int newuser() {
+  int moveon = 0;
+  int username = 0000;
+  char passwd[16];
+  while (moveon == 0) {
+    printf("Type in your 4-digit ID for the username.\n");
+    scanf("%i",&username);
 
+    if (username >= 1000 && username <= 9999) {
+      char *in = passwd;
+      struct termios  tty_orig;
+      char c;
+      tcgetattr( STDIN_FILENO, &tty_orig );
+      struct termios  tty_work = tty_orig;
+      puts("Please input password:");
+      tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_work.c_cc[ VMIN ]  = 1;
+      tty_work.c_cc[ VTIME ] = 0;
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
 
-char * newuser() {
-  printf("Type in your 4-digit ID for the username.\n");
-  char username[100];
-  fgets(username, sizeof(username), stdin);
+      while (1) {
+	if (read(STDIN_FILENO, &c, sizeof c) > 0) {
+	  if ('\n' == c) {
+	    break;
+	  }
+	  *in++ = c;
+	  write(STDOUT_FILENO, "*", 1);
+	}
+      }
 
-  printf("\n Type in a  password: ");
-  char pwd[25],ch='a';
-  int i=0;
-  while(1) {
-    ch=getch();
-    if(ch==13) {
-      break;
-    } else if(ch==8) {
-      if(i!=0) { /*this is for avoiding the ENTER instructions getting deleted */
-	printf("\b");  /*printing backspace to move cursor 1 pos back*/
-	printf("%c",32);/*making the char invisible which is already on console*/
-	printf("\b"); /*printing backspace to move cursor 1 pos back*/
-	i--;
-	pwd[i]='\0';
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+
+      *in = '\0';
+      fputc('\n', stdout);
+
+      char check[16];
+      char *checkin =  check;
+      struct termios  tty_check;
+      char d;
+      tcgetattr( STDIN_FILENO, &tty_check );
+      struct termios  tty_checking = tty_check;
+      puts("Please retype password:");
+      tty_checking.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_checking.c_cc[ VMIN ]  = 1;
+      tty_checking.c_cc[ VTIME ] = 0;
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_checking );
+
+      while (1) {
+	if (read(STDIN_FILENO, &d, sizeof(d)) > 0) {
+	  if ('\n' == d) {
+	    break;
+	  }
+	  *checkin++ = d;
+	  write(STDOUT_FILENO, "*", 1);
+	}
+      }
+
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_check );
+
+      *checkin = '\0';
+      fputc('\n', stdout);
+
+      if(strcmp(passwd,check) != 0) {
+	printf("Error: Passwords don't match. Please try again.\n");
       } else {
-	continue;
+	break;
+	moveon == 1;
       }
     } else {
-      putchar('*');/* char - '*' will be printed instead of the character */
-      pwd[i]=ch;
-      i++;
+      printf("Error: Invalid username. Please input your 4-digit ID.\n");
     }
   }
+
+  char newuser[1000];
+  snprintf(newuser,sizeof(newuser), "%i: %s\n",username,passwd);
+  int fd = open("tutoraccounts.txt",O_RDWR | O_APPEND,0644);
+  write(fd, newuser, strlen(newuser));
+  close(fd);
+
   return username;
 }
 
-char * registereduser() {
+int registereduser() {
+	FILE* fd;
+	int line_num = 1;
+	int find_result = 0;
+	int username = 0000;
+
+	printf("Type in your 4-digit ID for the username.\n");
+    	scanf("%i",&username);
+
+	if((fd = fopen("tutoraccounts.txt", "r")) == NULL) {
+		return(-1);
+	}
+
+	char buffer[256];
+
+	while(fgets(buffer, sizeof(buffer), fd) != NULL) {
+		printf("%s\n",buffer);
+
+		if((strstr(buffer, username)) != NULL) {
+			printf("A match found on line: %d\n", line_num);
+			printf("\n%s\n", buffer);
+			find_result++;
+		}
+
+	}
+
+	if(find_result == 0) {
+		printf("\nSorry, couldn't find a match.\n");
+	}
+
+	//Close the file if still open.
+	if(fd) {
+		fclose(fd);
+	}
+
+  return 1;
 
 }
 
@@ -65,21 +136,21 @@ int tutorlogin() {
     printf("Error %d: %s\n", errno, strerror(errno));
   }
 
-  printf("Login or Register?\n");
-  char action[100];
-  fgets(action, sizeof(action), stdin);
-
   int accessing = 0;
+  int username = 0;
   while (accessing == 0) {
-    if (strcmp("Login", action) >= 0) {
-      registereduser();
-      accessing = 1;
-    } else if (strcmp("Register", action) >= 0) {
-      printf("okay cool");
-      newuser() ;
-      accessing = 1;
+    printf("Press 1 to login or 2 to register.\n");
+    int action;
+    scanf("%i",&action);
+    if (action == 1) {
+      username = registereduser();
+      break;
+    } else if (action == 2) {
+      username = newuser();
+      break;
     } else {
       printf("We didn't understand your response. Please try again.\n");
+      continue;
     }
   }
 
@@ -87,7 +158,8 @@ int tutorlogin() {
   //if it exists, ask for password
   //if not, ask to create account and double check password
 
-  return 1;
+  printf("%i\n",username);
+  return username;
 }
 
 int main() {
@@ -95,7 +167,7 @@ int main() {
   if (tutoraccounts < 0) {
     printf("Error %d: %s\n", errno, strerror(errno));
   } else {
-    printf("Program laoded.\n");
+    printf("Program loaded.\n");
   }
   close(tutoraccounts);
 
@@ -104,23 +176,22 @@ int main() {
 
   int moveon = 0;
   while (moveon == 0) {
-    printf("\nAre you a tutor or a tutee?\n");
-    char student[100];
-    fgets(student, sizeof(student), stdin);
-
-    if (strcmp(student,"tutor") >= 0) {
+    printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
+    int student;
+    scanf("%i",&student);
+    if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
-      moveon = 1;
       int loggedin = 0;
       while (loggedin == 0)
-	if (tutorlogin()) {
+	if (tutorlogin() != 0) {
 	  printf("Thank you for logging in\n");
+	  moveon = 1;
 	  loggedin = 1;
 	} else {
 	  printf("There was an error while logging in.");
 	  printf("Please try again.\n");
 	}
-    } else if (strcmp(student, "tutee") >= 0) {
+    } else if (student == 2) {
       printf("\nWelcome tutee!\n");
       moveon =1;
     } else {

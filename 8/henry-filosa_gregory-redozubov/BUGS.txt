@@ -1,0 +1,9 @@
+1. Despite putting a lot of groundwork in, the server child is unable to recognize when a client exits.
+   This may lead to slowness if a lot of child processes build up.
+
+2. There are no semaphores for individual user files. In the rare instance that two clients
+   message the same person at the same time, this may lead to writing issues.
+   However, they would have to hit send within milliseconds of one another.
+   Reading is not an issue, because a user can only be logged in from one location at a time.
+   
+3. The authenticate and add_user functions have not been added. As a result there is no password checking and a user may be logged in from multiple locations. The latter can result in messages being dropped

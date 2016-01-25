@@ -21,7 +21,6 @@ int main() {
 
   while(1){
     if(f){
-      port++;
 
       //create the socket
       socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -39,9 +38,14 @@ int main() {
       socket_client = accept( socket_id, NULL, NULL );
       printf("<server> connected: %d\n", socket_client );
 
-      if( player_waiting ){
-	//SEND ADDRESS TO WAITING CHILD PROCESS THROUGH PIPE
+      //RECEIVE IP ADDRESS FROM CLIENT, put it in line
+      read( socket_client, line, sizeof(line) );
 
+      if( player_waiting ){
+	
+	//SEND ADDRESS TO WAITING CHILD PROCESS THROUGH PIPE
+	close(fds[READ]);
+	write(fds[WRITE], line, sizeof(line) );
       }
       else{
 	//create a pipe to communicate with child

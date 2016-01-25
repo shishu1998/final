@@ -1,0 +1,2 @@
+if server exits first client enters infinite loop
+having trouble making the exit_sig work :((

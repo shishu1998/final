@@ -1,0 +1,23 @@
+Parts:
+1. Basic CDS: clients will be added and will message their server and receive a response.
+   A. Server creates WKP
+   B. Client creates pip and messages server
+   C. Server creates two unnamed pipe and forks off subserver
+      a. Pipes open and close
+      b. Sub responds to client
+      c. Server takes note and puts client name and sub server pipe into an array
+   D.
+
+2. SubServer will send the message plus everything stated above. The MainServer will respond based on the message and who the user is.
+
+3. Start formating how requests will look like, i.e. how the SubServer will ask MainServer if "String" is a user.
+
+4. Make code and test out receiving messages by having a "Control.c" that has the MainServer message clients.
+
+5. Make code and test out sending messages by having client message MainServer.
+
+6. Add and alter (5) so that the Users can message each other.
+
+7. Make good hashtable for fto.
+
+8. Add semaphores for writing, so between two users, the compilation of conversation is fine.

@@ -113,10 +113,10 @@ int main() {
 	map[curX - 1][curY] = '@';
       }
       else {
+	printf("\tInvalid Move\n");
 	sleep(1);
       }
     }
-
     else if (c == 's') {
       char testChar = map[curX + 1][curY];
       if (testChar != '-' && testChar != 'x') {
@@ -126,6 +126,7 @@ int main() {
         map[curX + 1][curY] = '@';
       }
       else {
+	printf("\tInvalid Move\n");
 	sleep(1);
       } 
     }
@@ -138,6 +139,7 @@ int main() {
         map[curX][curY - 1] = '@';
       }
       else {
+	printf("\tInvalid Move\n");
 	sleep(1);
       } 
     }
@@ -150,6 +152,7 @@ int main() {
         map[curX][curY + 1] = '@';
       }
       else {
+	printf("\tInvalid Move\n");
 	sleep(1);
       } 
     }

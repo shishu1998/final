@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -11,7 +10,8 @@
 int main() {
 
   int socket_id, socket_client;
-  
+  char buffer[256];
+
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
@@ -29,6 +29,10 @@ int main() {
   printf("<server> connected: %d\n", socket_client );
 
   write( socket_client, "hello", 6 );
-  
+
+  while( read(socket_client, buffer, sizeof(buffer)) ){
+    printf("<server> New message from client: %s\n", buffer);
+    write( socket_client, "I got your message", 18); 
+  }
   return 0;
 }

@@ -9,3 +9,7 @@ Basic: RPS between two clients
        4. Subservers store inputs in a Shared Memory Segment
        5. Subservers look at inputs and pass judgement
        6. Winner and loser get appropriate messages
+1-20-16
+Network connection understood. Next step: Putting that into forever loop and establishing talk between client and server
+1-25-16
+Forever loop established. Working on game mechanics now

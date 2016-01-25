@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +12,8 @@ int main(int argc, char **argv) {
   int socket_id;
   char buffer[256];
   int i;
+  
+
 
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -32,6 +33,22 @@ int main(int argc, char **argv) {
 
   read( socket_id, buffer, sizeof(buffer));
   printf("<client> received: [%s]\n", buffer );
+  buffer[0] = 0; //Clearing buffer so we can write to server
+  
+
+  while( 1 ){ //While loop that allows communication
+    printf("Input: ");
+    fgets(buffer, sizeof(buffer), stdin); //Gets user input
+
+    
+    write( socket_id, buffer, sizeof(buffer)); 
+    buffer[0] = 0; //Clearing buffer so we can read from server again
+    
+    read( socket_id, buffer, sizeof(buffer) );
+    
+    printf("<client> recieved: [%s]\n", buffer);
+  }
   
   return 0;
 }
+ 

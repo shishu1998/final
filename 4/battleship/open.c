@@ -9,7 +9,17 @@
 int main(){
   
   int i,n,len_of_input;
-    time_t t;
+  time_t t;
+  
+  int p;
+  p = fork();
+  if (p != 0) {
+    int status = 1;
+    wait(&status);
+    //return hold;
+  }
+  else {
+    execlp("aplay", "aplay", "song.wav", 0);
 
     srand((unsigned) time(&t));
     n = rand() % 3;

@@ -12,7 +12,7 @@ char *bidfile = "curr_bid.txt";
 char *bidderfile = "bidders.txt";
 int fd;
 int success_write = 1;
-
+int ppid, cpid;
 
 char entered_bid[256];
 

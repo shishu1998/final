@@ -3,12 +3,18 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
 #include "game.h"
+#include "shared.h"
+
+int socket_id, socket_client;
+int socket_id_2, socket_client_2;
+char line[100];
+char prev[2];
 
 static void sighandler( int signo ) {
 
@@ -26,11 +32,12 @@ static void sighandler( int signo ) {
   }
 }
 int main() {
+  /*
 
-  int socket_id, socket_client;
-  int socket_id_2, socket_client_2;
+*/
+  struct sockaddr_in listener;
+
   int f=1;
-  char line[4]="0000";
 
   while(1){
     if(f){
@@ -38,7 +45,6 @@ int main() {
       socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
       //bind to port/address
-      struct sockaddr_in listener;
       listener.sin_family = AF_INET;  //socket type IPv4
       listener.sin_port = htons(24601); //port #
       listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
@@ -81,10 +87,10 @@ int main() {
     //instructions for child
     if(!f){
       write( socket_client, line, 4 );
-      read( socket_client, line, 4 );
+      read( socket_id, line, 4 );
       turn( line[0],line[1],line[2], line[3] );
       write( socket_client_2, line, 4 );
-      read(socket_2, line, 4);
+      read(socket_id_2, line, 4);
       turn( line[0],line[1],line[2], line[3] );
     }
     else{

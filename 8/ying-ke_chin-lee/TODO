@@ -30,7 +30,13 @@
 - created REQ_MODE, edit inside client_socket.c
 [COMPLETED]
 
-7) Ending condition for bid (should not be hard)
+7) Bid history
+[COMPLETE] It is saved to the server side.
+
+8) Ending condition for bid
+[COMPLETED]
 
 >>> IF I FINISH EARLY ENOUGH <<<
 change bzeros (deprecated) to memsets
+fix the rather inelegant naming scheme ("old_main"?  Really?)
+get rid of loose comments/code that no longer is useful

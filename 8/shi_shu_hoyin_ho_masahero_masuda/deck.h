@@ -15,6 +15,8 @@ struct card* makecard(char* content,char* type){
   return out;
 }
 
+card deal_greencard(card *green_deck);
+card deal_redcard(card *red_deck);
 void printdeck(card* deck){
   int i = 0;
   while(deck[i].content){

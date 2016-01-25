@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     socklen_t clilen;
     char buffer[256];
     char question[1024];
+    char option[4];
     char oddsInt[4];
     struct sockaddr_in serv_addr, cli_addr;
 
@@ -34,6 +35,11 @@ int main(int argc, char *argv[])
     srand (time(NULL));
     integerRandom = (rand() % 100) + 1;
 
+    printf("What would you like to do?\n");
+    printf("1. Start a new odds-are game\n");
+    printf("2. Join a previously created odds-are game\n");
+    printf("Please enter the corressponding number: ");
+    fgets(option, sizeof(option), stdin);
     printf("Enter your odds are: ");
     fgets(question, sizeof(question), stdin);
     printf("Enter the number for your odds are: ");

@@ -91,43 +91,40 @@ int newuser() {
   return username;
 }
 
+/*
+int find_user_match(char *username) {
+  FILE* fd = fopen("tutoraccounts.txt", "r");
+  char *buffer = (char *)malloc(500*sizeof(char));
+  fread(buffer, sizeof(char), 500, fd);
+  username = strsep(&username, "\n");
+  printf("username:%s\n", username);
+  printf("buffer: %s\n", buffer);
+  if (strstr(buffer, username) == NULL) {//if username isn't taken 
+    printf("find_user_match() returned NULL. Your username is acceptable.\n");
+    buffer = "";
+    fclose(fd);
+    return 1;
+  }
+  else {
+    printf("Your username is taken. Please try again.\n");
+    buffer = "";
+    fclose(fd);
+    return 0;
+  }
+}
+*/
+
 int registereduser() {
-	FILE* fd;
-	int line_num = 1;
-	int find_result = 0;
-	int username = 0000;
-
-	printf("Type in your 4-digit ID for the username.\n");
-    	scanf("%i",&username);
-
-	if((fd = fopen("tutoraccounts.txt", "r")) == NULL) {
-		return(-1);
-	}
-
-	char buffer[256];
-
-	while(fgets(buffer, sizeof(buffer), fd) != NULL) {
-		printf("%s\n",buffer);
-
-		if((strstr(buffer, username)) != NULL) {
-			printf("A match found on line: %d\n", line_num);
-			printf("\n%s\n", buffer);
-			find_result++;
-		}
-
-	}
-
-	if(find_result == 0) {
-		printf("\nSorry, couldn't find a match.\n");
-	}
-
-	//Close the file if still open.
-	if(fd) {
-		fclose(fd);
-	}
-
-  return 1;
-
+  FILE* fd = fopen("tutoraccounts.txt","r");
+  //int username = 0000;
+  
+  printf("Type in your 4-digit ID for the username.\n");
+  int username;
+  char str[100];
+  scanf("%[^1000-9999]%d",str,&username);  
+  
+   return 1;
+  
 }
 
 int tutorlogin() {
@@ -144,13 +141,12 @@ int tutorlogin() {
     scanf("%i",&action);
     if (action == 1) {
       username = registereduser();
-      break;
+      accessing = 1;
     } else if (action == 2) {
       username = newuser();
-      break;
+      accessing = 1;
     } else {
       printf("We didn't understand your response. Please try again.\n");
-      continue;
     }
   }
 
@@ -160,6 +156,11 @@ int tutorlogin() {
 
   printf("%i\n",username);
   return username;
+}
+
+int clean_stdin() {
+	while (getchar() != '\n');
+		return 1;
 }
 
 int main() {
@@ -175,10 +176,14 @@ int main() {
   printf("Hello and welcome to ARISTA chat!\n");
 
   int moveon = 0;
+  char student;
+  int rows;
   while (moveon == 0) {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
     int student;
-    scanf("%i",&student);
+    char str[100];
+    scanf("%i",student);
+	printf("%i",student);
     if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;
@@ -197,5 +202,6 @@ int main() {
     } else {
       printf("We didn't understand your response. Please try again.\n");
     }
+
   }
 }

@@ -9,21 +9,6 @@
 #define PSWD_LEN 20 //length of password
 #define BUFFER_LEN 500 //# of characters read from username.txt 
 
-/*void make_profile(char *username, char *password) {
-  char a1[20]; char a2[20]; char a3[20]; 
-  printf("You have successfully created a username and account! To complete account information, please answer the following questions below:");
-  printf("Question 1\nWhat's your full name? Please put spaces between your first, middle, and last name. You may omit your middle name.\n");
-  fgets(a2, 20, stdin);
-  printf("a2: %s\n", a2);
-  printf("Question 2\nWhat's your current age?\n");
-  fgets(a3, 20, stdin);
-  printf("a3: %s\n", a3);
-  printf("Question 3\nWhat's your hair color?\n");
-  fgets(a1, 20, stdin);
-  //printf("Question 4\nWhy do you want to take Mary to PROM? Please limit your answer to 500 characters.\n");
-  }
-*/
-
 /*
 Goes through stdin username and password and looks for any white space and underscores. 
  */
@@ -99,7 +84,7 @@ void find_user() {
     else
       printf("HUZZAH. You are a valid user! \n");
     buffer = "";
-  printf("buffer after fread/fwrite: %s\n", buffer);
+    printf("buffer after fread/fwrite: %s\n", buffer);
   }
   else if (find_error(user, pswd) == 0)
     printf("final_errpr returned 0\n");
@@ -164,3 +149,4 @@ int main() {
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
   return 0;
 }
+

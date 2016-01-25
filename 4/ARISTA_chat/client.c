@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
   printf("<client> connect returned: %d\n", socket_id);
 	
   int type = 1;  // 0 (tutor) or 1 (tutee) - get this from login
-  type = (int)argv[2][0];
+  type = (int)argv[2][0] - 48;  // convert from ASCII value
   // send type to server
   write(socket_id, &type, sizeof(type));
 

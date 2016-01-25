@@ -160,7 +160,7 @@ int main() {
 
 	int pid = fork();
     if (pid == 0){
-		if (num_tutors >= 2) {  // find_tutor(tutors, num_tutors, tutees, num_tutees-1) 
+		if (num_tutors >= 2) {  // find_tutor(num_tutees-1) 
 			char msg[] = "You have been connected to a tutor.";
 			write(tutors[0][0], msg, sizeof(msg));
 

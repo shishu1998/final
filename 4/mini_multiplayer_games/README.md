@@ -40,12 +40,19 @@ Files with Actual Code
 * Makefile
 * server.c
 * client.c
+* client_relations.c
 * connect4.c
-* connect4.h
 * dots.c
-* dots.h
 * tictac.c
+
+Header Files
+------------
+* client_relations.h
+* server.h
+* connec4.h
+* dots.h
 * tictac.h
+
 
 Informational Files
 -------------------

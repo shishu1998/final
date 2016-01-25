@@ -2,11 +2,6 @@
 #include <unistd.h>
 #include <string.h>
 
-typedef struct deck{
-  card *cards;
-  int size;
-}deck;
-
 typedef struct card{
   char* content;
   char* type;
@@ -20,46 +15,59 @@ struct card* makecard(char* content,char* type){
   return out;
 }
 
-int randNum(){
+card deal_greencard(card *green_deck);
+card deal_redcard(card *red_deck);
+void printdeck(card* deck){
+  int i = 0;
+  while(deck[i].content){
+    printf("%s\n",deck[i].content);
+    i++;
+  }
+}
+int getsize(card* deck){
+  int counter = 0;
+  while(deck[counter].content){
+    counter++;
+  }
+  return counter;
+}
+
+unsigned int randNum(){
   int descriptor = open("/dev/urandom", O_RDONLY);
-  int *num = (int *)malloc(4);
+  unsigned int *num = (unsigned int *)malloc(4);
   read(descriptor,num,4);
   close(descriptor);
   return *num;
 }
 
-void shuffle(deck d){
+void shuffle(card* deck){
+  int len = getsize(deck);
   int rand1;
   int rand2;
-  card temp;
+  //  card* temp = (card*)malloc(sizeof(card));
+  card *temp;
   int counter = 0;
   while(counter < 1000){
-    rand1 = randNum() % d->size;
-    rand2 = randNum() % d->size;
-    temp = d[rand1];
-    d[rand1] = d[rand2];
-    d[rand2] = temp;
-    counter++;
+    rand1 = randNum() % len;
+    rand2 = randNum() % len;
+    temp = &deck[rand1];
+    deck[rand1] = deck[rand2];
+    deck[rand2] = *temp;
+    counter ++;
   }
 }
 
-struct deck makedeck(char* type){
-  deck *newDeck;
+struct card* makedeck(char* type){
+  card* deck;
   int descriptor;
   char buffer[20000];
-  newDeck->size = (int)malloc(sizeof(int));
-  char* maketype = (char*)malloc(sizeof("green"));
   if(type == "red"){
     descriptor = open("reddeck",O_RDONLY);
-    newDeck->cards = (card*)malloc(sizeof(card)*746);
-    newDeck->size=746;
-    maketype = "red";
+    deck = (card*)malloc(sizeof(card)*746);
   }
   if(type == "green"){
     descriptor = open("greendeck",O_RDONLY);
-    newDeck->cards = (card*)malloc(sizeof(card)*249);
-    newDeck->size=249
-    maketype = "green";
+    deck = (card*)malloc(sizeof(card)*250);
   }
   read(descriptor,buffer,sizeof(buffer));
   char* cards = buffer;
@@ -67,18 +75,10 @@ struct deck makedeck(char* type){
   int i = 0;
   while(cards){
     temp = strsep(&cards,"\n");
-    newDeck->cards[i] = *makecard(temp,maketype);
+    deck[i] = *makecard(temp,type);
     i ++;
   }
   return deck;
-}
-
-void printdeck(deck *d){
-  int i = 0;
-  while(d->cards[i].content){
-    printf("%s\n",d->cards[i].content);
-    i++;
-  }
 }
 
 

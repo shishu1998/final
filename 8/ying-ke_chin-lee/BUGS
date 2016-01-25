@@ -1,32 +1,43 @@
 JAN 5
 - exec'd twice, creating two new tabs in Chromium browser rather than one
-	- FIXED Jan 6
-
-JAN 10
-- accidentally made it so new bid wipes out old bid =___=
-- shmid error 22: invalid argument in control.c
-	- sort of fixed but still wipes out old bid
-		- FIXED, but...
-- tried to use global variables to access current lot being edited (to change new low bid price).  
-	- uses global variable but hangs on This is entered bid: 
-	- does write to bids file.
-	- invalid pointer error.
-	- changed it back so linker error
-	- fixed linker error but now invalid pointer error
-	- fixed (was a wrong "free()") but now nothing happens...doesn't allow bid at all
-
-JAN 11
-- turns out there were some malloc'ing issues that were complicated, ended up not making global vars
-- now updates, "allows" bids as it should BUT still need to make lot value update.
-	- FIXED and does update lot value now, not that this actually matters, the way I have written this program...
-		- JAN 12: but no longer writes value into file??  Did I do that on purpose?
-	- I will need a way to free those pointers once I'm done....not sure how to do this yet.
+	- [FIXED] Jan 6
 
 JAN 13:
 - now tried to server-ify it, but need to find a way to handle invalid bids.
+- Okay, now it sort of takes care of that.  Using ?/y/n method to check which action to perform; it's not good so far...
+- tried to make it so that ?/y/n request for input in while loop, but now the server is not printing out updates in bids.
 
-more bugs
-doesn't run yet lololol
+JAN 15:
+- realized new version in progress ("Reconstructed") hangs after asking whether you want to view the work.  Probably forgot to clean up those last few parts
+	- [FIXED] a couple minutes later...
+- need to make Bid do something LOOL (it's in the wrong loop...)
+- don't try to give negative input yet.  It's not ready to deal with silly input
+	- [FIXED] Now it will be an unsuccessful bid.  As it should be.  (by JAN 24)
+
+JAN 16:
+- [FIXED] fgets hang (was a typo left over from reorganizing the code)
+- need to figure out why client code suddenly decides to quit on its own.
+	- [FIXED] (by JAN 24), believed to be updating num_bidders in the wrong process (child, rather than parent)
+
+JAN 21:
+- [FIXED] issues with receiving new bid, now updates bids appropriately
+- still need to make use of paddle numbers 
+	- [UPDATE] JAN 22 may need to use something rather than pid for paddle numbers
+
+JAN 22:
+- [FIXED] issue where exit(0) was placed in old_main rather than in client_socket so the program quit too quickly without informing server.
+- server/client out of sync, cause unknown.
+	- [UPDATE] JAN 22 seems that it is back in sync, though client oddly receives messages from server twice.
+	- [UPDATE] JAN 22 no longer gives messages to client twice, but Server does fail to react to client requests
+	- [FIXED] JAN 24 I believe it was an extra write floating around...
+- server does not return newly found bid price to client.
+	- [FIXED] JAN 22 server returns price to client.
+
+JAN 24:
+- No known bugs at this time
+- probably more prints that are ugly than I need, though...
 
 Possible changes to make?
 	- browser defaults to Chromium, add Firefox option later?
+	- put in login
+

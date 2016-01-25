@@ -2,7 +2,7 @@ DW APPROVED
 
 ## Names:
 * Jared Beh (server connections)
-* Michael Rivera (client-side display)
+* Michael Rivera (client-side display and prompts)
 * Thomas Wong (server-side game processes)
 
 ## Proposal: "Ultimate Tic-Tac-Toe"

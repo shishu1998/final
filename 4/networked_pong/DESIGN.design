@@ -35,3 +35,5 @@ We will update this document once we work out how the multi-sided pong will work
 1/13/15 -- Pong Working (Same computer)		
 1/17/15 -- Networked Pong Working (2 Player max)		
 1/26/15 -- Multi-sided pong and highscores feature			
+
+Note: gcc example.c -o example `pkg-config --cflags --libs gtk+-3.0`

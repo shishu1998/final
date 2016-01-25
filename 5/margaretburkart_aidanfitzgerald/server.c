@@ -101,7 +101,7 @@ void server_talk(int socket_client) {
     }
     else {
       buffer[r] = 0;
-      printf("Read input: %s\n", buffer);
+      printf("Read input: %10s\n", buffer);
     }
 
     // TODO: parse input
@@ -284,11 +284,39 @@ void server_send(char *buffer, user *session) {
   fprintf(mail, "From: %s\n", session->name);
   // Write mail content
   fputs(content, mail);
+printf("Uploaded email to %s\n", filename);
+
   // Done with the file
   fclose(mail);
 
   // Done with the filename buffer
   free(filename);
+}
+
+void server_get(int client_socket, user *session) {
+// Open the user's remote mailbox directory
+char *dirname = server_dir(session->name);
+DIR *dir = opendir(dirname);
+
+// Read the first entry
+ struct dirent *head;
+ get_head: head = readdir(dir);
+ if (head->d_type != DT_REG && head->d_type != DT_LNK) {
+   goto get_head;
+ }
+
+ // Done with the directory
+ closedir(dir);
+
+ if (head) {
+   // Read the file
+   
+ }
+ else {
+   // Report that no file was found
+   sock_write("NONE");
+   printf("User %s tried to find 
+ }
 }
 
 /* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */

@@ -98,15 +98,22 @@ int dontBreak(int pos){
 
   return okay;
 }
-
 int isHit(int pos){
-  int hit = isInShips(pos);
+  int hit;
+
+  if (pos == ships[0] ||
+      pos == ships[1] ||
+      pos == ships[2] ||
+      pos == ships[3] ||
+      pos == ships[4]){
+    hit = 1;
+  }
 
   if (hit){
     int i;
     for (i = 0; i < 5 ; i++)
       if (ships[i] == pos)
-	ships[i] = 0;
+        ships[i] = 0;
   }
 
   return hit;
@@ -244,7 +251,6 @@ int main(){
     printf("first turn\n");
     printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
     scanf("%d", &incoord);
-    printf("[%d]\n", incoord);
     if (isInRange(incoord) == 1){
       //Ship Location is Put Into Shared Memory if Valid the First Time                                                                                                            
       *currentcoordinate = incoord;
@@ -263,7 +269,6 @@ int main(){
     strncpy(result,"",sizeof(result));
     
     incoord = 0;
-    
     //Semaphore is Upped
     new.sem_op = 1;
     semid = semget(ftok("makefile", 47), 1, 0644);
@@ -279,7 +284,6 @@ int main(){
     //All Turns After First
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
-      sleep(2);
       printf("You Got Back from Opponent: %s\n", result);
       //Attempts to Down Semaphore to Access Shared Memory
       printf("Trying to down the semaphore...\n");
@@ -304,6 +308,7 @@ int main(){
         printf("Error %d: %s\n", errno, strerror(errno));
         return 1;
       }
+      printf("shared memory current reads as:%d\n", *currentcoordinate);
       readpos = *currentcoordinate;
       if (isHit(readpos)){
 	if (isAllHit()){
@@ -325,12 +330,12 @@ int main(){
       //Player Gives Program a Ship Location                                                                                                      
       printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
       scanf("%d", &incoord);
-      if (dontBreak(incoord) == 1){
+      if (isInRange(incoord) == 1){
 	//Ship Location is Put Into Shared Memory if Valid the First Time
 	*currentcoordinate = incoord;
       }
       else{
-	while (dontBreak(incoord) != 1){
+	while (isInRange(incoord) != 1){
 	  printf("Please enter a valid location: ");
 	  scanf("%d", &incoord);
 	}

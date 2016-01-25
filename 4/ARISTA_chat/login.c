@@ -91,6 +91,7 @@ int newuser() {
   return username;
 }
 
+/*
 int find_user_match(char *username) {
   FILE* fd = fopen("tutoraccounts.txt", "r");
   char *buffer = (char *)malloc(500*sizeof(char));
@@ -111,10 +112,11 @@ int find_user_match(char *username) {
     return 0;
   }
 }
+*/
 
 int registereduser() {
   FILE* fd = fopen("tutoraccounts.txt","r");
-  int username = 0000;
+  //int username = 0000;
   
   printf("Type in your 4-digit ID for the username.\n");
   int username;
@@ -180,7 +182,8 @@ int main() {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
     int student;
     char str[100];
-    scanf("%[^1-2]%d",str,&student);
+    scanf("%i",student);
+	printf("%i",student);
     if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;

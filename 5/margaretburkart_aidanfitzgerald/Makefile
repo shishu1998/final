@@ -36,3 +36,7 @@ mail.d: server_setup
 # Creates client directory structure
 my_mail.d: client_setup
 	./client_setup
+
+# Clean out object files
+clean:
+	rm *.o

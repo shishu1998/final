@@ -181,8 +181,7 @@ int main(){
 
   while( read(from_server, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
-      //sleep(2);
-      printf("You Got Back from Opponent: %s\n", result);
+    printf("You Got Back from Opponent: %s\n", result);
       //Attempts to Down Semaphore to Access Shared Memory
       printf("Trying to down the semaphore...\n");
       ret = semop(semid, &new, 1);
@@ -249,12 +248,11 @@ int main(){
       printf("There was a problem in upping the semaphore\n");
       printf("Error %d: %s\n", errno, strerror(errno));
     }
-    else
+    else{
       printf("Success!\n");
+    }
     //shared memory is detached
     shmdt(currentcoordinate);
-    readpos = 0;
-    incoord = 0;
   }
   
   printf("The Game has ended!\n");

@@ -61,6 +61,17 @@ int isInShips(int pos){
   return okay;
 }
 
+int isInRange(int pos){
+  if ( !( ((pos > 10)&&(pos < 16)) ||
+	  ((pos > 20)&&(pos < 26)) ||
+	  ((pos > 30)&&(pos < 36)) ||
+	  ((pos > 40)&&(pos < 46)) ||
+	  ((pos > 50)&&(pos < 56))  )){
+    return 0;
+  }
+  
+  return 1;
+}
 /*======== int dontBreak()  ==========
 
 check to see is 11-15, 21-25, 31-35, 41-45, 51-55
@@ -167,7 +178,7 @@ int main(){
   }
   //REMOVE END
   
-
+  //create & initialize shared mem
   shmid = shmget(ftok("makefile",13),sizeof(int), 0664| IPC_CREAT | IPC_EXCL);
   printf("Trying to create the shared memory...\n");
   if(shmid == -1){
@@ -225,21 +236,24 @@ int main(){
     
 
     //Game Actually Begins Once Client(Player 2) is connected
-    int readpos;
-    int incoord;
+    int readpos = 0;
+    int incoord = 0;
     char result[100];
     
     //Player 1 Takes the First Turn
+    printf("first turn\n");
     printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1):");
     scanf("%d", &incoord);
-    if (dontBreak(incoord) == 1){
+    printf("[%d]\n", incoord);
+    if (isInRange(incoord) == 1){
       //Ship Location is Put Into Shared Memory if Valid the First Time                                                                                                            
       *currentcoordinate = incoord;
     }
     else{
-      while (dontBreak(incoord) != 1){
+      while (isInRange(incoord) != 1){
 	printf("Please enter a valid location: ");
 	scanf("%d", &incoord);
+	printf("[%d]\n", incoord);
       }
       //Ship Location is Put Into Shared Memory Once Valid                                                                                                                         
       *currentcoordinate = incoord;
@@ -249,10 +263,23 @@ int main(){
     strncpy(result,"",sizeof(result));
     
     incoord = 0;
+    
+    //Semaphore is Upped
+    new.sem_op = 1;
+    semid = semget(ftok("makefile", 47), 1, 0644);
+    printf("Trying to up the semaphore...\n");
+    ret = semop(semid, &new, 1);
+    if(ret == -1){
+      printf("There was a problem in upping the semaphore\n");
+      printf("Error %d: %s\n", errno, strerror(errno));
+    } 
+    //shared memory is detached
+    shmdt(currentcoordinate);
+
     //All Turns After First
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
-      //sleep(2);
+      sleep(2);
       printf("You Got Back from Opponent: %s\n", result);
       //Attempts to Down Semaphore to Access Shared Memory
       printf("Trying to down the semaphore...\n");
@@ -265,6 +292,18 @@ int main(){
       else
 	printf("Success!\n");
       //Once Semaphore is Downed, Reads Shared Memory to See What Coordinate Opponnet Wrote                                                                                    
+      shmid = shmget(ftok("makefile", 13), sizeof(int), 0664);
+      if(shmid == -1){
+	printf("There was a problem getting the shared memory\n");
+        printf("Error: %d: %s\n", errno, strerror(errno));
+        return 1;
+      }
+      currentcoordinate = (int *) shmat(shmid,0,0);
+      if(*currentcoordinate == -1){
+        printf("There was a problem in attaching the shared memory to a variable\n");
+        printf("Error %d: %s\n", errno, strerror(errno));
+        return 1;
+      }
       readpos = *currentcoordinate;
       if (isHit(readpos)){
 	if (isAllHit()){
@@ -309,6 +348,8 @@ int main(){
       }
       else
 	printf("Success!\n");
+      //shared memory is detached
+      shmdt(currentcoordinate);
       readpos = 0;
       incoord = 0;
     }

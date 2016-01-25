@@ -59,20 +59,20 @@ int main() {
   
   /* stores tutor client info
   * 	0: client socket id
-  *		1: username
+  *		1: availability - 1 (free), -1 (in chat)
   *		2: math skill
   *		3: science skill
   *		4: history skill
   **/
-  int tutors[MAX_CLIENTS][5]; 
+  int tutors[MAX_CLIENTS][5] = {{-1}}; 
   int num_tutors = 0;
   
   /* stores tutee client info
   *		0: client socket id
-  * 	1: username
+  * 	1: availability - 1 (free), -1 (in chat)
   * 	2: subject - 2 (math), 3 (science), 4 (history)
   **/
-  int tutees[MAX_CLIENTS][3];
+  int tutees[MAX_CLIENTS][3] = {{-1}};
   int num_tutees = 0;
   
   socket_id = create_server();
@@ -88,6 +88,7 @@ int main() {
 			if (num_tutors < MAX_CLIENTS) {
 				printf("Adding tutor - %d\n", socket_client);
 				tutors[num_tutors][0] = socket_client;
+				tutors[num_tutors][1] = 1;
 				num_tutors++;
 				printf("# tutors %d\n", num_tutors);
 			}
@@ -102,6 +103,7 @@ int main() {
 			if (num_tutees < MAX_CLIENTS) {
 				printf("Adding tutee\n");
 				tutees[num_tutees][0] = socket_client;
+				tutees[num_tutees][1] = 1;
 				num_tutees++;
 			}
 			else {

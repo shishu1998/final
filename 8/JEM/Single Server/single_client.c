@@ -7,7 +7,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
 #include "server.h"
+#include "login.h"
 
 int main(int argc, char **argv) {
 
@@ -15,6 +17,7 @@ int main(int argc, char **argv) {
   //char input[256];
   //char buffer[256];
   char* yes_or_no = (char*)malloc(sizeof(char)*10);
+
   char* input = (char*)malloc(sizeof(char)*250);
   char* buffer = (char*)malloc(sizeof(char)*250);
   int i;
@@ -32,12 +35,14 @@ int main(int argc, char **argv) {
   bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
   
   //attempt a connection
+  //if (find_user_match() == 1) {
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
-  printf("<client> connect returned: %d\n", i);
-  if ( i < 0 ){
-    printf("We're sorry, you failed to connect to the server.  Please try again.\n");
-    exit(0);
-  }
+    printf("<client> connect returned: %d\n", i);
+    if ( i < 0 ){
+      printf("We're sorry, you failed to connect to the server.  Please try again.\n");
+      exit(0);
+    }
+    //}
   //while (strcmp(buffer, "bye") != 0) {
   while( 1 ) {
     //read( socket_id, buffer, strlen(buffer));

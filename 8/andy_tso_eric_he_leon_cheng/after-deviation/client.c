@@ -102,12 +102,12 @@ int main(int argc, char *argv[]) {
       printf( "debugging\n");
       if (num==p.num_cards){
         printf( "debugging\n");
-	      p.cards[p.num_cards] = draw_card();
-	      printf( "debugging\n");
-	      p.num_cards++;
-	      printf( "debugging\n");
-	      scard1 = "draw";
-	      scard2 = "draw";
+	p.cards[p.num_cards] = draw_card();
+	printf( "debugging\n");
+	p.num_cards++;
+	printf( "debugging\n");
+	scard1 = "draw";
+	scard2 = "draw";
       }
       else{
       	card c = p.cards[num];
@@ -126,19 +126,22 @@ int main(int argc, char *argv[]) {
       /* Send message to the server */
       //printf("five (w)\n");
       //n = write(sockfd, buffer, strlen(buffer));
-      n = write(sockfd, scard1, strlen(scard1));
-    
-    if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-    }
+
+      card write_card = p.cards[num];
+      printf("write_card: %d, %d\n",
+	     write_card.color,
+	     write_card.value);
+      n = write(sockfd, &write_card, sizeof(card));
+      printf("Bytes written: %d\n", n);
+      printf("error #%d: %s\n", errno, strerror(errno));
+      printf("\n");
+      
+      if (n < 0) {
+	perror("ERROR writing to socket");
+	exit(1);
+      }
       sleep(1);
-      n = write(sockfd, scard2, strlen(scard2));
     }  
-    if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-    }
    
     /* Now read server response */
     bzero(buffer,256);

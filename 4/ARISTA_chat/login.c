@@ -144,13 +144,12 @@ int tutorlogin() {
     scanf("%i",&action);
     if (action == 1) {
       username = registereduser();
-      break;
+      accessing = 1;
     } else if (action == 2) {
       username = newuser();
-      break;
+      accessing = 1;
     } else {
       printf("We didn't understand your response. Please try again.\n");
-      continue;
     }
   }
 

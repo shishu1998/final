@@ -16,7 +16,7 @@
 const char underscore = '_';
 
 int find_error(char *username, char *password) {
-  printf("Running find_error()...\n");
+  //printf("Running find_error()...\n");
   if (username == NULL || password == NULL) {
     printf("username and password cannot be null.\n");
     return 0;

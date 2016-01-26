@@ -5,9 +5,9 @@ As of present, this project lets you create a list of a directory tree. Any chan
 
 #Usage
 Just run make run to start editing your current directory!
-If you would like to use a different directory, run
--$./dirinfo <directory name>
--$./editor
+If you would like to use a different directory, run<br>
+-$./dirinfo <directory name><br>
+-$./editor<br>
 separately
 
 #Unfinished

@@ -99,18 +99,30 @@ int main(int argc, char *argv[]) {
       char * scard1;
       char * scard2;
       int num = atoi(buffer);
-      printf( "debugging\n");
+      //printf( "debugging\n");
       if (num==p.num_cards){
-        printf( "debugging\n");
+        card *write_card = (card*)malloc(sizeof(card));
+        //printf( "debugging\n");
 	      p.cards[p.num_cards] = draw_card();
-	      printf( "debugging\n");
+	      //printf( "debugging\n");
 	      p.num_cards++;
-	      printf( "debugging\n");
+	      //printf( "debugging\n");
 	      scard1 = "draw";
 	      scard2 = "draw";
+	      // SENDING CARD PLAYED BY PLAYER
+	      write_card->color = 20;
+	      write_card->value = 20;
+	      int z = write(sockfd, write_card, sizeof(card) );
+	      if (z < 0) {
+          perror("ERROR writing");
+          printf("error: %s \n", strerror(errno));
+          exit(1);
+        }
       }
       else{
       	card c = p.cards[num];
+      	card *write_card;
+      	*write_card = p.cards[num];
       	int value = c.value;
       	int color = c.color;
       	char svalue[100];
@@ -120,13 +132,22 @@ int main(int argc, char *argv[]) {
       	sprintf(cvalue, "%d", color);
       	scard2 = cvalue;
       	p = remove_card(p, num);
-      	printf("tried to stringify a card in client: %s %s\n", scard1, scard2);
+      	printf("tried to stringify a card in client: %s %s\n", scard2, scard1);
+      	// SENDING CARD PLAYED BY PLAYER
+      	write_card->color = color;
+	      write_card->value = value;
+	      int z = write(sockfd, write_card, sizeof(card) );
+	      if (z < 0) {
+          perror("ERROR writing");
+          printf("error: %s \n", strerror(errno));
+          exit(1);
+        }
       }
 
       /* Send message to the server */
       //printf("five (w)\n");
       //n = write(sockfd, buffer, strlen(buffer));
-      n = write(sockfd, scard1, strlen(scard1));
+      //n = write(sockfd, scard1, strlen(scard1));
     
     if (n < 0) {
       perror("ERROR writing to socket");

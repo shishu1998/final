@@ -25,12 +25,10 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
   char buffer[100];
   int counter = 0;
   card redCards[7];
-  card greenCard = deal_greencard(greenDeck);
+  //  card greenCard = deal_greencard(greenDeck);
 
-  printf("Ho Yin went black\n");
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
-  printf("Now Ho Yin can't go back\n");
   remove("pipe");
   
   int f = fork();
@@ -40,17 +38,19 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
     
     to_player = open(buffer,O_WRONLY);
     remove(buffer);
+    write(to_player,&ids[freeID],sizeof(int));
+    /*
+    strcpy(buffer,greenCard.content);
+    write(to_player,buffer,sizeof(buffer));
+    */
     while (counter < 7){
       redCards[counter] = deal_redcard(redDeck);
-      write(to_player,redCards[counter].content,sizeof(redCards[counter].content));
-      printf("%s\n",redCards[counter].content);
+      strcpy(buffer,redCards[counter].content);
+      write(to_player,buffer,sizeof(buffer));
+      printf("%s\n",buffer);
       counter++;
     }
-    write(to_player,&ids[freeID],sizeof(int));
     ids[freeID] = 0;
-    write(to_player,greenCard.content,sizeof(greenCard.content));
-    printf("I like Sandy, Kappa\n");
-    
     return to_player;
   }
   else{

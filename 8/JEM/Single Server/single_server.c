@@ -33,6 +33,28 @@ int find_error(char *username, char *password) {
   }
 }
 
+int find_user_match(char *username) {
+  FILE* fd = fopen("username.txt", "r");
+  char *buffer = (char *)malloc(BUFFER_LEN*sizeof(char));
+  fread(buffer, sizeof(char), BUFFER_LEN, fd);
+  username = strsep(&username, "\n");
+  printf("username:%s\n", username);
+  printf("buffer: %s\n", buffer);
+  if (strstr(buffer, username) == NULL) {//if username isn't taken                                                                      
+    printf("find_user_match() returned NULL. Your username is acceptable.\n");
+    buffer = "";
+    fclose(fd);
+    return 1;
+  }
+  else {
+    printf("Your username is taken. Please try again.\n");
+    buffer = "";
+    printf("buffer after fread/fwrite: %s\n", buffer);
+    fclose(fd);
+    return 0;
+  }
+}
+
 void sign_up(char input) {
   char user[USER_LEN]; char pswd[PSWD_LEN];
   char *username;
@@ -66,29 +88,6 @@ void sign_up(char input) {
         exit(0); //add ability to log in directly??                                                                                                                         
       }
     }
-  }
-}
-
-int find_user_match(char *username) {
-  FILE* fd = fopen("username.txt", "r");
-  char *buffer = (char *)malloc(BUFFER_LEN*sizeof(char));
-  fread(buffer, sizeof(char), BUFFER_LEN, fd);
-  username = strsep(&username, "\n");
-  printf("username:%s\n", username);
-  printf("buffer: %s\n", buffer);
-  if (strstr(buffer, username) == NULL) {//if username isn't taken                                                                                                         \
-                                                                                                                                                                            
-    printf("find_user_match() returned NULL. Your username is acceptable.\n");
-    buffer = "";
-    fclose(fd);
-    return 1;
-  }
-  else {
-    printf("Your username is taken. Please try again.\n");
-    buffer = "";
-    printf("buffer after fread/fwrite: %s\n", buffer);
-    fclose(fd);
-    return 0;
   }
 }
 
@@ -160,8 +159,10 @@ int main() {
     printf("<server> connected: %d\n", socket_client );
     //now you can do things
     //while( strcmp(input, "bye") != 0 ) {
-    //read(socket_client, buffer, msg_len);
-    //printf("one_two value:%s\n", buffer);
+    
+    read(socket_client, buffer, msg_len);
+    printf("one_two value:%s\n", buffer);
+    
     while( 1 ) {
       printf("Talk to <client> : ");
       //fgets(input, strlen(input), stdin);

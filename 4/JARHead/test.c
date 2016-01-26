@@ -22,6 +22,26 @@ int main() {
   // Make an unnamed pipe for char input transfer.
   pipe(fd);
 
+  // create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+
+  // bind to port/address
+  struct sockaddr_in sock;
+  sock.sin_family = AF_INET;
+  sock.sin_port = htons(5000);
+  // Set the IP address to connect to
+  // 127.0.0.1 is the "loopback" address of any machine
+  inet_aton( "127.0.0.1", &(sock.sin_addr) );
+  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+
+  //attempt a connection
+  i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (i == -1) {
+    printw("Error connecting to server: %s", strerror(errno));
+    return 0;
+  }
+  printw("<client> connect returned: %d\n", i);
+
   // The child process will constantly pipe the user input to the parent
   // process.
   switch(fork()) {
@@ -52,8 +72,12 @@ int main() {
 
     while (1) {
       read(fd[READ], read_buffer, sizeof(read_buffer));
-      printw("%s |", read_buffer);
+      send(socket_id, read_buffer, sizeof(read_buffer), 0);
       refresh();
+    // errno = recv( socket_id, buffer, sizeof(buffer), 0);
+    // printw("%w", buffer);
+    // printf("Error: %s\n", strerror(errno));
+    // printf("Received: %s\n", buffer);
     }
     endwin();
     break;

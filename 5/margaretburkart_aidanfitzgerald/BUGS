@@ -1,0 +1,7 @@
+1/25/16
+Bug: Loop for user commands exits after one command.
+1/25/16
+Fix: Flushed stdin.
+
+1/25/16
+Bug: Server does not recognize the test user's valid username and password.

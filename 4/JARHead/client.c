@@ -9,54 +9,87 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-int main(int argc, char **argv) {
+#define READ 0
+#define WRITE 1
 
-  char buffer[256];
-  int i;
-  int errno;
-  int socket_id, connect_response, c;
+static void clean_up_memory(int signo) {
+}
 
-  /* initscr(); */
-  /* noecho(); */
-  /* keypad(stdscr, TRUE); */
-  /* nodelay(stdscr, TRUE); */
+int main() {
+ 
+  int fd[2];
+  char input_buffer[8];
+  char write_buffer[256];
+  char read_buffer[256];
+  char server_buffer[256];
+  int i, c, errno, input_writer, input_reader;
+  int socket_id;
 
-  // create the socket
+  // Create a socket to send and receive data from the server.
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
 
-  // bind to port/address
+  // Bind to port/address.
   struct sockaddr_in sock;
   sock.sin_family = AF_INET;
   sock.sin_port = htons(5000);
-  //Set the IP address to connect to
-  //127.0.0.1 is the "loopback" address of any machine
+  
+  // Set the IP address to connect to.
+  // 127.0.0.1 is the "loopback" address of any machine.
   inet_aton( "127.0.0.1", &(sock.sin_addr) );
-  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  bind(socket_id, (struct sockaddr *) &sock, sizeof(sock));
 
-  //attempt a connection
+  // Attempt to connect to the server.
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   if (i == -1) {
     printf("Error connecting to server: %s", strerror(errno));
+    return 0;
   }
-  printf("<client> connect returned: %d\n", i);
+
+  // Make an unnamed pipe for char input transfer.
+  pipe(fd);
   
-  while (1) {
+  // The child process will constantly pipe the user input to the parent
+  // process.
+  switch(fork()) {
+  case -1:
+    printf("Something broke!\n");
+    return 0;
+  
+  case 0:
+    // Child process - Constantly sends user input to the parent process.
+    initscr();
+    noecho();
 
-    errno = recv( socket_id, buffer, sizeof(buffer), 0);
-    printf("Error: %s\n", strerror(errno));
-    printf("Received: %s\n", buffer);
-    printf("Enter A Message\n");
-    fgets(buffer, 256, stdin);
-    send( socket_id, buffer, sizeof(buffer), 0);
+    close(fd[READ]);
+    while (c = getch()) {
+      sprintf(input_buffer, "%d", c);
+      write(fd[WRITE], input_buffer, sizeof(input_buffer));
+    }
+    endwin();
+    break;
+
+  default:
+    // Parent process - Takes the user input and sends it to the server while
+    // redrawing the screen at the same time. This forking is necessary because
+    // otherwise, the loop will hang while we wait for user input.
+    initscr();
+    close(fd[WRITE]);
+
+    while (1) {
+      errno = recv(socket_id, server_buffer, sizeof(server_buffer), 0);
+      printw("%s", server_buffer);
+      
+      read(fd[READ], read_buffer, sizeof(read_buffer));
+      send(socket_id, read_buffer, sizeof(read_buffer), 0);
+      refresh();
+    // printw("%w", buffer);
+    // printf("Error: %s\n", strerror(errno));
+    // printf("Received: %s\n", buffer);
+    }
+    close(socket_id);
+    endwin();
+    break;
   }
-
-  /* while (1) { */
-  /*   c = getch(); */
-  /*   if (c != -1) { */
-  /*     sprintf(buffer, "%d", c); */
-  /*     printw("%s", buffer); */
-  /*   } */
-  /* } */
-
+  
   return 0;
 }

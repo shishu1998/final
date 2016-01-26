@@ -115,17 +115,44 @@ int newuser() {
   return 0;
   }
   }
-
+*/
 
 int registereduser() {
   FILE* fd = fopen("tutoraccounts.txt","r");
   printf("Type in your 4-digit ID for the username.\n");
-  int username;
-  char str[100];
-  scanf("%[^1000-9999]%d",str,&username);
-  return 1;
+    int username;
+    char buffer[100];
+    fgets(buffer, 100, stdin);
+    if (sscanf(buffer, "%d", &username)) {
+       char *in = passwd;
+        struct termios  tty_orig;
+        char c;
+        tcgetattr( STDIN_FILENO, &tty_orig );
+        struct termios  tty_work = tty_orig;
+        puts("Please input password:");
+        tty_work.c_lflag &= ~( ECHO | ICANON );
+        tty_work.c_cc[ VMIN ]  = 1;
+        tty_work.c_cc[ VTIME ] = 0;
+        tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+
+        while (1) {
+          if (read(STDIN_FILENO, &c, sizeof c) > 0) {
+            if ('\n' == c) {
+              break;
+            }
+            *in++ = c;
+            write(STDOUT_FILENO, "*", 1);
+          }
+        }
+
+        tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+
+        *in = '\0';
+        fputc('\n', stdout);
+	return username
+	}
+
 }
-*/
 
 int tutorlogin() {
   int tutoraccounts = open("tutoraccounts.txt", O_CREAT | O_RDWR | O_APPEND, 0644);

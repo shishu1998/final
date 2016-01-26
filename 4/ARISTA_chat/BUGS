@@ -1,0 +1,2 @@
+- Password does not check for backspace, so if you try backspacing, it will
+just read it as another character in your password! :)

@@ -27,9 +27,7 @@ void clean_stdin(void)
     int c;
     do {
         c = getchar();
-//	printf("cl:getchar hang?\n");
     } while (c != '\n' && c != EOF);
-//	printf("cl:out of getchar\n");
 }
 
 int main(int argc, char *argv[])
@@ -68,27 +66,21 @@ int main(int argc, char *argv[])
 		old_main();
 
 		if (BID_MODE != 0) {
-			n = write(sockfd, my_paddle, strlen(my_paddle)+1); //tbh does nothing but sync read/write in client/socket
+			n = write(sockfd, my_paddle, strlen(my_paddle)+1);
 
 			memset(buffer, 0, sizeof(buffer)); // better than bzero
 			printf("Your bid: ");
 			bzero(buffer,SIZEBUFF);
 			
-			clean_stdin();//getchar();
+			clean_stdin();
 			fgets(buffer, sizeof(buffer)-1, stdin);
 
 			n = write(sockfd,buffer,strlen(buffer));
-			printf("buffer is %s\n", buffer);
+//			printf("buffer is %s\n", buffer);
 			if (n < 0) 
 				 error("ERROR writing to socket");
 			bzero(buffer,SIZEBUFF);
-/*
-			n = read(sockfd,buffer,SIZEBUFF-1);
-			if (n < 0) 
-				 error("ERROR reading from socket");
-//			printf("client buffer: %s\n",buffer);
-			printf("%s\n", buffer);
-*/
+
 			//check for errors
 			if (errno) printf("error %d: %s\n", errno, strerror(errno));
 		} else if (REQ_MODE != 0) {
@@ -96,7 +88,7 @@ int main(int argc, char *argv[])
 			n = write(sockfd, "2", 2); // I'm just taking 2 to mean REQ_MODE for server
 			if (n < 0) error("ERROR writing to socket");
 
-			printf("attempting a request at info, n = %d\n", n);
+//			printf("attempting a request at info, n = %d\n", n);
 			printf("CURRENT BID AT: ");
 
 			//check for errors
@@ -119,7 +111,6 @@ int main(int argc, char *argv[])
 
 		n = read(sockfd,buffer,SIZEBUFF-1);
 		if (n < 0) error("ERROR reading from socket");
-//		printf("client buffer: %s\n", buffer);
 		printf("%s\n", buffer);
 
 	}

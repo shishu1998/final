@@ -19,6 +19,7 @@ static int running = 1;
 int main(int argc, char * argv[]) {
   int socket_id, e;
   char *hostname, *username;
+  int sending = 0;
 
   if (argc < 3) {
     printf("Usage: client <hostname> <username>\n");
@@ -26,6 +27,9 @@ int main(int argc, char * argv[]) {
   } else {
     hostname = argv[1];
     username = argv[2];
+    if (argc >= 4) {
+      sending = 1;
+    };
   }
 
   struct user me = new_user(username);
@@ -44,14 +48,18 @@ int main(int argc, char * argv[]) {
   }
 
   while (running) {
-    e = run(socket_id, me);
+    if (sending) {
+      e = send_messages(socket_id, me);
+    } else {
+      e = receive_messages(socket_id);
+    }
     if (e < 0) running = 0;
   }
 
   cleanup(socket_id);
 }
 
-int run(int socket_id, struct user me) {
+int send_messages(int socket_id, struct user me) {
   int e;
 
   struct message message;
@@ -69,9 +77,6 @@ int run(int socket_id, struct user me) {
   if (e < 0) return e;
 
   printf(" sent!\n");
-
-  e = handle_response(socket_id);
-  if (e < 0) return e;
 
   return 0;
 }
@@ -157,7 +162,7 @@ int handshake(int socket_id, struct user user) {
   return 0;
 }
 
-int handle_response(int socket_id) {
+int receive_messages(int socket_id) {
   int e;
   struct signal sig;
 

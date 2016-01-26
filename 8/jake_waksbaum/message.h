@@ -35,5 +35,6 @@ struct signal new_handshake_sig(struct user user);
 struct signal new_message_sig(struct user from, struct user to, char *text);
 struct signal new_disconnect_sig();
 int is_to(struct message message, struct user user);
+int is_from(struct message message, struct user user);
 
 #endif

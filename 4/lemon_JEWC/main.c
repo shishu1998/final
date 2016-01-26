@@ -94,6 +94,15 @@ void append(char old[], const char new[], int index) {
     strcpy(old, buf);   
 }
 
+void del_char(char str[],int dex){
+  int z=dex;
+  while(str[z]){
+    //printf("%c\n",str[z]);
+    str[z]=str[z+1];
+    z++;
+  }
+}
+
 int main(){
   int file;
   printf("\e[7mPlease enter the name of the file you are creating or editing.\e[27m\n");

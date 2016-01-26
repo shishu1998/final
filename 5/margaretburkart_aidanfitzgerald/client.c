@@ -87,6 +87,10 @@ void open_file(char* buffer, char* final, int socket_id, int fd){
 void compose(int socket_id){
   printf("Composing...\n");
   change_location("Drafts.d");
+  char buff[256];
+
+  char* loc = getcwd(buff,256);
+  printf("Currently in %s\n",loc);
   create_new();
   int fd;
   char buffer[256];
@@ -264,8 +268,8 @@ void sign_in(int socket_id){
   fgets(pass,MAXLEN,stdin);
   strip_add(pass,final);
 
-  sock_write(socket_id,final);
   printf("This is what you sent to the server:\n[%s]\n",final);
+  sock_write(socket_id,final);
   
   //read from socket
   char buffer[256];

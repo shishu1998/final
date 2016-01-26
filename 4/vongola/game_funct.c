@@ -178,9 +178,10 @@ void print_DEAD(player* player_list){
   int size=sizeof(player_list);
   int i=0;
 
-  while (i<0){
+  printf("The Dead:\n\n");
+  while (i<size){
     if (player_list[i].status == DEAD){
-      printf("Name: %s", player_list[i].name);
+      printf("Name: %s ", player_list[i].name);
       
       printf("Role: %s\n", get_role(player_list[i].role));
     }
@@ -192,7 +193,7 @@ void print_ALIVE(player* player_list){
   int size=sizeof(player_list);
  
   int i=0;
-  
+  printf("The Living:\n\n");
   while(i<size){
     if (player_list[i].status == ALIVE){
       printf("Name: %s ", player_list[i].name);
@@ -203,8 +204,33 @@ void print_ALIVE(player* player_list){
   }
 }
 
-int lynch_count( int i ){
-  return i/2 + 1;
+int num_alive(player* player_list){
+  int size=sizeof(player_list);
+  int i=0;
+  int alive=0;
+  while (i<size){
+    if (player_list[i].status == ALIVE){
+      alive++;
+    }
+    i++;
+  }
+  return alive;
+}
+
+int lynch_count(player* player_list ){
+  int size=sizeof(player_list);
+  int i=0;
+  int decision=0;
+  while (i<size){
+    if (player_list[i].vote == YES){
+      decision++;
+    }
+    i++;
+  }
+  if (decision >= num_alive(player_list)/2+1){
+    return 0;
+  } 
+  return -1;
 }
 
 int main(){
@@ -227,7 +253,7 @@ int main(){
     printf("%s: %d\n", player_list[i].name, player_list[i].role);//prints all player names and roles in array
     i++;
   }
-  print_ALIVE(player_list);
+ 
 
   printf("\n\n");
   strcat(player_list[2].target, "Player 0");
@@ -243,5 +269,7 @@ int main(){
     printf("%s: %d\n", player_list[i].name, player_list[i].status);
     i++;
   }
-  
+  printf("alive: %d\n", num_alive(player_list));
+  print_ALIVE(player_list);
+  print_DEAD(player_list);
 }

@@ -1,18 +1,12 @@
+#include "utils.h"
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <errno.h>
+#include <netdb.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 
-#define PORT_STR "8000"
-#define PORT_INT 8000
-
-void error(char *msg) {
-	perror(msg);
-	exit(EXIT_FAILURE);
-}
-
-int open_client_socket_addr(char *addr) {
+int client_open_sock_addr(char *addr) {
 	struct sockaddr_in server;
 	int sock;
 
@@ -32,10 +26,11 @@ int open_client_socket_addr(char *addr) {
 		}
 		error("connect");
 	}
+
 	return sock;
 }
 
-int open_client_socket_name(char *name) {
+int client_open_sock_name(char *name) {
 	struct addrinfo hints, *res;
 	int err, sock;
 
@@ -45,7 +40,7 @@ int open_client_socket_name(char *name) {
 
 	if ((err = getaddrinfo(name, PORT_STR, &hints, &res)) != 0) {
 		printf("getaddrinfo: %s\n", gai_strerror(err));
-		return 1;
+		return 0;
 	}
 
 	sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
@@ -64,6 +59,49 @@ int open_client_socket_name(char *name) {
 	return sock;
 }
 
-int main() {
-	printf("socketfd: %d", open_client_socket_name("www.google.com"));
+void send_and_recieve(int sock, char *data, int data_size, char *buf, int buf_size) {
+	if(write(sock, data, data_size) < 0) {
+		error("send");
+	}
+
+	if(read(sock, buf, buf_size) < 0) {
+		error("recv");
+	}
+}
+
+int server_open_sock() {
+	struct sockaddr_in server;
+	int sock;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == -1) {
+		error("socket");
+	}
+
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = INADDR_ANY;
+	server.sin_port = htons(PORT_INT);
+
+	if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1) {
+		error("bind");
+	}
+
+	if (listen(sock , 16)) {
+		error("listen");
+	}
+
+	return sock;
+}
+
+int server_connect_sock(int sock) {
+	struct sockaddr_in client;
+	int c = sizeof(struct sockaddr_in);
+	int client_sock;
+
+	client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t *)&c);
+	if (client_sock == -1) {
+		error("accept");
+	}
+
+	return client_sock;
 }

@@ -35,10 +35,12 @@ int server_handshake( int *from_client ){
 
   strcpy( names[num_at], buffer );
   num_at++;
+  memset(name,0,strlen(name));
   strcpy( name, buffer);
   
   to_client = open( buffer, O_WRONLY);
-  //wait(1000);
+  printf("Opened %s, about to write\n", buffer);
+  sleep(1);
   write(to_client, "Hi, <Server> hereby acknowledges.\n", 40);
   printf("<Server> is now connected. Yay.\n\n\n");
  
@@ -49,15 +51,18 @@ int server_handshake( int *from_client ){
 int scanThrough(){
 
   char buffer[200];
-  //memset(name,0,strlen(buffer));
+  //memset(name,0,strlen(name));
   int i = 0;
   while (i<num_at){
     memset(name,0,strlen(name));
-    strcpy( name, names[i]);
-    int fd = open(name, O_RDONLY);
-    if (fd >0){
+    memset(buffer,0,strlen(buffer));
+    //strcpy( name, names[i]);
+    int fd = open(names[i], O_RDONLY);
+    if (fd > 0){
       read( fd, buffer, sizeof(buffer) );
-      printf("Name: %s: %s\n", names[1], buffer);
+      printf("Name: %s\nMessage: %s\n\n", names[i], buffer);
+    } else {
+      printf("ERROR: %s\n", strerror(errno) );
     }
     close(fd);
     i++;
@@ -73,15 +78,7 @@ int scanThrough(){
       break;
     }
     i++;
-  }
-  
-
-
-  int i = 0;
-  while (i<num_att){
-    read
-    i++;
-    }*/
+  }*/
 }
 
 int main(){
@@ -103,12 +100,14 @@ int main(){
     //printf("Elder Number is: %d\n", elder);
     if (elder == 0){ // i.e. child
       while (1){
-	read( from_client, buffer, sizeof(buffer));
+	memset(buffer,0,strlen(buffer));
+	int stop = read( from_client, buffer, sizeof(buffer));
+	if (stop<=3){
+	  exit(0);
+	}
+	printf("Words sent from sub: %s\n", buffer);
 	//printf( "<Server> received: %s\n", buffer);
 
-	char str[7];
-	sprintf(str, "%d", getpid());
-	//int fd = open( str , O_CREAT|O_WRONLY|O_TRUNC,0644);
 	int fd = open( name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 
 	//change the semaphore and or shared memory
@@ -131,13 +130,11 @@ int main(){
 	
 	//printf("Name: %s\n", message);
 	//#####################################################
-	//parts = strsep(&buffer, SPLIT);//from who
 	//sends this to the MS.
 	//changes a semaphore
 	//MS checks semaphores or shared memory, reverts it back to normal
 	//MS then reads it.
 	//MS sends back a response and changes semaphore
-	//Deliminates responses.
 	//strcat(message, parts);
 	//parts = strsep(&buffer, SPLIT); //to_who
 	//strcat(message, parts);
@@ -161,7 +158,6 @@ int main(){
     else{ //parent
       close (to_client);
       close (from_client);
-      int a = 0;
       scanThrough();
       /*
       while (a<num_at){

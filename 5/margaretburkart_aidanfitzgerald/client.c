@@ -277,7 +277,7 @@ void sign_in(int socket_id){
   printf("contents of buffer: [%s]\n",buffer);
   if(strncmp(buffer,"OK",2)==0){
     enter_mail(socket_id);
-  }else if(strncamp(buffer,"FAIL\nIncorrect password",23)==0){
+  }else if(strncmp(buffer,"FAIL\nIncorrect password",23)==0){
     printf("Incorrect password\n");
   }else if(strncmp(buffer,"FAIL\nNo such user",17)==0){
     printf("No such user\n");

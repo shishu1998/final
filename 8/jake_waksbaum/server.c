@@ -43,14 +43,15 @@ int main() {
   }
 
   struct user client;
-  int pipe_id;
 
   while (running) {
     if (listener) {
       printf("<server> listening on %d\n", PORT);
       client_socket = accept(listening_socket, NULL, NULL); // blocks here on connection
-      e = handshake(client_socket, &client, &pipe_id);
+      printf("BOUTA HANDSHAKE OH NAH\n");
+      e = handshake(client_socket, &client);
       printf("<server> connected: %s\n", client.name);
+      fflush(stdout);
       listener = fork();
       if (listener) {
         close(client_socket);
@@ -58,7 +59,7 @@ int main() {
         close(listening_socket);
       }
     } else {
-      e = handle_request(client_socket, pipe_id, client);
+      e = handle_request(client_socket, client);
       if (e <= 0) {
         running = 0;
       }
@@ -68,7 +69,6 @@ int main() {
   if (listener) {
     close(listening_socket);
   } else {
-    close(pipe_id);
     remove(client.name);
     struct signal sig = new_disconnect_sig();
     write(client_socket, &sig, sizeof(sig));
@@ -99,7 +99,11 @@ int setup_server(int port) {
   return listening_socket;
 }
 
-int fetch_a_message(int socket_id, int pipe_id, struct signal* sig) {
+int fetch_a_message(int socket_id, char *pipe_path, struct signal* sig) {
+
+  int pipe_id = open(pipe_path, O_RDONLY | O_NONBLOCK);
+  if (pipe_id < 0) return -1;
+
   fd_set fd;
   FD_ZERO(&fd);
   FD_SET(socket_id, &fd);
@@ -113,13 +117,15 @@ int fetch_a_message(int socket_id, int pipe_id, struct signal* sig) {
   } else {
     return read(pipe_id, sig, sizeof(*sig));
   }
+
+  close(pipe_id);
 }
 
-int handle_request(int socket_id, int pipe_id, struct user client) {
+int handle_request(int socket_id, struct user client) {
   int e;
   struct signal sig;
 
-  e = fetch_a_message(socket_id, pipe_id, &sig);
+  e = fetch_a_message(socket_id, client.name, &sig);
   if (e < 0) return -1;
 
   switch (sig.type) {
@@ -130,9 +136,9 @@ int handle_request(int socket_id, int pipe_id, struct user client) {
     if (is_to(sig.body.message, client)) {
       e = write(socket_id, &sig, sizeof(sig));
       if (e < 0) return -1;
-    } else {
+    } else if (is_from(sig.body.message, client)) {
       struct signal resp;
-      int to_pipe = open(sig.body.message.to.name, O_WRONLY);
+      int to_pipe = open(sig.body.message.to.name, O_WRONLY | O_NONBLOCK);
       if (to_pipe < 0) {
         resp = new_message_sig(sig.body.message.to, sig.body.message.from, "NOT RECEIVED!");
         write(socket_id, &resp, sizeof(resp));
@@ -153,7 +159,7 @@ int handle_request(int socket_id, int pipe_id, struct user client) {
   return e;
 }
 
-int handshake(int client_socket, struct user *client, int *pipe_id) {
+int handshake(int client_socket, struct user *client) {
   int e;
   struct signal sig;
   e = read(client_socket, &sig, sizeof(sig));
@@ -163,9 +169,6 @@ int handshake(int client_socket, struct user *client, int *pipe_id) {
 
   e = mkfifo(client->name, 0600);
   if (e < 0) return -1;
-
-  *pipe_id = open(client->name, O_RDONLY);
-  if (*pipe_id < 0) return -1;
 
   e = write(client_socket, &sig, sizeof(sig));
   if (e <= 0) return -1;

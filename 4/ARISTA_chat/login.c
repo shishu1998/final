@@ -11,14 +11,13 @@
 
 int newuser() {
   int moveon = 0;
-  int username = 0000;
   char passwd[16];
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
     int username;
     char buffer[100];
     fgets(buffer, 100, stdin);
-    if (sscanf(buffer, "%d", &username)) {
+  if (sscanf(buffer, "%d", &username)) {
       if (username >= 1000 && username <= 9999) {
 	char *in = passwd;
 	struct termios  tty_orig;
@@ -30,7 +29,6 @@ int newuser() {
 	tty_work.c_cc[ VMIN ]  = 1;
 	tty_work.c_cc[ VTIME ] = 0;
 	tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
-	
 	while (1) {
 	  if (read(STDIN_FILENO, &c, sizeof c) > 0) {
 	    if ('\n' == c) {
@@ -40,12 +38,11 @@ int newuser() {
 	    write(STDOUT_FILENO, "*", 1);
 	  }
 	}
-	
 	tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
-	
+
 	*in = '\0';
 	fputc('\n', stdout);
-	
+
 	char check[16];
 	char *checkin =  check;
 	struct termios  tty_check;
@@ -57,7 +54,6 @@ int newuser() {
 	tty_checking.c_cc[ VMIN ]  = 1;
 	tty_checking.c_cc[ VTIME ] = 0;
 	tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_checking );
-	
 	while (1) {
 	  if (read(STDIN_FILENO, &d, sizeof(d)) > 0) {
 	    if ('\n' == d) {
@@ -69,29 +65,29 @@ int newuser() {
 	}
 
 	tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_check );
-	
+
 	*checkin = '\0';
 	fputc('\n', stdout);
-	
+
 	if(strcmp(passwd,check) != 0) {
 	  printf("Error: Passwords don't match. Please try again.\n");
 	} else {
-	  break;
 	  moveon == 1;
 	}
       }
-    } else {
-      printf("Error: Invalid username. Please input your 4-digit ID.\n");
-    }
-  }
-  
-  char newuser[1000];
+ char newuser[1000];
   snprintf(newuser,sizeof(newuser), "%i: %s\n",username,passwd);
   int fd = open("tutoraccounts.txt",O_RDWR | O_APPEND,0644);
   write(fd, newuser, strlen(newuser));
   close(fd);
-  
+
   return username;
+
+    } else {
+      printf("Error: Invalid username. Please input your 4-digit ID.\n");
+	return 0;
+    }
+  }
 }
 
 int find_user_match(char *username) {
@@ -121,6 +117,7 @@ int registereduser() {
   int username;
   char buffer[100];
   fgets(buffer, 100, stdin);
+  char passwd[16];
   if (sscanf(buffer, "%d", &username)) {
     char *in = passwd;
     struct termios  tty_orig;

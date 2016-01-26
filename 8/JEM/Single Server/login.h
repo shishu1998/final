@@ -1,6 +1,11 @@
+<<<<<<< HEAD
+#ifndef FOO
+
+=======
 int find_user();
 #ifndef FOO
 //int find_user();
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b
 #define FOO
 
 const char underscore = '_';
@@ -16,4 +21,9 @@ const char underscore = '_';
 
 int find_user_match(char*);
 
+<<<<<<< HEAD
+int find_user();
+
+=======
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b
 #endif

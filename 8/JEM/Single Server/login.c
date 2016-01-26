@@ -4,6 +4,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+<<<<<<< HEAD
+
+#include "login.h"
+=======
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b
 
 #include "login.h"
 /*void make_profile(char *username, char *password) {
@@ -106,9 +111,12 @@ int find_user() {
   return 0;
 }
 
+<<<<<<< HEAD
+  int main() {
+=======
 int main() {
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  //char underscore[1] = "_";
   char *username;
   char yes_no;
   printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\nPlease type in 1 if you have an account or 2 if you'd like to make one.\n");
@@ -158,5 +166,9 @@ int main() {
   else
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
   return 0;
+<<<<<<< HEAD
+  }
+=======
 }
 
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b

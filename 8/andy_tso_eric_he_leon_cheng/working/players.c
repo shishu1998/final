@@ -19,6 +19,12 @@ typedef struct
   int num_cards;//number of cards in player's hand
 } player;
 
+typedef struct
+{
+  card top_card;
+  char mssg[100];
+} init;
+
 
 int desired_total;
 int player_count;

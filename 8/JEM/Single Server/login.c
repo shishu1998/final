@@ -4,10 +4,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
 #include "login.h"
-//#define USER_LEN 20 
-//#define PSWD_LEN 20
-//#define BUFFER_LEN 500
 
 /*void make_profile(char *username, char *password) {
   char a1[20]; char a2[20]; char a3[20]; 
@@ -109,10 +107,9 @@ int find_user() {
   }
   return 0;
 }
-/*  
+
   int main() {
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  //char underscore[1] = "_";
   char *username;
   char yes_no;
   printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\nPlease type in 1 if you have an account or 2 if you'd like to make one.\n");
@@ -163,4 +160,3 @@ int find_user() {
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
   return 0;
   }
-  */

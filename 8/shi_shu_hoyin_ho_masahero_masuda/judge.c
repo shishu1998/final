@@ -27,7 +27,7 @@ int judge_handshake(int* from_server){
 }
 
 void receivecards(int* from_server,card *received[8]){
-  card buffer[100];
+  char buffer[100];
   int counter = 0;
   while(counter < 8){
     read(*from_server,buffer,sizeof(buffer));
@@ -53,7 +53,7 @@ int main(){
       printf("%d.%s\n",counter,received[counter].content);
     }
     fgets(buffer,sizeof(buffer),stdin);
-    *strchr(buffer,"\n") = 0;
+    *strchr(buffer,'\n') = 0;
     int winner = atoi(buffer);
     while(winner < 0 || winner > 7 || !(received[winner].content)){
       printf("please type in a valid number: \n");
@@ -61,7 +61,7 @@ int main(){
 	printf("%d.%s\n",counter,received[counter].content);
       }
       fgets(buffer,sizeof(buffer),stdin);
-      *strchr(buffer,"\n") = 0;
+      *strchr(buffer,'\n') = 0;
       int winner = atoi(buffer);
     }
     write(to_server,received[winner].content,sizeof(received[winner].content));    

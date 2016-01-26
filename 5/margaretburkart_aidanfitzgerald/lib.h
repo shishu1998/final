@@ -18,7 +18,7 @@
 
 #include <sys/stat.h>
 
-#define strstart(haystack, needle) strncmp(haystack, needle, strlen(needle)) == 0
+#define strstart(haystack, needle) (strncmp(haystack, needle, strlen(needle)) == 0)
 
 typedef struct {char *name; char *passwd;} user;
 
@@ -33,8 +33,8 @@ void server_send(char*, user*);
 int server_get(int, user*);
 
 // User operations
-user *user_find(char*, FILE*);
-user *user_create(char*, char*, FILE*);
+user *user_find(char*);
+user *user_create(char*, char*);
 void user_freemem(user*);
 
 // Common network stuff

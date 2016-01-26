@@ -15,27 +15,24 @@ void make_deck( card* deck) {
   int counter = 0;
   int value, is_ace;
   setvbuf (stdout, NULL, _IONBF, 0);
-  printf("wee");
+  printf("wee\n");
   char suits[4] = "DCHS"; //diamond, clubs, hearts, spades
 
-  card* current_card = deck;
-  card* previous_card = deck;
   //Aces
   value = 1;
   is_ace = 1;
   char* name = "A";
-  while( counter < 4) {
-    printf("%d", counter);
-    make_card( value, name + suits[counter], is_ace, current_card);
 
-    //skips zeroth place
-    previous_card -> next_card = current_card;
-    previous_card = current_card;
+  make_card( value, name + suits[0], is_ace, deck );
+
+  while( counter < 3) {
+    printf("%d", counter);
+    make_card( value, name + suits[counter], is_ace, deck -> next_card);    
+
+    deck = deck -> next_card;
     
     counter++;
   }
-  //shifts back to zeroth
-  deck = deck -> next_card;
   //2 to 10
   value++; // value == 2
   is_ace = 0; 
@@ -45,10 +42,10 @@ void make_deck( card* deck) {
       //converts integer value to string, base 10
       sprintf( name, "%d", value );
       
-      make_card( value, name + suits[counter], is_ace, current_card);
-      previous_card = current_card;
-      current_card = current_card -> next_card;
+      make_card( value, name + suits[counter], is_ace, deck -> next_card);
 
+      deck = deck -> next_card;
+      
       counter++;
     }
     value++;
@@ -59,18 +56,16 @@ void make_deck( card* deck) {
     while( counter < 4 ) {
       if( value == 11) { //Jacks
 	name = "J";
-	make_card( value, name + suits[counter], is_ace, current_card);
+	make_card( value, name + suits[counter], is_ace, deck -> next_card);
       } else if( value == 12) { //Queens
 	name = "Q";
-	make_card( value, name + suits[counter], is_ace, current_card);
+	make_card( value, name + suits[counter], is_ace, deck -> next_card);
       } else if(value == 13) { //Kings
 	name = "K";
-	make_card( value, name + suits[counter], is_ace, current_card);
+	make_card( value, name + suits[counter], is_ace, deck -> next_card);
       }
 
-      previous_card = current_card;
-      current_card = current_card -> next_card;
-
+      deck = deck -> next_card;
       counter++;
     }
     value++;

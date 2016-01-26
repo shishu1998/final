@@ -261,11 +261,15 @@ void sign_in(int socket_id){
   strcat(final,use_phrase);
   printf("Enter your username: ");
   fgets(use,MAXLEN,stdin);
+  printf("final after username retrieved: [%s]\n",final);
   strip_add(use,final);
+  printf("final after username entered: [%s]\n",final);
 
   strcat(final,pass_phrase);
   printf("Enter your password: ");
+  printf("final before password retrieved: [%s]\n",final);
   fgets(pass,MAXLEN,stdin);
+  printf("final after password retrieved: [%s]\n",final);
   strip_add(pass,final);
 
   printf("This is what you sent to the server:\n[%s]\n",final);

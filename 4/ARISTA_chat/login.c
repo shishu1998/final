@@ -16,7 +16,6 @@ int newuser() {
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
     scanf("%i",&username);
-
     if (username >= 1000 && username <= 9999) {
       char *in = passwd;
       struct termios  tty_orig;
@@ -24,7 +23,7 @@ int newuser() {
       tcgetattr( STDIN_FILENO, &tty_orig );
       struct termios  tty_work = tty_orig;
       puts("Please input password:");
-      tty_work.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_work.c_lflag &= ~( ECHO | ICANON );
       tty_work.c_cc[ VMIN ]  = 1;
       tty_work.c_cc[ VTIME ] = 0;
       tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
@@ -51,7 +50,7 @@ int newuser() {
       tcgetattr( STDIN_FILENO, &tty_check );
       struct termios  tty_checking = tty_check;
       puts("Please retype password:");
-      tty_checking.c_lflag &= ~( ECHO | ICANON );  // | ISIG );
+      tty_checking.c_lflag &= ~( ECHO | ICANON );
       tty_checking.c_cc[ VMIN ]  = 1;
       tty_checking.c_cc[ VTIME ] = 0;
       tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_checking );
@@ -116,15 +115,11 @@ int find_user_match(char *username) {
 
 int registereduser() {
   FILE* fd = fopen("tutoraccounts.txt","r");
-  //int username = 0000;
-  
   printf("Type in your 4-digit ID for the username.\n");
   int username;
   char str[100];
-  scanf("%[^1000-9999]%d",str,&username);  
-  
-   return 1;
-  
+  scanf("%[^1000-9999]%d",str,&username);
+  return 1;
 }
 
 int tutorlogin() {
@@ -134,11 +129,12 @@ int tutorlogin() {
   }
 
   int accessing = 0;
+  char str[100];
   int username = 0;
   while (accessing == 0) {
     printf("Press 1 to login or 2 to register.\n");
     int action;
-    scanf("%i",&action);
+    scanf("[^1-2]%d",str,&action);
     if (action == 1) {
       username = registereduser();
       accessing = 1;
@@ -163,6 +159,7 @@ int clean_stdin() {
 		return 1;
 }
 
+
 int main() {
   int tutoraccounts = open("tutoraccounts.txt", O_CREAT | O_TRUNC, 0644);
   if (tutoraccounts < 0) {
@@ -180,11 +177,10 @@ int main() {
   int rows;
   while (moveon == 0) {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
-    int student;
+    int student
     char str[100];
-    scanf("%i",&student);
-    printf("%i",student);
-if (student == 1) {
+    scanf("%[^1000-9999]%d",str,&student);
+    if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;
       while (loggedin == 0)
@@ -202,6 +198,5 @@ if (student == 1) {
     } else {
       printf("We didn't understand your response. Please try again.\n");
     }
-
   }
 }

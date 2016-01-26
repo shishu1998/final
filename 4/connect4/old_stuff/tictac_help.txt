@@ -1,0 +1,9 @@
+To Make a Move:
+
+Type in the corresponding row column.
+
+Ex. Type in A1 to put an X or O on the upper left corner.
+That's about it. Have fun!
+
+If you wish to exit this game:
+Type exit.

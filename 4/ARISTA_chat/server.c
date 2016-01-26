@@ -166,7 +166,7 @@ int main() {
 			int tutor_ind = find_tutor(tutee_ind);
 			if (tutor_ind != -1) {
 				char msg[] = "You have been connected to a tutor.";
-				write(tutee_ind, msg, sizeof(msg));
+				write(tutees[tutee_ind][0], msg, sizeof(msg));
 				tutors[tutor_ind][1] = 1;
 
 				while(1) {

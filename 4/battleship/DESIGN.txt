@@ -14,8 +14,12 @@ the win-loss record. One user can only access his/her board, not that of the opp
 He/she cannot fire a shot until the opponent has fired theirs.
 
 should incorporate:
+<<<<<<< HEAD
 //piping and server
 //shared memory and semaphores
+=======
+ server and client connection
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
 execution of inputs (using fgets to see what a user's shot is)
 parsing strings
 signals when closing /forfeiting game
@@ -24,7 +28,11 @@ writing to a file
 streches: 
 cheat codes??
 //timer that calls for a forfeit if turn time is up
+<<<<<<< HEAD
 
+=======
+//shared memory and semaphores for connectivity with others
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
 Group Member Responsibilities
 Lian: 
 	-The colorful and appealing intro[welcome.c]
@@ -38,6 +46,13 @@ Kevin:
 Max:
 	-a working server and client connection[?]
 
+<<<<<<< HEAD
+=======
+Data structures to use:
+array of ints
+strings
+
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
 Timeline of expected completion
 -important functions in board.c to be completed by Saturday, 1/23
 	--finished by the next morning, 1/24

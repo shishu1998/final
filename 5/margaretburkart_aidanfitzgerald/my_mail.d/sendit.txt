@@ -1,0 +1,4 @@
+To: A
+Subject: hey
+
+this is where i’d write the text of file

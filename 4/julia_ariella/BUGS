@@ -1,0 +1,9 @@
+iTerminal
+Julia Hou and Ariella Kahan
+
+BUGS:
+There are a number of bugs in the account function. We coded it so you can’t use a username that was already taken (because this would create conflicts in the <username>.txt files), but in addition to not being allowed to use a username that was already taken, you also can’t make your username a password that was already taken. Some problems arise if you make a username that has overlap with a different, already used, username (i.e. “cs.txt” and “csproject.txt” could cause problems). Additionally, new lines in the “account.txt” text file (where all the usernames are stored) causes issues, but new lines are only added to account.txt if you open account.txt and accidentally add in a username.
+
+Also, you must use underscores instead of spaces at all times while using our project, and while it is okay if you enter numbers other than the ones listed, you cannot enter strings (i.e. if you have options 1 - 7, you can enter 8 but you can’t enter “play”). When using the play or shuffle functions, the song name you type in must match up exactly with the name of the song in your directory (though you should not add the .wav extension). For example, if Let_It_Be.wav is in your directory, you must request to play Let_It_Be; Let it Be, Let_it_Be, or some other variation won’t work.
+
+Lastly, this is not so much a bug but more a constraint of afplay — you must listen to the entire song in order to continue using the program.    

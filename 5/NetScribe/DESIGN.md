@@ -1,6 +1,6 @@
 DW APPROVED
 
-# C9++
+# NetScribe
 The Improved Terminal Based Co-Coding Engine
 
 ## Members
@@ -40,7 +40,4 @@ only edit with one editor at once). Shared memory may be required.
 Since this is designed to work over LAN, more or less just a simple hub-like
 broadcasting program. Involves networking.
 
-**More information to come once the project begins development**
-
-## Timeline / Dev Log
-TBD
+Each file has a theory header which explains the contents of the file.

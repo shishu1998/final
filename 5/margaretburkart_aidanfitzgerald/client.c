@@ -114,7 +114,6 @@ void compose(int socket_id){
   
   open_file(buffer,final,socket_id,fd);
 
-
 }
 
 void strip_add(char* source, char* dest){
@@ -184,11 +183,26 @@ void execute(char* cmd, int socket_id){
 void take_directions(int socket_id){
   char buffer[256];
   char final[256];
+  int   ch;
+  char  buf[256];
 
-  printf("Enter your command: ");
-  fgets(buffer,MAXLEN,stdin);
-  strip_add(buffer,final);
-  execute(final, socket_id);
+  printf("Flushing input. Press any key to continue:\n");
+  
+  while ((ch = getchar()) != '\n' && ch != EOF);
+  
+  printf ("Enter your command: ");
+  int i;
+  for(i=0; i<256; i++){
+    final[i] = '\0';
+  }
+  
+  if (fgets(buffer, sizeof(buffer), stdin))
+  {
+    //printf ("You entered: %s", buf);
+    strip_add(buffer,final);
+    //printf("final: [%s]\n",final);
+    execute(final, socket_id);
+  }
 }
 
 void my_ls(){

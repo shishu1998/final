@@ -114,6 +114,7 @@ int send_song(char * user_input, int socket_client){
 
     //printf("read in : [%s] \n", song);
      printf("boutta write song to client\n");
+     #ifdef __linux__
      if( sendfile( socket_client, song_file, 0, file_size) < 0){
      	printf("unable to send? \n");
      	printf("errno %s\n", strerror(errno));
@@ -121,6 +122,15 @@ int send_song(char * user_input, int socket_client){
      	return -1;
 
      }
+     #else
+     if( sendfile(song_file, socket_client, 0, file_size, 0, 0) < 0){
+       printf("unable to send? \n");
+       printf("errno %s\n", strerror(errno));
+       write(socket_client, "-1", 3);
+       return -1;
+
+     }
+     #endif
     // write(socket_client, song, file_size + 1);
     printf("finished writing song\n");
     return 0;

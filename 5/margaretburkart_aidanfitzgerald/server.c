@@ -210,11 +210,8 @@ user *server_login(char *buffer) {
   user *u = scan_userinfo(buffer);
 
   // Validate login
-  FILE *userfile = fopen("mail.d/users.csv", "r+");
-  user *account = user_find(u->name, userfile);
+  user *account = user_find(u->name);
   printf("user_find\n");
-  fclose(userfile);
-  printf("fclose\n");
 
   if (account) {
     if (strcmp(u->passwd, account->passwd) == 0) {
@@ -247,10 +244,8 @@ user *server_login(char *buffer) {
 user *server_acct_setup(char *buffer) {
   user *u = scan_userinfo(buffer);
 
-  // Create user in userfile
-  FILE *userfile = fopen("mail.d/users.csv", "r+");
-  user *clone = user_create(u->name, u->passwd, userfile);
-  fclose(userfile);
+  // Add to userfile
+  user *clone = user_create(u->name, u->passwd);
 
   if (clone) {
     // Only free the struct, don't free the strings inside

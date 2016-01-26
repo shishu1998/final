@@ -1,0 +1,27 @@
+Ariel Levy
+Michaela Papallo
+Caitlin Stanton
+
+~~~~~~~~~~~~~~~~~~~~~
+How to Compile / Use:
+~~~~~~~~~~~~~~~~~~~~~
+type 'make'
+run ./client <hostname> <type>
+    where <type> is 0 for tutee or 1 for tutor
+    (this is just until the login function is completely integrated)
+
+~~~~~~~~~~~~~~~~
+Important Files:
+~~~~~~~~~~~~~~~~
+makefile
+DESIGN
+README
+TODO
+BUGS
+
+server.c
+client.c
+hostlookup.c
+connection.h
+
+tutoraccounts.txt

@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include <sys/stat.h>
+
 #define strstart(haystack, needle) strncmp(haystack, needle, strlen(needle)) == 0
 
 typedef struct {char *name; char *passwd;} user;

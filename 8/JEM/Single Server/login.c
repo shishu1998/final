@@ -4,11 +4,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-#include "login.h"
-//#define USER_LEN 20 
-//#define PSWD_LEN 20
-//#define BUFFER_LEN 500
+<<<<<<< HEAD
 
+#include "login.h"
+=======
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b
+
+#include "login.h"
 /*void make_profile(char *username, char *password) {
   char a1[20]; char a2[20]; char a3[20]; 
   printf("You have successfully created a username and account! To complete account information, please answer the following questions below:");
@@ -28,7 +30,7 @@
 Goes through stdin username and password and looks for any white space and underscores. 
  */
 int find_error(char *username, char *password) {
-  printf("Running find_error()...\n");
+  //printf("Running find_error()...\n");
   if (username == NULL || password == NULL) {
     printf("username and password cannot be null\n");
     return 0;
@@ -72,7 +74,6 @@ int find_user_match(char *username) {
 int find_user() {
   FILE* fd1 = fopen("username.txt", "r");//open username.txt
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  //char underscore[3] = "_\0";
   char *username;
   //retrieves username and password
   printf("Please type in your username:\n");
@@ -84,7 +85,7 @@ int find_user() {
   if (find_error(user, pswd) == 1) {
     username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char               
     strcat(username, user);                                                                                                                         
-    char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
+    char *line = (char *)calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));
     line = strsep(&username, "\n");
     strcat(line, &underscore);
     strcat(line, pswd);                                                                                                                             
@@ -109,10 +110,13 @@ int find_user() {
   }
   return 0;
 }
-/*  
+
+<<<<<<< HEAD
   int main() {
+=======
+int main() {
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  //char underscore[1] = "_";
   char *username;
   char yes_no;
   printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\nPlease type in 1 if you have an account or 2 if you'd like to make one.\n");
@@ -121,7 +125,7 @@ int find_user() {
   
   if (yes_no == '1') {
     find_user(); 
-    
+    /*
     FILE* fd1 = fopen("username.txt", "r");
     printf("Please type in your username:\n");
     fgets(user, USER_LEN, stdin);
@@ -131,7 +135,7 @@ int find_user() {
     //printf("sizeof(buffer) = %lu\n", sizeof(buffer));
     fread(buffer, sizeof(char), 100, fd1);
     printf("buffer: %s\n", buffer);
-    
+    */
   }
   else if (yes_no == '2'){
     FILE* fd1 = fopen("username.txt", "a+");
@@ -141,9 +145,9 @@ int find_user() {
     fgets(pswd, PSWD_LEN, stdin);
     printf("username array: %s\n", user);
     printf("pswd array: %s\n", pswd);
-    username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char
+    username = calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));//1 is for the underscore and the other is for the null char
     strcat(username, user);
-    char *line = (char *)calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));
+    char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
     line = strsep(&username, "\n");
     //printf("sizeof(username) = %lu\n", strlen(username));
     strcat(line, &underscore);
@@ -151,10 +155,10 @@ int find_user() {
     //strcat(password, pswd);
     strcat(line, pswd);
     printf("line: %s\n", line);
-    if (find_user_match(user) == 0) {
-    fwrite(line, sizeof(char), strlen(line), fd1);
+    if (find_user_match(user) == 1) {
+      fwrite(line, sizeof(char), strlen(line), fd1);
     }
-    else if (find_user_match(user) == 1)
+    else if (find_user_match(user) == 0)
       printf("Please try again\n");
     fclose(fd1);
   }
@@ -162,5 +166,9 @@ int find_user() {
   else
     printf("STOP SABOTAGING THIS PROGRAM AND GIVE US EITHER 1 OR 2 AS YOUR ANSWER. SMH PEOPLE THESE DAYS\n");
   return 0;
+<<<<<<< HEAD
   }
-  */
+=======
+}
+
+>>>>>>> 91dd01dd8eb0d510fd11b524e60f438817798c8b

@@ -1,42 +1,64 @@
 #include "lib.h"
 
-user *user_find(char *name, FILE *userfile) {
-  char *passwd = malloc(256);
-  printf( "strlen(name): %ld\n", strlen(name) );
-  // Generate format string
-  char *regex = malloc(strlen(name) + 6);
+user *user_find(char *name) {
+  // Begin working with file
+  char *ufname = server_dir("users.csv");
 
-  strcpy(regex, name);
-  strcat(regex, ",%255s");
+  // Get file size
+  struct stat ufinfo;
+  if (stat(ufname, &ufinfo)) return NULL;
+  int ufsize = ufinfo.st_size;
 
-  printf("Build regex\n");
+  // Read file into buffer
+  FILE *uf = fopen(ufname, "r");
+  char *ufbuffer = malloc(ufsize + 1);
+  if (!fgets(ufbuffer, ufsize + 1, uf)) return NULL;
+  fclose(uf);
 
-  // Search for user and password
-  rewind(userfile);
-  
-  if (fscanf(userfile, regex, passwd) > 0) {
+  // Done working with file
+  free(ufname);
+
+  // Parse tokens - lines - and find the line that contains the correct username
+  char *token = strtok(ufbuffer, "\n");
+  while (token && !strstart(token, name)) {
+    printf("%s\n", token);
+    token = strtok(NULL, "\n");
+  }
+
+  if (token) {
+    // Parse at the first comma
+    token = strtok(token, ",");
+    // Get the string after the comma - that's the password
+    token = strtok(NULL, ",");
+
+    // malloc and strcpy ensures that passwd is freeable later
+    char *passwd = malloc(strlen(token) + 1);
+    strcpy(passwd, token);
+
+    // Done with the buffer
+    free(ufbuffer);
+    
     // User found - indicated by presence of password field
     user *found = malloc(sizeof(user));
     found->name = name;
     found->passwd = passwd;
-
-    free(regex);
     return found;
   }
+
   else {
     // User not found
-    free(regex);
+    free(ufbuffer);
     return NULL;
   }
-
+  
 }
 
 // TODO make directories
-user *user_create(char *name, char *passwd, FILE *userfile) {
+user *user_create(char *name, char *passwd) {  
   user *u;
 
   // Return if user already exists
-  if ( (u = user_find(name, userfile)) ) {
+  if ( (u = user_find(name)) ) {
     // Don't free u->name
     free(u->passwd);
     free(u);
@@ -46,8 +68,17 @@ user *user_create(char *name, char *passwd, FILE *userfile) {
   }
 
   // Add user to flat file
-  fseek(userfile, 0, SEEK_END);
-  if ( fprintf(userfile, "%s,%s\n", name, passwd) > 0) {
+  char *ufname = server_dir("users.csv");
+  FILE *uf = fopen(ufname, "r");
+  fseek(uf, 0, SEEK_END);
+  int status = fprintf(uf, "%s,%s\n", name, passwd);
+
+  // Clean up
+  fclose(uf);
+  free(ufname);
+
+  // Check if fprintf worked
+  if (status > 0) {
     u = malloc(sizeof(user));
     u->name = name;
     u->passwd = passwd;

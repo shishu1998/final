@@ -1,7 +1,0 @@
-To: me
-Subject: three
-
-once
-twice
-thrice
-over

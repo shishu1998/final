@@ -63,14 +63,10 @@ int main(){
   while (detect_keypress(&cursor_row,&cursor_col,&first_line,&current_line,&changed_lines,map));
 
   open_preserved_screen(&term);
+  fileops(changed_lines);
 
   cleanup(first_line);
   close(map);
-  changed_lines=changed_lines->next;
-  while (changed_lines!= NULL){
-  	printf("%s\n",changed_lines->text);
-  	changed_lines=changed_lines->next;
-  }
 }
 
 int get_cursor(int* row, int* col, 
@@ -381,18 +377,23 @@ int cleanup(line* line_node){
 }
 
 int fileops(line* changes){
-	char* path;
+	char* temp;
+	char path[512];
 	changes = changes->next;
 	while (changes->next != NULL){
-		temp = strdup(&first_line->text[first_line->begin_edit+1]);
+		printf("%s",changes->text);
+		temp = strdup(&changes->text[changes->begin_edit+1]);
 		temp[strlen(temp)-1] = 0;
-		line* changed_line = *changed_lines;
-		if (strcmp(first_line->status,temp)){
-			while (changed_line->next != NULL){
-				changed_line = changed_line->next;
-			}
-			changed_line->next = first_line;
+		if (strcmp(changes->status,temp)){
+			strcpy(path,changes->text);
+			changes->status[strlen(changes->status)-1]=0;
+			strcpy(&path[changes->begin_edit+1],changes->status);
+			rename(path,changes->text);
 		}
+		free(changes->text);
+		free(changes->status);
+		free(changes);
 		free(temp);
+		changes = changes->next;
 	}
 }

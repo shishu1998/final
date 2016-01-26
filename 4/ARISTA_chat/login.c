@@ -12,9 +12,9 @@
 int newuser() {
   int moveon = 0;
   char passwd[16];
-  int username = 0;
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
+    int username;
     char buffer[100];
     fgets(buffer, 100, stdin);
     if (sscanf(buffer, "%d", &username)) {
@@ -86,25 +86,24 @@ int newuser() {
   }
   return username;
 }
-int find_user_match(char *username) {
-  FILE* fd = fopen("tutoraccounts.txt", "r");
-  char *buffer = (char *)malloc(500*sizeof(char));
-  fread(buffer, sizeof(char), 500, fd);
-  username = strsep(&username, "\n");
-  printf("username:%s\n", username);
-  printf("buffer: %s\n", buffer);
-  if (strstr(buffer, username) == NULL) {//if username isn't taken 
-    printf("find_user_match() returned NULL. Your username is acceptable.\n");
-    buffer = "";
-    fclose(fd);
-    return 1;
+int does_user_exist(char *username) {
+  FILE *fp;
+  int line_num = 1;
+  int find_result = 0;
+  char temp[512];
+  
+  if((fp = fopen("tutoraccounts.txt", "r")) == NULL) {
+    return(-1);
   }
-  else {
-    printf("Your username is taken. Please try again.\n");
-    buffer = "";
-    fclose(fd);
-    return 0;
+  while(fgets(temp, 512, fp) != NULL) {
+    if((strstr(temp, str)) != NULL) {
+      printf("A match found on line: %d\n", line_num);
+      printf("\n%s\n", temp);
+      find_result++;
+    }
+    line_num++;
   }
+  return find_result;
 }
 
 int registereduser() {
@@ -115,34 +114,39 @@ int registereduser() {
   fgets(buffer, 100, stdin);
   char passwd[16];
   if (sscanf(buffer, "%d", &username)) {
-    char *in = passwd;
-    struct termios  tty_orig;
-    char c;
-    tcgetattr( STDIN_FILENO, &tty_orig );
-    struct termios  tty_work = tty_orig;
-    puts("Please input password:");
-    tty_work.c_lflag &= ~( ECHO | ICANON );
-    tty_work.c_cc[ VMIN ]  = 1;
-    tty_work.c_cc[ VTIME ] = 0;
-    tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
-
-    while (1) {
-      if (read(STDIN_FILENO, &c, sizeof c) > 0) {
-	if ('\n' == c) {
-	  break;
+    if (does_user_exist(username) != 0) {
+      char *in = passwd;
+      struct termios  tty_orig;
+      char c;
+      tcgetattr( STDIN_FILENO, &tty_orig );
+      struct termios  tty_work = tty_orig;
+      puts("Please input password:");
+      tty_work.c_lflag &= ~( ECHO | ICANON );
+      tty_work.c_cc[ VMIN ]  = 1;
+      tty_work.c_cc[ VTIME ] = 0;
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+      
+      while (1) {
+	if (read(STDIN_FILENO, &c, sizeof c) > 0) {
+	  if ('\n' == c) {
+	    break;
+	  }
+	  *in++ = c;
+	  write(STDOUT_FILENO, "*", 1);
 	}
-	*in++ = c;
-	write(STDOUT_FILENO, "*", 1);
       }
+      
+      tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+      
+      *in = '\0';
+      fputc('\n', stdout);
+      find_user_match(username);
+      return username;
     }
-
-    tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
-
-    *in = '\0';
-    fputc('\n', stdout);
-    find_user_match(username);
+  } else {
+    printf("That account doesn't exist yet. Please register for a new account.\n");
+    username = newuser();
     return username;
-  }
 }
 
 int tutorlogin() {

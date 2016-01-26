@@ -32,7 +32,7 @@ card* receivecards(int* from_server,card* received){
   card *tobejudged = (card* )malloc(sizeof(card)*8);
   while(counter < 8){
     read(*from_server,buffer,sizeof(buffer));
-    tobejudge[counter] = *makecard(buffer,"red");
+    tobejudged[counter] = *makecard(buffer,"red");
     counter ++;
   }
   return tobejudged;

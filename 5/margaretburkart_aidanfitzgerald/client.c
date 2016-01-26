@@ -32,22 +32,32 @@ void send_email(char* file_name, int socket_id, int fd){
 
   struct stat fileinfo;
   int f = fstat(fd, &fileinfo);
-  printf("This is f: %d\n",f);
+  //printf("This is f: %d\n",f);
   int filesize = fileinfo.st_size;
-  printf("filesize: %d\n",filesize);
+  // printf("filesize: %d\n",filesize);
+
+  struct stat fileinfo2;
+  int g = stat(file_name, &fileinfo);
+  // printf("This is g: %d\n",g);
+  int filesize2 = fileinfo.st_size;
+  // printf("filesize2: %d\n",filesize2);
+
+  // printf("fd: %d\n",fd);
+  fd = open(file_name,O_RDWR,0664);
+  // printf("fd: %d\n",fd);
 
   int off;
   off = lseek(fd,0,SEEK_SET);
-  printf("this is off: %d\n",off);
+  // printf("this is off: %d\n",off);
   if(off==-1){
     perror("lseek failed");
   }
-  int r = read(fd,buffer,filesize);
+  int r = read(fd,buffer,filesize2);
   if(r==-1){
     perror("Failed to read from file");
   }
-  printf("This is r: %d\n",r);
-  printf("This is buffer: [%s]\n",buffer);
+  // printf("This is r: %d\n",r);
+  // printf("This is buffer: [%s]\n",buffer);
   strncat(final,buffer,strlen(buffer)+1);
   sock_write(socket_id,final);
   close(fd);
@@ -61,8 +71,8 @@ void open_file(char* buffer, char* final, int socket_id, int fd){
     perror("Failed to fork");
   }else if(f==0){
      int i;
-     i = execlp("xdg-open","xdg-open",final,NULL);
-     //i = execlp("open","open",final,NULL);
+     //i = execlp("xdg-open","xdg-open",final,NULL);
+     i = execlp("open","open",final,NULL);
      if(i==-1){
        perror("Failed to open file");
      }
@@ -100,6 +110,7 @@ void compose(int socket_id){
     perror("Failed to create file");
   }
   //close(fd);
+  printf("This is final now: [%s]\n",final);
   
   open_file(buffer,final,socket_id,fd);
 

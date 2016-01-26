@@ -1,0 +1,7 @@
+To: me
+Subject: nonsense
+
+first line
+second line
+penultimate line
+final line

@@ -117,11 +117,11 @@ void printMyBoard(board *b){
         if(b->moves[i][j][1]){
           out[3*j+3]='X';
         }else{
-          out[3*j+3]='O';
+          out[3*j+3]=b->moves[i][j][0]+48;
         }
       }else{
         if(b->moves[i][j][1]){
-          out[3*j+3]='+';
+          out[3*j+3]='@';
         }else{
           out[3*j+3]='-';
         }
@@ -177,7 +177,7 @@ void printOtherBoard(board *b){
         }
       }else{
         if(b->moves[i][j][1]){
-          out[3*j+3]='+';
+          out[3*j+3]='@';
         }else{
           out[3*j+3]='-';
         }
@@ -227,15 +227,15 @@ void setBoard(board *new){
   }
 }
 
-int random_int(int n) {
+int randomInt(int n) {
   int urandom_handle = open("/dev/urandom", O_RDONLY);
   int random;
   read(urandom_handle, &random, 4);
   close(urandom_handle);
-  return random%n;
+  return abs(random%n);
 }
 
-void cpuSetBoard(board *new){
+void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random board setup, with all setups equally likely... not easy to do.
   int sort[new->shipnum];
   int i;
   int count = 0;
@@ -248,7 +248,7 @@ void cpuSetBoard(board *new){
       }
     }
   }
-
+  
   int hor[new->rows][new->cols];
   int ver[new->rows][new->cols];
   
@@ -261,64 +261,83 @@ void cpuSetBoard(board *new){
       ver[i][j]=(new->rows)-i;
     }
   }
-
   for(i=0;i<new->shipnum;i++){
-      int c=0;
-      int j;
-      for(j=0; j<new->rows; j++){
-	int k;
-	for(k=0; k<new->cols; k++){
-	  if(hor[j][k]>=(new->ships)[sort[i]]) c++;
-	  if(ver[j][k]>=(new->ships)[sort[i]]) c++;
-	}
+    int c=0;
+    int j;
+    for(j=0; j<new->rows; j++){
+      int k;
+      for(k=0; k<new->cols; k++){
+        if(hor[j][k]>=(new->ships)[sort[i]]) c++;
+        if(ver[j][k]>=(new->ships)[sort[i]]) c++;
       }
-      
-      if(!c){
-	printf("The CPU is taking a while to find a random setup.  Consider using a larger board or fewer ships.\n");
-	cpuSetBoard(new);
-	return;
+    }
+    
+    if(!c){
+      printf("The CPU is taking a while to find a random setup.  Consider using a larger board or fewer ships.\n");
+      randSetBoard(new);
+      return;
+    }
+    
+    int d = randomInt(c);
+    int xcor;
+    int ycor;
+    int isHor;
+    for(j=0; j<new->rows; j++){
+      int k;
+      for(k=0; k<new->cols; k++){
+        if(hor[j][k]>=(new->ships)[sort[i]]){
+          d--;
+          if(!d){
+            xcor = j;
+            ycor = k;
+            isHor = 1;
+          }
+        }
       }
-      
-      int d = random_int(c);
-      int xcor;
-      int ycor;
-      int isHor;
-      for(j=0; j<new->rows; j++){
-	int k;
-	for(k=0; k<new->cols; k++){
-	  if(hor[j][k]>=(new->ships)[sort[i]]){
-	    d--;
-	    if(!d){
-	      xcor = j;
-	      ycor = k;
-	      isHor = 1;
-	    }
-	  }
-	}
+    }
+    
+    for(j=0; j<new->rows; j++){
+      int k;
+      for(k=0; k<new->cols; k++){
+        if(ver[j][k]>=(new->ships)[sort[i]]){
+          d--;
+          if(!d){
+            xcor = j;
+            ycor = k;
+            isHor = 0;
+          }
+        }
       }
-      for(j=0; j<new->rows; j++){
-	int k;
-	for(k=0; k<new->cols; k++){
-	  if(ver[j][k]>=(new->ships)[sort[i]]){
-	    d--;
-	    if(!d){
-	      xcor = j;
-	      ycor = k;
-	      isHor = 0;
-	    }
-	  }
-	}
+    }
+    
+    if(isHor){
+      for(j=0; j<(new->ships)[sort[i]]; j++){
+        new->moves[xcor][ycor+j][0]=sort[i];
+        hor[xcor][ycor+j]=0;
+        int k;
+        for(k=xcor; k>=0 && ver[k][ycor+j]; k--){
+          ver[k][ycor+j] = xcor-k;
+        }
       }
-
-      if(isHor){
-	for(j=0; j<(new->ships)[sort[i]]; j++){
-	  new->moves[xcor][ycor+j][0]=sort[i];
-	  int k;
-	  for(k=xcor; k>=0 && hor[][]
-	}
-      }else{
-	
+      for(j=ycor-1; j>=0 && hor[xcor][j]; j--){
+        hor[xcor][j] = ycor - j;
       }
+    }else{
+      for(j=0; j<(new->ships)[sort[i]]; j++){
+        new->moves[xcor+j][ycor][0]=sort[i];
+        ver[xcor+j][ycor]=0;
+        int k;
+        for(k=ycor; k>=0 && hor[xcor+j][k]; k--){
+          hor[xcor+j][k] = ycor-k;
+        }
+      }
+      for(j=xcor-1; j>=0 && ver[j][ycor]; j--){
+        ver[j][ycor] = xcor - j;
+      }
+    }
+    
+  }
+}
 
 void move(board *b){
   printf("Enter the coordinates of your guess, like 'A1' with the A capitalized.\n");
@@ -349,21 +368,3 @@ int gameOver(board *b){
   }
   return 1;
 }
-
-int main(){
-  board b1;
-  newBoard(&b1);
-  board b2;
-  copyBoard(&b2,&b1);
-  setBoard(&b1);
-  setBoard(&b2);
-  while(!(gameOver(&b1)||gameOver(&b2))){
-    printOtherBoard(&b2);
-    move(&b2);
-    printMyBoard(&b2);
-    printOtherBoard(&b1);
-    move(&b1);
-    printMyBoard(&b1);
-  }
-}
-    

@@ -1,5 +1,5 @@
-#IFNDEF GAME_H
-#DEFINE GAME_H
+#ifndef GAME_H
+#define GAME_H
 
 typedef struct {
 
@@ -17,4 +17,4 @@ char check_win();  // check to see if the super_board is won
 void update_winner( board );  // update winner variable
 void update_full( board );    // update full variable
 
-#ENDIF
+#endif

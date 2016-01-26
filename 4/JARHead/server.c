@@ -9,13 +9,18 @@
 #include <sys/shm.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "map.h"
 
 #define PORT 5000
 #define ID 0
+#define UID_LENGTH 8
 
+/**
+ *  Removes the shared memory when the server is killed.
+ */
 static void clean_up_memory(int signo) {
   int e, sd, key;
   key = ftok("Makefile", ID);
@@ -23,12 +28,26 @@ static void clean_up_memory(int signo) {
   e = shmctl(sd, IPC_RMID, NULL);
   printf("Shared memory removed: %d\n", e);
   exit(0);
-};
+}
+
+/**
+ * Generates a UID of specified length.
+ */
+void generate_uid(char* buffer, int length) {
+  int i;
+  for (i = 0; i < length; ++i) {
+    buffer[i] = (char) ((rand() % 26) + 97);
+  }
+  buffer[length] = '\0';
+}
 
 int main() {
 
   // Set up signal handler to clean up memory when we kill the server.
   signal(SIGINT, clean_up_memory);
+
+  // Seed the random number generator.
+  srand(time(NULL));
 
   // Character buffer for storing information from the clients.
   char buffer[256];
@@ -46,18 +65,20 @@ int main() {
   // Initialize the map
   map = shmat(sd, 0, 0);
   init(map);
-  display_printf(map);
+  generate_uid(buffer, UID_LENGTH);
+  printf("%s\n", buffer);
 
-  // create the socket
+  // Create the socket that will allow client connections.
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
 
-  //bind to port/address
+  // Bind to a specific port/address.
   struct sockaddr_in listener;
   listener.sin_family = AF_INET; // socket type IPv4
   listener.sin_port = htons(PORT); // port #
   listener.sin_addr.s_addr = INADDR_ANY; // bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
 
+  // Begin listening on the specified port.
   listen(socket_id, 1);
   printf("Listening on port %d\n", PORT);
 

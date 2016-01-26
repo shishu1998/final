@@ -1,4 +1,4 @@
-Member(s)
+Member
 ========
 * Sammi Wu Leung
 
@@ -16,22 +16,15 @@ To Run
    //first set up the server
    ./server
 
-   //then start a new client
+   //then start new client(s)
+   //you'll need two on the same computer!
    ./client
 
-After that, the you will be prompted to enter the name of the game you would like to play.
+Further instructions can be found inside the game!
 
 Connect 4
 ---------
-tbd
-
-Tic-Tac-Toe
------------
-tbd
-
-Connect-the-Dots
-----------------
-tbd
+When it is your turn, you type in numbers from 1 - 7 to place your piece in the board.
 
 Files
 =====
@@ -41,18 +34,10 @@ Files with Actual Code
 * server.c
 * client.c
 * client_relations.c
-* connect4.c
-* dots.c
-* tictac.c
 
 Header Files
 ------------
 * client_relations.h
-* server.h
-* connec4.h
-* dots.h
-* tictac.h
-
 
 Informational Files
 -------------------
@@ -60,5 +45,9 @@ Informational Files
 * TODO.txt
 * BUGS.txt
 * README.md
+* help.txt
 
+
+There are Useless Files under Old Stuff ... Don't worry about them.
+-------------------------------------------------------------------
 

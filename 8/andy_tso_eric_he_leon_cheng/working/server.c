@@ -104,6 +104,19 @@ void doprocessing (int sock) {
   //printf( "%d\n", shmemkey );
   int shmid = shmget( shmemkey, 3 * sizeof(int), 0644 );
   array = (int *)shmat( shmid, 0, 0 );
+  
+  init *write_mssg = (init*)malloc(sizeof(init));
+  /*
+  write_mssg->top_card.color = array[1];
+  write_mssg->top_card.value = array[2];
+  int x = write(sock, write_mssg, sizeof(init));
+  if (x < 0) {
+    perror("ERROR writing mssg ");
+    printf("error: %s \n", strerror(errno));
+    exit(1);
+  }
+  printf( "sent mssg\n");
+  */
   //printf( "debugging\n" );
 
   //printf("current_position: %d\n", current_position);
@@ -123,20 +136,38 @@ void doprocessing (int sock) {
   printf( "sock:%d == %d:mem\n", sock, array[0] );
   if ( array[0] == sock ) {
     //printf( "debugging\n" );
-    shmdt( (void *)array );
+  
     sleep(1); //GO TO SLEEP and wait for read to happen first    
-    int p = write(sock, "go", sizeof("go"));
-    
+    //int p = write(sock, "go", sizeof("go"));
+    printf("bout to set color\n");
+    write_mssg->top_card.color = array[1];
+    printf("bout to set value\n");
+    write_mssg->top_card.value = array[2];
+    printf( "bout to set go\n");
+    strcpy(write_mssg->mssg, "go");
+    printf( "mssg inside s %s\n", write_mssg->mssg );
+    shmdt( (void *)array );
+    printf("bout to write\n");
+    int x = write(sock, write_mssg, sizeof(init));
+    printf("i wrote\n");
+    if (x < 0) {
+      perror("ERROR writing topcard ");
+      printf("error: %s \n", strerror(errno));
+      exit(1);
+    }
+    printf( "sent topcard\n");
+    /*
     if (p < 0) {
       perror("ERROR writing");
       printf("error: %s \n", strerror(errno));
       exit(1);
     }
-  
+    */
     int n;
     char buffer[256];
     char buffer3[256];
     bzero(buffer,256);
+    sleep(1);
     card *read_card = (card*)malloc(sizeof(card));
     //printf("two (r)\n");
     //n = read(sock,buffer,255);
@@ -182,7 +213,7 @@ void doprocessing (int sock) {
     printf( "buffer: %s == %s topcard\n", buffer, topcard );
     */
     shmdt( (void *)array );
-    n = write(sock,"I got your message",18);
+    //n = write(sock,"I got your message",18);
     
     
     //current_position++;

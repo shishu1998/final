@@ -135,7 +135,12 @@ void server_talk(int socket_client) {
 
     else if (strstart(buffer, "GET")) {
       // Retrieve one email
-      server_get(socket_client, session);
+      int status = server_get(socket_client, session);
+
+      if (status) {
+	sock_write(socket_client, "FAIL\nCould not retrieve email");
+	die(1);
+      }
     }
 
     else if (strstart(buffer, "SEND")) {
@@ -169,16 +174,30 @@ void server_talk(int socket_client) {
 
 user *scan_userinfo(char *buffer) {
   printf("Entered scan_userinfo fn\n");
-  
-  user *u = malloc(sizeof(user));
-  u->name = malloc(256);
-  memset(u->name, 0, 256);
-  u->passwd = malloc(256);
-  memset(u->passwd, 0, 256);
+
+  // Get tokens
+  char *token = NULL;
+
+  // Get first token
+  token = strtok(buffer, "\n");
+  printf("%s\n", token);
 
   
-  sscanf(buffer, "Username: %255s", u->name);
-  sscanf(buffer, "Password: %255s", u->passwd);
+  user *u = malloc(sizeof(user));
+
+  // Get second token: Username line
+  token = strtok(NULL, "\n");
+  
+  u->name = malloc(256);
+  memset(u->name, 0, 256);
+  sscanf(token, "Username: %255s", u->name);
+
+  // Get third token: Password line
+  token = strtok(NULL, "\n");
+  
+  u->passwd = malloc(256);
+  memset(u->passwd, 0, 256);
+  sscanf(token, "Password: %255s", u->passwd);
 
   printf("%s / %s\n", u->name, u->passwd);
 
@@ -293,7 +312,7 @@ void server_send(char *buffer, user *session) {
   free(filename);
 }
 
-void server_get(int socket_client, user *session) {
+int server_get(int socket_client, user *session) {
   // Open the user's remote mailbox directory
   char *dirname = server_dir(session->name);
   DIR *dir = opendir(dirname);
@@ -316,7 +335,7 @@ void server_get(int socket_client, user *session) {
 
     // Get file size
     struct stat fileinfo;
-    if (stat(filename, &fileinfo)) die(1);
+    if (stat(filename, &fileinfo)) return -1;
     int filesize = fileinfo.st_size;
 
     printf("User %s tried to retrieve emails; found email at %s, size %d\n", session->name, filename, filesize);
@@ -328,7 +347,7 @@ void server_get(int socket_client, user *session) {
 
     // Read the file
     FILE *file = fopen(filename, "r");
-    if (!fgets(buffer + 3, filesize + 1, file)) die(1);
+    if (!fgets(buffer + 3, filesize + 1, file)) return -1;
     fclose(file);
 
     // Write email to socket
@@ -345,6 +364,8 @@ void server_get(int socket_client, user *session) {
 
     free(dirname);
   }
+
+  return 0;
 }
 
 /* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */

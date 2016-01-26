@@ -45,3 +45,9 @@ Timeline:
 -> 'cat' the proper page and forces the user to stay within the bounds of the manual.
 01/26/16 - Started bomb.c
 -> Finished Game for a singular module.
+-> Finished Game completely
+---> Single difficulty with multiple combinations of puzzles
+---> Randomly generated each time with various modules attached
+---> Zoom onto a single module before you start work
+---> See the art reflect the changes youve made
+---> Explosive loss screen and joyful win screens

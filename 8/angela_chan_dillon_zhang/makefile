@@ -11,3 +11,5 @@ run:
 
 clean:
 	rm *.out
+	rm *.o
+	rm *.h.gch

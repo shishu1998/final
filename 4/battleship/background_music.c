@@ -8,16 +8,18 @@
 
 int main(){
     
-  int p;
+  /*int p;
   p = fork();
   if (p != 0) {
     int status = 1;
     wait(&status);
-    //return hold;
   }
   else {
-    execlp("aplay", "aplay", "song.wav", 0);
-  }
+  */
+    execlp("aplay", "aplay", "song.mp3", 0);
+  
+  
+  //printf("hello\n");
   return 0;
 
 }

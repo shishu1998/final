@@ -181,6 +181,8 @@ int main(){
   while( read(from_server, result, sizeof(result) )){
     //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
     printf("You Got Back from Opponent: %s\n", result);
+    if (!strcmp(result,"All Ships Eliminated! We Surrender! You Win!\n"))
+      break;
     //Attempts to Down Semaphore to Access Shared Memory
     struct sembuf new = {0, -1, SEM_UNDO};
     printf("Trying to access the semaphore...\n");
@@ -217,17 +219,17 @@ int main(){
     readpos = *currentcoordinate;
     if (isHit(readpos)){
       if (isAllHit()){
-	strncpy(result,"All Ships Eliminated!",sizeof(result));
+	strncpy(result,"All Ships Eliminated! We Surrender! You Win!\n",sizeof(result));
 	write(to_server, result, sizeof(result) );
 	break;
       }
       else{
-	strncpy(result,"Ship Hit!",sizeof(result));
+	strncpy(result,"Ship Hit!\n",sizeof(result));
 	write(to_server, result, sizeof(result) );
       }
     }
     else{
-      strncpy(result,"Ship Missed!",sizeof(result));
+      strncpy(result,"Ship Missed!\n",sizeof(result));
       write(to_server, result, sizeof(result) );
     }
     strncpy(result,"",sizeof(result));

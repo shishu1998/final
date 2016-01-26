@@ -57,7 +57,6 @@ card draw_card() {
   new_card.value = num % 15;//[0,14]
   return new_card;
 }
-
 void update_top_card( card c ) {
   top_card.color = c.color;
   top_card.value = c.value;
@@ -105,26 +104,24 @@ char * stringify_card (card c){
   return ret;
 }
 
-card remove_card(player p, int i) {
+player remove_card(player p, int i) {
   card ret;
   ret.color = p.cards[i].color;
   ret.value = p.cards[i].value;
   p.cards[i] = p.cards[p.num_cards-1];
-  p.num_cards -= 1;
   card nll;
-  nll.color = -1;
-  nll.value = -1;
   p.cards[p.num_cards-1] = nll;
-  return ret;
+  p.num_cards -= 1;
+  return p;
 }
-
+/*
 void play_card(player p, int i) {
   //check if this is a valid next card to play
   if ( p.cards[i].color == top_card.color || p.cards[i].value == top_card.value ) {
     //remove card from p.cards and update num_cards
     p.num_cards--;
     remove_card( p, i );
-    update_top_card( remove_card(p, i) );
+    update_top_card(  );
     //**[DONE]**change the card that is on top of the pile (shared memory?)
   } 
   else {
@@ -133,7 +130,7 @@ void play_card(player p, int i) {
     //play_card(p, newcard);
   }
 }
-
+*/
 void player_action(player p) {
   //print out options for the player
   printf("It's your turn! What would you like to do?\n");
@@ -190,7 +187,8 @@ void player_action(player p) {
 
 
 player generate_hand(player p){
-  for (p.num_cards = 0; p.num_cards<7; p.num_cards++){
+  p.num_cards = 0;
+  for (p.num_cards; p.num_cards<7; p.num_cards++){
     p.cards[p.num_cards] = draw_card();
     //printf("p.cards[p.num_cards].value: %d \n", p.cards[p.num_cards].value);
     //printf("p.cards[p.num_cards].color: %d \n", p.cards[p.num_cards].color);

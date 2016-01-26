@@ -9,13 +9,16 @@
 #include <arpa/inet.h>
 
 // File system libraries
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include <errno.h>
 #include <string.h>
 
-#define strstart(haystack, needle) strncmp(haystack, needle, strlen(needle)) == 0
+#include <sys/stat.h>
+
+#define strstart(haystack, needle) (strncmp(haystack, needle, strlen(needle)) == 0)
 
 typedef struct {char *name; char *passwd;} user;
 
@@ -27,10 +30,11 @@ void server_talk(int);
 user *server_login(char*);
 user *server_acct_setup(char*);
 void server_send(char*, user*);
+int server_get(int, user*);
 
 // User operations
-user *user_find(char*, FILE*);
-user *user_create(char*, char*, FILE*);
+user *user_find(char*);
+user *user_create(char*, char*);
 void user_freemem(user*);
 
 // Common network stuff
@@ -48,8 +52,8 @@ void strip_add(char*, char*);
 
 //File navigation functions
 void change_location(char*); //moves between subfolders
-void execute(char*); //executes user's command
-void take_directions(); //prompts user for a command, then reads it
+void execute(char*,int); //executes user's command
+void take_directions(int); //prompts user for a command, then reads it
 void my_ls(); //lists contents of current location
 void enter_mail(int); //starting screen for file navigation
 

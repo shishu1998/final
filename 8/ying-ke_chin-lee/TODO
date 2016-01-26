@@ -31,10 +31,12 @@
 [COMPLETED]
 
 7) Bid history
-[ALMOST] It is accessed on the server side, however.
-In a sense, it is complete, since it is fairly simple to match which bidder to which bid.  You have to read the two files side by side (ignoring the initial 0 "bid").
+[COMPLETE] It is saved to the server side.
 
 8) Ending condition for bid
+[COMPLETED]
 
 >>> IF I FINISH EARLY ENOUGH <<<
 change bzeros (deprecated) to memsets
+fix the rather inelegant naming scheme ("old_main"?  Really?)
+get rid of loose comments/code that no longer is useful

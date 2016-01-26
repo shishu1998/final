@@ -80,10 +80,7 @@ int main(int argc, char **argv) {
 
 	semkey = ftok("control.c", 'b');
 	if (semkey < 0) printf("semkey3: error %d: %s\n", errno, strerror(errno));
-/*
-	semctl(semid, 0, IPC_RMID);
-	shmctl(shmid, IPC_RMID, NULL);
-*/
+
 	if (argc == 1) {
 		printf("You are missing an argument.\n");
 		exit(1);

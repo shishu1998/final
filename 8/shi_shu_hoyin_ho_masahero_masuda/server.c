@@ -42,18 +42,15 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
     remove(buffer);
     while (counter < 7){
       redCards[counter] = deal_redcard(redDeck);
-      redCards[counter].owner=ids[freeID];
+      write(to_player,redCards[counter].content,sizeof(redCards[counter].content));
       printf("%s\n",redCards[counter].content);
       counter++;
     }
-    greenCard.owner=ids[freeID];
-    printf("Masa is slacking\n");
     write(to_player,&ids[freeID],sizeof(int));
     ids[freeID] = 0;
-    write(to_player,&redCards,sizeof(card)*7);
-    printf("Masa likes Sandy\n");
-    write(to_player,&greenCard,sizeof(card));
+    write(to_player,greenCard.content,sizeof(greenCard.content));
     printf("I like Sandy, Kappa\n");
+    
     return to_player;
   }
   else{

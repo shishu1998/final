@@ -147,17 +147,32 @@ int main(int argc, char *argv[]) {
       	scard1 = svalue;
       	sprintf(cvalue, "%d", color);
       	scard2 = cvalue;
-      	p = remove_card(p, num);
+      	if ( c.color == read_mssg->top_card.color || c.value == read_mssg->top_card.value) {
+      	  p = remove_card(p, num);
+      	  printf("Successfully placed card!\n");
+      	  write_card->color = color;
+	        write_card->value = value;
+	        int z = write(sockfd, write_card, sizeof(card) );
+	        if (z < 0) {
+            perror("ERROR writing");
+            printf("error: %s \n", strerror(errno));
+            exit(1);
+          }
+      	}
+      	else {
+      	 printf("Sorry. Invalid card! Draw 1.\n");
+      	 p.cards[p.num_cards] = draw_card();
+      	 p.num_cards++;
+      	 write_card->color = 20;
+	       write_card->value = 20;
+	       int z = write(sockfd, write_card, sizeof(card) );
+	       if (z < 0) {
+            perror("ERROR writing");
+            printf("error: %s \n", strerror(errno));
+            exit(1);
+          }
+      	}
       	printf("tried to stringify a card in client: %s %s\n", scard2, scard1);
-      	// SENDING CARD PLAYED BY PLAYER
-      	write_card->color = color;
-	      write_card->value = value;
-	      int z = write(sockfd, write_card, sizeof(card) );
-	      if (z < 0) {
-          perror("ERROR writing");
-          printf("error: %s \n", strerror(errno));
-          exit(1);
-        }
       }
 
       /* Send message to the server */

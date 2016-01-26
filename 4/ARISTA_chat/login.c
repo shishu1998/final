@@ -12,9 +12,9 @@
 int newuser() {
   int moveon = 0;
   char passwd[16];
+  int username = 0;
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
-    int username;
     char buffer[100];
     fgets(buffer, 100, stdin);
     if (sscanf(buffer, "%d", &username)) {

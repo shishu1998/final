@@ -35,10 +35,10 @@ int fill_buffers(int, int, line*);
 int print_buffers(line*);
 int open_screen_buffer(termios*);
 int open_preserved_screen(termios*);
-int detect_keypress(int*, int*,line**,line**,line**,int);
+int detect_keypress(int*, int*,line**,line**,int);
 int get_cursor(int*,int*,line*,line**);
-line* get_previous(int, int, line*);
-line* get_next(int, int, line*);
+line* get_previous(int, int);
+line* get_next(int, int);
 
 static winsize global_win;
 
@@ -50,7 +50,7 @@ int main(){
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &global_win);
 
   line* first_line = (line*)malloc(sizeof(line));
-  line* changed_lines = (line*)malloc(sizeof(line));
+  line* changed_lines;
   line* current_line;
 
   init(first_line);
@@ -60,21 +60,15 @@ int main(){
   open_screen_buffer(&term);  
   print_buffers(first_line);
 
-  while (detect_keypress(&cursor_row,&cursor_col,&first_line,&current_line,&changed_lines,map));
+  while (detect_keypress(&cursor_row,&cursor_col,&first_line,&current_line,map));
 
   open_preserved_screen(&term);
 
   cleanup(first_line);
   close(map);
-  changed_lines=changed_lines->next;
-  while (changed_lines!= NULL){
-  	printf("%s\n",changed_lines->text);
-  	changed_lines=changed_lines->next;
-  }
 }
 
-int get_cursor(int* row, int* col, 
-	line* first_line, line** current_line){
+int get_cursor(int* row, int* col, line* first_line, line** current_line){
   printf("\033[6n");
   int temp;
   temp = getchar();//\033
@@ -103,8 +97,7 @@ int get_cursor(int* row, int* col,
   *current_line = first_line;
 }
 
-int detect_keypress(int* cursor_row, int* cursor_col, 
-	line** first_line_ptr, line** current_line, line** changed_lines, int map){
+int detect_keypress(int* cursor_row, int* cursor_col, line** first_line_ptr, line** current_line, int map){
   int key;
   line* first_line = *first_line_ptr;
   key = getchar();
@@ -116,7 +109,7 @@ int detect_keypress(int* cursor_row, int* cursor_col,
       key = getchar();
       if (key == 65){
 	if (*cursor_row == 1 && first_line->file_offset > 1){//up
-	  line* new_first = get_previous(map,first_line->file_offset, *changed_lines);
+	  line* new_first = get_previous(map,first_line->file_offset);
 	  new_first->next = first_line;
 	  line* last;
 	  while (first_line->next != NULL){
@@ -124,22 +117,9 @@ int detect_keypress(int* cursor_row, int* cursor_col,
 	  	first_line = first_line->next;
 	  }
 	  last->next = NULL;
-	  //adds changes
-	  char* temp = strdup(&first_line->text[first_line->begin_edit+1]);
-	  temp[strlen(temp)-1] = 0;
-	  line* changed_line = *changed_lines;
-	  if (strcmp(first_line->status,temp)){
-	  	while (changed_line->next != NULL){
-	  		changed_line = changed_line->next;
-	  	}
-	  	changed_line->next = first_line;
-	  }
-	  else{
-	  	free(first_line->text);
-	  	free(first_line->status);
-	  	free(first_line);
-	  }
-	  free(temp);
+	  free(first_line->text);
+	  free(first_line->status);
+	  free(first_line);
 	  *first_line_ptr = new_first;
 	  first_line = *first_line_ptr;
 	  printf(CURSOR_SAVE);
@@ -151,25 +131,11 @@ int detect_keypress(int* cursor_row, int* cursor_col,
       }
       else if (key == 66){
 	if (*cursor_row == global_win.ws_row-1){
-	  (*current_line)->next = get_next(map,(*current_line)->file_offset,*changed_lines);
+	  (*current_line)->next = get_next(map,(*current_line)->file_offset);
+	  free(first_line->text);
+	  //free(first_line->status);
+	  free(first_line);
 	  (*first_line_ptr) = first_line->next;
-
-	  //adds changes
-	  char* temp = strdup(&first_line->text[first_line->begin_edit+1]);
-	  temp[strlen(temp)-1] = 0;
-	  line* changed_line = *changed_lines;
-	  if (strcmp(first_line->status,temp)){
-	  	while (changed_line->next != NULL){
-	  		changed_line = changed_line->next;
-	  	}
-	  	changed_line->next = first_line;
-	  	first_line->next=NULL;
-	  }
-	  else{
-	  	free(first_line->text);
-	  	free(first_line->status);
-	  	free(first_line);
-	  }
 	  first_line = (*first_line_ptr);
 	  printf(CURSOR_SAVE);
 	  
@@ -203,7 +169,7 @@ int detect_keypress(int* cursor_row, int* cursor_col,
     line* cur = *current_line;
     strcpy(&cur->text[*cursor_col-2],&cur->text[*cursor_col-1]);
     printf(CLEAR_LINE);
-    printf("\r%*s\r%s",global_win.ws_col,cur->status,cur->text);
+    printf("\r%s",cur->text);//clear line
     printf(CURSOR_RESTORE);//reset position
     *cursor_col = *cursor_col - 1;
   }
@@ -217,8 +183,7 @@ int detect_keypress(int* cursor_row, int* cursor_col,
     strcat(temp,&cur->text[*cursor_col-1]);
     strcpy(&cur->text[*cursor_col-1],temp);
     printf(CLEAR_LINE);
-    printf("\r%*s\r%s",global_win.ws_col,cur->status,cur->text);
-    //printf("\r%s",cur->text);
+    printf("\r%s",cur->text);//clear line
     printf(CURSOR_RESTORE);//reset position
   	*cursor_col = *cursor_col + 1;
   }
@@ -230,18 +195,13 @@ int fill_buffers(int file, int start_read, line* first_line){
   first_line->file_offset = 1;
   //int read = (int)getline(&first_line->text, &buff_size, fstream);
   getline(&first_line->text, &buff_size, fstream);
-  first_line->begin_edit = strlen(first_line->text)-1;
-  while (first_line->text[first_line->begin_edit] != '/'){
-  	first_line->begin_edit = first_line->begin_edit - 1;
-  }
-  strcpy(first_line->status,&first_line->text[first_line->begin_edit+1]);
-  *strchr(first_line->status,'\n') = 0;
   //strcpy(first_line->status,first_line->text);
   while(first_line->next != NULL){
     first_line = first_line->next;
     first_line->file_offset = (int)ftell(fstream);
     //read = (int)getline(&first_line->text, &buff_size, fstream);
     getline(&first_line->text, &buff_size, fstream);
+    //char temp[255];
     if (first_line->file_offset == -1){
       printf("%s\n",strerror(errno));
     }
@@ -291,7 +251,7 @@ int init(line* line_node){
   return 0;
 }
 
-line* get_previous(int map, int next_line, line* changes){//get previous line
+line* get_previous(int map, int next_line){//get previous line
   FILE* fstream = fdopen(dup(map),"r");
   line* first = (line*)malloc(sizeof(line));
   size_t buff_size = sizeof(first->text); 
@@ -306,23 +266,8 @@ line* get_previous(int map, int next_line, line* changes){//get previous line
     temp = (char)fgetc(fstream);
   }
   first->file_offset = ftell(fstream);
-
-  line* last = changes;
-  changes = changes->next;
-  while (changes!= NULL && changes->next != NULL){
-  	if (changes->file_offset == first->file_offset){
-  		last->next = changes->next;
-  		free(first->text);
-  		free(first->status);
-  		free(first);
-  		fclose(fstream);
-  		return changes;
-  	}
-  	last = changes;
-  	changes = changes->next;
-  }
-
   getline(&first->text, &buff_size, fstream);
+
   first->begin_edit = strlen(first->text)-1;
   while (first->text[first->begin_edit] != '/'){
   	first->begin_edit = first->begin_edit - 1;
@@ -333,7 +278,7 @@ line* get_previous(int map, int next_line, line* changes){//get previous line
   return first;
 }
 
-line* get_next(int map, int previous_line, line* changes){//get next line
+line* get_next(int map, int previous_line){//get next line
   FILE* fstream = fdopen(dup(map),"r");
   line* next = (line*)malloc(sizeof(line));
   size_t buff_size = sizeof(next->text);
@@ -342,24 +287,9 @@ line* get_next(int map, int previous_line, line* changes){//get next line
   fseek(fstream,previous_line,SEEK_SET);
   getline(&next->text, &buff_size, fstream);
   next->file_offset = ftell(fstream);
-
-  line* last = changes;
-  changes = changes->next;
-  while (changes!= NULL && changes->next != NULL){
-  	if (changes->file_offset == next->file_offset){
-  		last->next = changes->next;
-  		free(next->text);
-  		free(next->status);
-  		free(next);
-  		fclose(fstream);
-  		return changes;
-  	}
-  	last = changes;
-  	changes = changes->next;
-  }
-
   getline(&next->text, &buff_size, fstream);
   next->next = NULL;
+  
   next->begin_edit = strlen(next->text)-1;
   while (next->text[next->begin_edit] != '/'){
   	next->begin_edit = next->begin_edit - 1;
@@ -378,21 +308,4 @@ int cleanup(line* line_node){
     line_node = line_node->next;
   }
   return 0;
-}
-
-int fileops(line* changes){
-	char* path;
-	changes = changes->next;
-	while (changes->next != NULL){
-		temp = strdup(&first_line->text[first_line->begin_edit+1]);
-		temp[strlen(temp)-1] = 0;
-		line* changed_line = *changed_lines;
-		if (strcmp(first_line->status,temp)){
-			while (changed_line->next != NULL){
-				changed_line = changed_line->next;
-			}
-			changed_line->next = first_line;
-		}
-		free(temp);
-	}
 }

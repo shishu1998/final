@@ -29,6 +29,7 @@ int player_handshake(int *from_server,card *red_hand, card *green_hand, int id){
   read(*from_server,&id,sizeof(int));
   printf("Player connection established: %s\n",buffer);
   int counter = 0;
+  printf("%s\n",red_hand[0].content);
   while (!(red_hand[counter].content)){
     printf("%s\n",red_hand[counter].content);
     counter++;

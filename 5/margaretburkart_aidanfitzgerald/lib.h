@@ -28,7 +28,7 @@ void server_talk(int);
 user *server_login(char*);
 user *server_acct_setup(char*);
 void server_send(char*, user*);
-void server_get(int, user*);
+int server_get(int, user*);
 
 // User operations
 user *user_find(char*, FILE*);

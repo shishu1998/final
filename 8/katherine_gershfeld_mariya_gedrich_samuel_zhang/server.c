@@ -73,34 +73,45 @@ int main() {
     socket_client=accept(socket_id, NULL, NULL);
     printf("<server> connected to player\n");
 
-    char* p_response;
+    char p_response[256];
     write(socket_client, "hello", 4);
     while (read(socket_client, p_response, 255)) {
       printf("Received [%s] from client\n", p_response);
     }
     
-    //if( /* Player input == hit */ ) {
+    //if(!strcmp(p_response, "0")) { //1 is hit code
     //current_card = hit( players, number_of_cards, deck, player_index );
-    // if( current_card -> is_ace == 1) { // ace
+    //if( current_card -> is_ace == 1) { // ace
+    //	write(socket_client, "ace", 2);
+    //	while (read(socket_client, p_response, 255)) {
+    //	  printf("Received [%s] from client\n", p_response);
+    //	}
+    //	if (!strcmp(p_response, "0")) {
+    //	  ace_choice=1;
+    //	} else if (!strcmp(p_response, "1")) {
+    //	  ace_choice=11;
+    //	}
+	
 	/* Make player choose 1 or 11 here using int "ace_choice"
 	   If player chooses one, don't change ace_choice.
 	 */
 
 	/* Change ace_choice here if applicable */
 	
-	//if( ace_choice == 11 ) {
-    // cycle_card = players[ player_index ];
+    //	if( ace_choice == 11 ) {
+    //	  cycle_card = players[ player_index ];
     //	  while( cycle_card != current_card )
     //	    cycle_card = cycle_card -> next_card;
     //	}
-    // }
     //}
-    //else /* player input == stand */
-	//player_index = stand( number_of_players, player_index );
-
-    current_player_score = player_score( players, player_index - 1);
-    if( current_player_score > highest_player_score )
-      highest_player_score = current_player_score;
+    //}
+    //else {/* player input == stand */
+    //	player_index = stand( number_of_players, player_index );
+    //}
+    
+    //current_player_score = player_score( players, player_index - 1);
+    //if( current_player_score > highest_player_score )
+    // highest_player_score = current_player_score;
     
     /*Send players array to server/client and refresh graphical output */
   }

@@ -30,7 +30,7 @@ int main(int argc, char **argv){
   printf("<client> connect returned: %d\n", i);
 
   read(socket_id, buffer, sizeof(buffer));
-  printf("<client recieved: [%s]\n", buffer);
+  printf("<client> recieved: [%s]\n", buffer);
 
   return 0;
 }

@@ -1,91 +1,87 @@
+#include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <ncurses.h>
 
-#define WIDTH 30
-#define HEIGHT 10 
+#define READ 0
+#define WRITE 1
 
-int startx = 0;
-int starty = 0;
-
-char *choices[] = { 
-			"Choice 1",
-			"Choice 2",
-			"Choice 3",
-			"Choice 4",
-			"Exit",
-		  };
-int n_choices = sizeof(choices) / sizeof(char *);
-void print_menu(WINDOW *menu_win, int highlight);
-
-int main()
-{	WINDOW *menu_win;
-	int highlight = 1;
-	int choice = 0;
-	int c;
-
-	initscr();
-	clear();
-	noecho();
-	cbreak();	/* Line buffering disabled. pass on everything */
-	startx = (80 - WIDTH) / 2;
-	starty = (24 - HEIGHT) / 2;
-		
-	menu_win = newwin(HEIGHT, WIDTH, starty, startx);
-	keypad(menu_win, TRUE);
-	mvprintw(0, 0, "Use arrow keys to go up and down, Press enter to select a choice");
-	refresh();
-	print_menu(menu_win, highlight);
-	while(1)
-	{	c = wgetch(menu_win);
-		switch(c)
-		{	case KEY_UP:
-				if(highlight == 1)
-					highlight = n_choices;
-				else
-					--highlight;
-				break;
-			case KEY_DOWN:
-				if(highlight == n_choices)
-					highlight = 1;
-				else 
-					++highlight;
-				break;
-			case 10:
-				choice = highlight;
-				break;
-			default:
-				mvprintw(24, 0, "Charcter pressed is = %3d Hopefully it can be printed as '%c'", c, c);
-				refresh();
-				break;
-		}
-		print_menu(menu_win, highlight);
-		if(choice != 0)	/* User did a choice come out of the infinite loop */
-			break;
-	}	
-	mvprintw(23, 0, "You chose choice %d with choice string %s\n", choice, choices[choice - 1]);
-	clrtoeol();
-	refresh();
-	endwin();
-	return 0;
+static void clean_up_memory(int signo) {
 }
 
+int main() {
+ 
+  int fd[2];
+  char input_buffer[8];
+  char write_buffer[256];
+  char read_buffer[256];
+  int c, input_writer, input_reader;
 
-void print_menu(WINDOW *menu_win, int highlight)
-{
-	int x, y, i;	
+  // Make an unnamed pipe for char input transfer.
+  pipe(fd);
 
-	x = 2;
-	y = 2;
-	box(menu_win, 0, 0);
-	for(i = 0; i < n_choices; ++i)
-	{	if(highlight == i + 1) /* High light the present choice */
-		{	wattron(menu_win, A_REVERSE); 
-			mvwprintw(menu_win, y, x, "%s", choices[i]);
-			wattroff(menu_win, A_REVERSE);
-		}
-		else
-			mvwprintw(menu_win, y, x, "%s", choices[i]);
-		++y;
-	}
-	wrefresh(menu_win);
+  // create the socket
+  socket_id = socket( AF_INET, SOCK_STREAM, 0 );
+
+  // bind to port/address
+  struct sockaddr_in sock;
+  sock.sin_family = AF_INET;
+  sock.sin_port = htons(5000);
+  // Set the IP address to connect to
+  // 127.0.0.1 is the "loopback" address of any machine
+  inet_aton( "127.0.0.1", &(sock.sin_addr) );
+  bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
+
+  //attempt a connection
+  i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (i == -1) {
+    printw("Error connecting to server: %s", strerror(errno));
+    return 0;
+  }
+  printw("<client> connect returned: %d\n", i);
+
+  // The child process will constantly pipe the user input to the parent
+  // process.
+  switch(fork()) {
+  case -1:
+    printf("Something broke!\n");
+    return 0;
+  
+  case 0:
+    // Child process - Constantly sends user input to the parent process.
+    initscr();
+    noecho();
+    keypad(stdscr, TRUE);
+
+    close(fd[READ]);
+    while (c = getch()) {
+      sprintf(input_buffer, "%d", c);
+      write(fd[WRITE], input_buffer, sizeof(input_buffer));
+    }
+    endwin();
+    break;
+
+  default:
+    // Parent process - Takes the user input and sends it to the server while
+    // redrawing the screen at the same time. This forking is necessary because
+    // otherwise, the loop will hang while we wait for user input.
+    initscr();
+    close(fd[WRITE]);
+
+    while (1) {
+      read(fd[READ], read_buffer, sizeof(read_buffer));
+      send(socket_id, read_buffer, sizeof(read_buffer), 0);
+      refresh();
+    // errno = recv( socket_id, buffer, sizeof(buffer), 0);
+    // printw("%w", buffer);
+    // printf("Error: %s\n", strerror(errno));
+    // printf("Received: %s\n", buffer);
+    }
+    endwin();
+    break;
+  }
+  
+  return 0;
 }

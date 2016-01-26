@@ -1,3 +1,3 @@
 Things to do
 ============
-I'm Done.
+Make it so that is playable by more than 2 players at a time.

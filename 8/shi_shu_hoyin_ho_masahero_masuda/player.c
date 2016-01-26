@@ -8,22 +8,22 @@
 #include "deck.h"
 
 
-int player_handshake(int *from_server,card *red_hand, card *green_hand, int id){
+int player_handshake(int *from_server,card* red_hand, card* green_hand, int id){
   int to_server;
   char buffer[100];
+  char cards[600];
 
   sprintf(buffer,"%d",getpid());
   mkfifo(buffer,0644);
-  printf("Ho Yin IS gay\n");
+  
   to_server = open("pipe",O_WRONLY);
   write(to_server,buffer,sizeof(buffer));
-  printf("Ho Yin IS gay\n");
+  
   printf("%s\n",buffer);
   *from_server = open(buffer,O_RDONLY);
   remove(buffer);
-  printf("Ho Yin IS definitely Gay\n");
-  read(*from_server,red_hand,sizeof(card)*7);
-  printf("Ho Yin likes ma dick\n");
+
+  read(*from_server,cards,sizeof(cards));
   read(*from_server,green_hand,sizeof(card));
   printf("Ho Yin thinks he's straight\n");
   read(*from_server,&id,sizeof(int));

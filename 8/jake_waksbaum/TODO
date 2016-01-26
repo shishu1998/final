@@ -1,4 +1,0 @@
-- coordinate shutdowns
-- use semaphores so a client can both send and receive
-- use some sort of central server instead of the pipes
-- fix weird text after shtudown

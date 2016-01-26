@@ -106,29 +106,16 @@ int main(int argc, char *argv[]) {
     printf( "mssg: %s\n", read_mssg->mssg );
     if ( !strcmp( read_mssg->mssg, "terminate" ))
       break;
-<<<<<<< HEAD:8/andy_tso_eric_he_leon_cheng/working/client.c
     //if ( !strcmp(buffer2, "go") ) {
     //read_mssg->mssg = "go";
     if ( !strcmp(read_mssg->mssg, "go") ) {
       printf("Please enter the message: ");
-=======
-    else if ( !strcmp( read_mssg->mssg, "END"))
-      printf("Game over! Someone won.\n");
-    //if ( !strcmp(buffer2, "go") ) {
-    //read_mssg->mssg = "go";
-    else if ( !strcmp(read_mssg->mssg, "go") ) {
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac:8/andy_tso_eric_he_leon_cheng/working/client.c
       bzero(buffer,256);
-      printf("Please enter the message: ");
       fgets(buffer,255,stdin);
 
       char * scard1;
       char * scard2;
       int num = atoi(buffer);
-<<<<<<< HEAD:8/andy_tso_eric_he_leon_cheng/working/client.c
-=======
-      
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac:8/andy_tso_eric_he_leon_cheng/working/client.c
       //printf( "debugging\n");
       if (num==p.num_cards){
         card *write_card = (card*)malloc(sizeof(card));
@@ -140,13 +127,8 @@ int main(int argc, char *argv[]) {
 	      scard1 = "draw";
 	      scard2 = "draw";
 	      // SENDING CARD PLAYED BY PLAYER
-<<<<<<< HEAD:8/andy_tso_eric_he_leon_cheng/working/client.c
 	      write_card->color = 20;
 	      write_card->value = 20;
-=======
-	      write_card->color = 21;
-	      write_card->value = 21;
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac:8/andy_tso_eric_he_leon_cheng/working/client.c
 	      int z = write(sockfd, write_card, sizeof(card) );
 	      if (z < 0) {
           perror("ERROR writing");
@@ -168,21 +150,6 @@ int main(int argc, char *argv[]) {
       	scard2 = cvalue;
       	if ( c.color == read_mssg->top_card.color || c.value == read_mssg->top_card.value || read_mssg->top_card.color == 20) {
       	  p = remove_card(p, num);
-<<<<<<< HEAD:8/andy_tso_eric_he_leon_cheng/working/client.c
-=======
-      	  if ( win_scenario(p) == 100 ) {
-      	    printf("You won!\n");
-      	    write_card->color = 100;
-	          write_card->value = 100;
-	          int z = write(sockfd, write_card, sizeof(card) );
-	          if (z < 0) {
-              perror("ERROR writing");
-              printf("error: %s \n", strerror(errno));
-              exit(1);
-            }
-      	    exit(0);
-      	  }
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac:8/andy_tso_eric_he_leon_cheng/working/client.c
       	  printf("Successfully placed card!\n");
       	  write_card->color = color;
 	        write_card->value = value;

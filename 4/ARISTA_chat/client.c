@@ -71,11 +71,7 @@ int main(int argc, char **argv) {
   socket_id = connect_server(hostname);
   printf("<client> connect returned: %d\n", socket_id);
 	
-<<<<<<< HEAD
   int type = 1;  // 0 (tutor) or 1 (tutee) - get this from login
-=======
-  int type = -1;  // 0 (tutor) or 1 (tutee) - get this from login
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
   type = (int)argv[2][0] - 48;  // convert from ASCII value
   // send type to server
   write(socket_id, &type, sizeof(type));
@@ -91,16 +87,14 @@ int main(int argc, char **argv) {
     sleep(1);
     read(socket_id, s, sizeof(s));
     printf("<client> received: %s\n", s);
-    printf("You: ");
+    printf("Enter text to write:\n");
     fgets(s, sizeof(s), stdin);
-	if (strcmp(s, "exit\n") == 0) {
-		printf("Goodbye\n");
-		close(socket_id);
-		exit(0);
-	}
     write(socket_id, s, sizeof(s));
 
   }
 
+  // read( socket_id, buffer, sizeof(buffer));
+  //printf("<client> received: [%s]\n", buffer );
+  
   return 0;
 }

@@ -7,13 +7,11 @@ endif
 
 all: server client
 
-SERVER_OBJECTS=server.o len_prefix.o shared.o message.o
-server: $(SERVER_OBJECTS)
-	$(CC) -o server $(SERVER_OBJECTS)
+server: server.o len_prefix.o shared.o
+	$(CC) -o server server.o len_prefix.o shared.o
 
-CLIENT_OBJECTS=client.o len_prefix.o shared.o hostname.o message.o
-client: $(CLIENT_OBJECTS)
-	$(CC) -o client $(CLIENT_OBJECTS)
+client: client.o len_prefix.h shared.o
+	$(CC) -o client client.o len_prefix.o shared.o
 
 %.o: %.c %.h
 		$(CC) -c $<

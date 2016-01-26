@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 
 #include <signal.h>
-#include "len_prefix.h"
+#include "message.h"
 #include "shared.h"
 #include "server.h"
 
@@ -21,7 +21,7 @@ static void sighandler(int signo) {
 }
 
 int main() {
-  int socket_id, client, e;
+  int listening_socket, client_socket, e;
 
   struct sigaction action = {
     .sa_handler = sighandler,
@@ -33,25 +33,28 @@ int main() {
 
   int listener = 1;
 
-  socket_id = setup_server(PORT);
-  if (socket_id < 0) {
+  listening_socket = setup_server(PORT);
+  if (listening_socket < 0) {
     perror("Error setting up server");
     exit(-1);
   }
 
+  struct user client;
+
   while (running) {
     if (listener) {
       printf("<server> listening on %d\n", PORT);
-      client = accept(socket_id, NULL, NULL); // blocks here on connection
-      printf("<server> connected: %d\n", client);
+      client_socket = accept(listening_socket, NULL, NULL); // blocks here on connection
+      e = handshake(client_socket, &client);
+      printf("<server> connected: %s\n", client.name);
       listener = fork();
       if (listener) {
-        close(client);
+        close(client_socket);
       } else {
-        close(socket_id);
+        close(listening_socket);
       }
     } else {
-      e = handle_request(client);
+      e = handle_request(client_socket);
       if (e <= 0) {
         running = 0;
       }
@@ -59,19 +62,19 @@ int main() {
   }
 
   if (listener) {
-    close(socket_id);
+    close(listening_socket);
   } else {
-    close(client);
+    close(client_socket);
   }
 
   return 0;
 }
 
 int setup_server(int port) {
-  int socket_id, e;
+  int listening_socket, e;
 
-  socket_id = socket(AF_INET, SOCK_STREAM, 0);
-  if (socket_id < 0) return socket_id;
+  listening_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (listening_socket < 0) return listening_socket;
 
   struct sockaddr_in listener = {
     .sin_family = AF_INET,   // socket type IPv4
@@ -79,29 +82,47 @@ int setup_server(int port) {
     .sin_addr.s_addr = INADDR_ANY
   };
 
-  e = bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
+  e = bind(listening_socket, (struct sockaddr *)&listener, sizeof(listener));
   if (e < 0) return e;
 
-  e = listen(socket_id, 1);
+  e = listen(listening_socket, 1);
   if (e < 0) return e;
 
-  return socket_id;
+  return listening_socket;
 }
 
-int handle_request(int socket) {
-  int read_bytes, e;
-  char * message = NULL;
+int handle_request(int socket_id) {
+  int e;
+  struct signal sig;
 
-  read_bytes = len_prefix_read(socket, (void **)&message);
-  if (read_bytes <= 0) return read_bytes;
+  e = read(socket_id, &sig, sizeof(sig));
+  if (e < 0) return -1;
 
-  printf("client[%d]: %s", socket, message);
-
-  char * resp = "RECEIVED";
-
-  e = len_prefix_write(socket, resp, strlen(resp));
-
-  free(message);
+  switch (sig.type) {
+  case DISCONNECT:
+    running = 0;
+    break;
+  case MESSAGE:
+    printf("<%s>: %s\n", sig.body.message.from.name, sig.body.message.text);
+    struct signal resp = new_message_sig(sig.body.message.to, sig.body.message.from, "RECEIVED!");
+    e = write(socket_id, &resp, sizeof(resp));
+    if (e < 0) return -1;
+    break;
+  }
 
   return e;
+}
+
+int handshake(int client_socket, struct user *client) {
+  int e;
+  struct signal sig;
+  e = read(client_socket, &sig, sizeof(sig));
+  if (e <= 0) return -1;
+
+  e = write(client_socket, &sig, sizeof(sig));
+  if (e <= 0) return -1;
+
+  *client = sig.body.handshake;
+
+  return 0;
 }

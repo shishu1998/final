@@ -21,6 +21,7 @@ user *user_find(char *name) {
   // Parse tokens - lines - and find the line that contains the correct username
   char *token = strtok(ufbuffer, "\n");
   while (token && !strstart(token, name)) {
+    printf("%s\n", token);
     token = strtok(NULL, "\n");
   }
 

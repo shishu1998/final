@@ -172,7 +172,7 @@ int main() {
   }
   close(tutoraccounts);
 
-  printf("\nHello and welcome to MovieFone--wait, sorry. Wrong program\n");
+//  printf("\nHello and welcome to MovieFone--wait, sorry. Wrong program\n");
   printf("Hello and welcome to ARISTA chat!\n");
 
   int moveon = 0;
@@ -182,9 +182,9 @@ int main() {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
     int student;
     char str[100];
-    scanf("%i",student);
-	printf("%i",student);
-    if (student == 1) {
+    scanf("%i",&student);
+    printf("%i",student);
+if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;
       while (loggedin == 0)

@@ -7,7 +7,9 @@
 | <img src="https://avatars2.githubusercontent.com/u/9355416?v=3&s=460" width="100" height="100" /> |Justin Pacquing| [`@stinographer`] (https://github.com/stinographer) |
 
 ## How to Compile/Run
+to compile: make
 
+to run: one player should use ./player1, the other should use ./player2
 
 ## Files
 player1.c

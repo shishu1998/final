@@ -8,7 +8,7 @@ typedef struct card{
   int owner;
 }card;
 
-struct card* makecard(char* content,char* type){
+card* makecard(char* content,char* type){
   card* out = (card*)malloc(sizeof(card));
   out->type = type;
   out->content = content;

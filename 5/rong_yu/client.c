@@ -21,7 +21,7 @@ int client_handshake(int *from_server){
   //printf("Name: %s\n", buffer);
   
   strcat(name, buffer);
-  printf("Name: %s\n", name);
+  printf("Name: %s\n", buffer);
   mkfifo( buffer, 0644);
   to_server = open( "mario", O_WRONLY );
   write( to_server, buffer, sizeof(buffer) );
@@ -92,6 +92,7 @@ int main(){
     //write( to_server, buffer, sizeof(buffer) );
     //read( from_server, buffer, sizeof(buffer) );
     write( to_server, message, sizeof(message));
+    printf("Message Sent: %s", message);
     read( from_server, buffer, sizeof(buffer) );
     printf("<client> received [%s]\n", buffer );
   }

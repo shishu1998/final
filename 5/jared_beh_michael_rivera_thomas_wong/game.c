@@ -33,13 +33,8 @@ int turn( char player, int R, int C, int r, int c) {
    *                  super_board[R][C].mini_board[r][c] != 0
    */
   
-  if ( super_board[R][C].full ) {
-    //if the board is already full
-    // EDIT: THIS SHOULD BE DONE BY SERVER, NOT TURN()
-    return 3;
-  }
-  else if ( R>2 && C>2 && r>2 && c>2 &&
-	    R<0 && C<0 && r<0 && c<0 ) {
+  if ( R>2 && C>2 && r>2 && c>2 &&
+       R<0 && C<0 && r<0 && c<0 ) {
     //if the input is not in the domain
     return 2;
   }
@@ -51,15 +46,17 @@ int turn( char player, int R, int C, int r, int c) {
     super_board[R][C].mini_board[r][c] = player;
   }
 
-  int i, j;
-  for ( i=0; i<3; i++ ) {
-    for ( j=0; j<3; j++ ) {
-      update_full( super_board[i][j] );
-      update_winner( super_board[i][j] );
-    }
+  update_full( super_board[R][C] );
+  update_winner( super_board[R][C] );
+  if ( super_board[R][C].full != 0 ) {
+    prev[0] = -1;
+    prev[1] = -1;
+  }
+  else {
+    prev[0] = R;
+    prev[1] = C;
   }
   check_win();
-
   
   return 0;
 }
@@ -148,15 +145,14 @@ void update_full( board b ) {
       }
     }
   }
+  
 }
 
-/* for testing
+//for testing
 
- *
 int main() {
 
 
 
   return 0;
 }
-*/

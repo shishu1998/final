@@ -11,14 +11,14 @@
 
 
 void get_name(char *buffer, int socket_id){
-  while(strlen(buffer) == 0){
+  while(strlen(buffer) == 0){//if the client doesn't have a name, have the next input be the name.
     printf("Please enter your desired name: ");
     fgets(buffer, sizeof(buffer), stdin);
     buffer[strlen(buffer) - 1] = '\0';
   }
 }
 
-void process(int fd, int sockfd, char *name){
+void process(int fd, int sockfd, char *name){//controls sending and receiving
   char buffer[256];
   int num_bytes;
   if (fd == 0){
@@ -28,17 +28,21 @@ void process(int fd, int sockfd, char *name){
   }else{
     //Receive from server
     num_bytes = recv(sockfd, buffer, sizeof(buffer),0);
-    if(num_bytes == -1){
+    if(num_bytes == -1){//if error in receiving
       printf("recv: %s\n",strerror(errno));
       exit(0);
-    }else if(num_bytes == 0){
+    }else if(num_bytes == 0){//if socket has closed
       printf("Server closed\n");
       exit(0);
-    }else{
-      buffer[num_bytes]='\0';
-      printf("%s", buffer);
-      fflush(stdout);
+    }else{//receive stuff
+      if(strlen(name) == 0){//send name to server if not created
+	get_name(name, sockfd);
+	send(sockfd, name, strlen(name), 0);
+      }
     }
+      buffer[num_bytes]='\0';
+      printf("%s", buffer);//print the message received out
+      fflush(stdout);
   }
 }
 
@@ -84,14 +88,14 @@ int main(int argc, char **argv) {
 
   while(1){
     read_fds = master;
-    if (select(fdmax+1, &read_fds, NULL, NULL, NULL)==-1){
+    if (select(fdmax+1, &read_fds, NULL, NULL, NULL)==-1){//if there is activity
       printf("select: %s\n", strerror(errno));
       exit(0);
     }
-    if(FD_ISSET(0, &read_fds)){
+    if(FD_ISSET(0, &read_fds)){//for sending
       process(0, socket_id, name);
     }
-    if(FD_ISSET(socket_id, &read_fds)){
+    if(FD_ISSET(socket_id, &read_fds)){//for receiving
       process(socket_id, socket_id, name);
     }
   }

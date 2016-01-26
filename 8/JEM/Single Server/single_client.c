@@ -179,7 +179,8 @@ women.\n\n");
     printf("We're sorry, you failed to connect to the server.  Please try again.\n");
     exit(0);
   }
-  /*printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\n");
+  /*
+  printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\n");
   printf("Please type in 1 if you have an account or 2 if you'd like to make one.\n");
   fgets(one_two, 3, stdin);
   printf("one_two value:%s\n", one_two);*/

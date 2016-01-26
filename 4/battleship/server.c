@@ -7,9 +7,33 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+static void sighandler( int signo ){
 
+  int i,n,end,win;
+  time_t t;
+
+  srand((unsigned) time(&t));
+  n = rand() % 3;
+  end = 0;
+
+  if (signo == SIGINT){
+    if (end == 0){
+      printf("You waved the white flag\n");
+    if (n == 1){
+      printf("What a sore loser!\n");
+      printf("You will never bring honor to your family!\n");
+	}
+    else printf ("It's ok! Try again next time!\n");
+    }
+    else 
+      printf ("You faught well, See you on the battle field next time\n");
+    exit(0);
+  }
+}
 int main() {
 
+  signal(SIGINT,sighandler);
+  
   int socket_id, socket_client;
   char buffer[256], ship_input[256];
   int hit;

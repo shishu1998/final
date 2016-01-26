@@ -1,4 +1,6 @@
-
+/**
+ * Server code.
+ */
 #include <errno.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -19,6 +21,8 @@
 #define MAP_MEMORY_ID 0
 #define PLAYERS_MEMORY_ID 1
 #define UID_LENGTH 1
+
+#define SERVER_UPDATE_FREQUENCY_MICROSECONDS 16000
 
 /**
  *  Removes the shared memory segments when the server is killed.
@@ -59,7 +63,7 @@ int main() {
   signal(SIGINT, clean_up_memory);
 
   // Seed the random number generator.
-  srand(time(NULL));
+  // srand(time(NULL));
 
   // Create shared memory segments.
   map_memory_key = ftok(FTOK_FILE, MAP_MEMORY_ID);
@@ -110,6 +114,7 @@ int main() {
       char new_player = (char) (97 + *players);
       sprintf(buffer, "%c", new_player);
       (*players)++;
+      add_new_player(map, new_player);
       send(socket_client, buffer, sizeof(buffer), 0);
 
       // Fork off a subprocess to handle the client's input.
@@ -123,12 +128,18 @@ int main() {
         map = shmat(map_memory_segment, 0, 0);
         close(socket_id);
 
-        while ( (n = recv(socket_client, buffer, sizeof(buffer), 0)) > 0)  {
-          strtok(buffer, "\n");
-          send(socket_client, buffer, sizeof(buffer), 0);
+        while ((n = recv(socket_client, buffer, sizeof(buffer), 0)) > 0) {
+          recv(socket_client, buffer, sizeof(buffer), 0);
+
+
+          /* player = buffer[0]; */
+          /* move_player(map, player, -1, 0); */
+          
+          send(socket_client, map, MAP_MEMORY_SIZE, 0);
         }
-        if (n < 0)
-          printf("%s\n", "Read error");
+        if (n < 0) {
+          printf("Read error\n");
+        }
         exit(0);
 
       default:
@@ -142,8 +153,8 @@ int main() {
     // Parent process - dedicated to continually updating the state of the game
     // at 60Hz.
     while (1) {
-      update(map);
-      usleep(16000);
+      // update(map);
+      usleep(SERVER_UPDATE_FREQUENCY_MICROSECONDS);
     }
   }
   return 0;

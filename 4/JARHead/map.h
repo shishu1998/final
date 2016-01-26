@@ -11,7 +11,6 @@
 void init(char* map);
 void display_printf(char* map);
 void display_printw(char* map);
-void update(char* map);
 /**
  * Takes an index in a MAP_WIDTH * MAP_HEIGHT size map and returns the
  * corresponding x coordinate.
@@ -22,6 +21,9 @@ int index_to_x(int index);
  * corresponding y coordinate.
  */
 int index_to_y(int index);
+
+int coord_to_index(int x, int y);
+int index_of(char* map, char c);
 
 void add_new_player(char* map, char player);
 /**
@@ -38,5 +40,6 @@ void add_new_player(char* map, char player);
  * if this will move the player out of the map, then nothing will happen.
  */
 void move_player(char* map, char player, int up, int left);
+void update(char* map);
 
 #endif

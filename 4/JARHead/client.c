@@ -13,12 +13,12 @@
 #include <unistd.h>
 
 #define INPUT_SEND_DELAY_MICROSECONDS 30000
-#define SCREEN_REFRESH_DELAY_MICROSECONDS 5000
+#define SCREEN_REFRESH_DELAY_MICROSECONDS 10000
 
 int main() {
 
   // Variable initialization.
-  char buffer[256];
+  char buffer[4096];
   int i, c, errno, input_writer, input_reader;
   int socket_id;
 
@@ -86,7 +86,7 @@ int main() {
     while (1) {
       // Constantly receive the state of the map from the server.
       recv(socket_id, buffer, sizeof(buffer), 0);
-      printw("%s", buffer);
+      display_printw(buffer);
       refresh();
       usleep(SCREEN_REFRESH_DELAY_MICROSECONDS);
       clear();

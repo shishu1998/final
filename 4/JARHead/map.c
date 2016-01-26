@@ -4,7 +4,7 @@ void init(char* map) {
   memset(map, 0, sizeof(map));
   int i;
   for (i = 0; i < MAP_WIDTH * MAP_HEIGHT; ++i) {
-    strcat(map, " ");
+    strcat(map, "-");
   }
 }
 
@@ -30,28 +30,40 @@ void display_printw(char* map) {
   printw("\n");
 }
 
-void update(char* map) {
-}
-
 int index_to_x(int index) {
   return index % MAP_WIDTH;
 }
 
 int index_to_y(int index) {
-  return (index - index_to_x(index)) / MAP_HEIGHT;
+  return index / MAP_WIDTH;
+}
+
+int index_of(char* map, char c) {
+  return (int) (strchr(map, c) - map);
+}
+
+int coord_to_index(int x, int y) {
+  return x + (y * MAP_WIDTH);
 }
 
 void add_new_player(char* map, char player) {
-  int x = rand() % MAP_WIDTH;
-  int y = rand() % MAP_HEIGHT;
-  
+  int coord = coord_to_index(rand() % MAP_WIDTH, rand() % MAP_HEIGHT);
+  while (map[coord] != '-') {
+    coord = coord_to_index(rand() % MAP_WIDTH, rand() % MAP_HEIGHT);
+  }
+  map[coord] = player;
 }
 
 void move_player(char* map, char player, int up, int left) {
-  int index = strchr(map, player);
-  int x, y;
-  x = index_to_x(index);
-  y = index_to_y(index);
-  
-  
+  int index = (int) (strchr(map, player) - map);
+  int x = index_to_x(index) + left;
+  int y = index_to_y(index) + up;
+  int newIndex = coord_to_index(x, y);
+  if (newIndex >= 0 && newIndex < MAP_WIDTH * MAP_HEIGHT) {
+      map[newIndex] = player;
+      map[index] = ' ';
+  }
+}
+
+void update(char* map) {
 }

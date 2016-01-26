@@ -1,4 +1,0 @@
-TODO:
-- figure out a way to end game (multiplayer and single-player)
-- allow server to fgets own word/clue (multiplayer)
-- fix the issue in multiplayer where board doesn't show before entering a letter

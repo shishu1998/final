@@ -3,9 +3,13 @@ Lian Wong
 Max Kong
 
 How to compile:
+	
 	type------ $ make
+	
 	to compile things according to the rules and depencies stated in makefile
+	
 	then type ---------$ make run
+ 	
  	to make the main run
 
 How to use:

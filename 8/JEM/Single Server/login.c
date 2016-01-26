@@ -105,7 +105,7 @@ int find_user() {
   }
   return 0;
 }
-/*
+
 int main() {
   char user[USER_LEN]; char pswd[PSWD_LEN];
   //char underscore[1] = "_";
@@ -160,4 +160,3 @@ int main() {
   return 0;
 }
 
-*/

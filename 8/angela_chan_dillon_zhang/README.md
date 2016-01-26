@@ -12,10 +12,14 @@ make
 make run
 ```
 
+Since we decided to move to an ascii based game, the need for outside libraries was moot. However, we do use ANSI colors so your terminal must be able to render it.
+
 ##How to Use
 1. Compile
 2. Run
 3. Don't Explode
+
+Find a friend and split up the tasks. One should be using the manual and the other should be tackliing the bomb head on. In this game of cooperation and communication, players are asked to disarm a bomb with the manual in hand. The only catch, one person is stuck with the bomb and one person is stuck with the manual.
 
 ##Necessary Files
 - `main.c`

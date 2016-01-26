@@ -107,7 +107,7 @@ int completed_module(module *m) {
 
 int completed_game(module **m) {
   int counter = 0;
-  while(counter < 2) {
+  while(counter < 5) {
     if (!completed_module(m[counter])) {
       return 0;
     }

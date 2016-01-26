@@ -1,2 +1,0 @@
-- Game will not quit after full word is guessed
-- Printing the game is through a char. Memory is allocated but never freed.

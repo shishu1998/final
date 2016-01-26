@@ -1,9 +1,0 @@
-con 0 0 0 con1.txt
-con 0 0 0 con2.txt
-con 0 0 0 con3.txt
-tic 0 0 0 tic1.txt
-tic 0 0 0 tic2.txt
-tic 0 0 0 tic3.txt
-dot 0 0 0 dot1.txt
-dot 0 0 0 dot2.txt
-dot 0 0 0 dot3.txt

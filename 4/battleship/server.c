@@ -11,7 +11,7 @@
 int main() {
 
   int socket_id, socket_client;
-  char buffer[256];
+  char buffer[256], ship_input[256];
   int hit;
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
@@ -23,15 +23,15 @@ int main() {
   listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
   bind(socket_id, (struct sockaddr *)&listener, sizeof(listener));
   
-  while(1){
-  
   listen( socket_id, 1 );
   printf("<server> listening\n");
 
   socket_client = accept( socket_id, NULL, NULL );
   printf("<server> connected: %d\n", socket_client );
- 
+
   // printf("\n");
+
+  while( 1 ){
 
   if( socket_client % 2 ) // figure out which player is contacting the server
     write( socket_client, "Player 2", 100 );
@@ -51,7 +51,22 @@ int main() {
     //change board
   else 
     write( socket_client, "You have missed!", 100 );
+  //server's turn to shoot
+  //<NEED SHOOTING FUNCTION>
+  
+  if ( hit ){
+    //TEMP: While there are no shooting function, the ship will always shoot at [4,3]   
+    strcpy( ship_input, "You have been hit at [4,3]" );
+    write( socket_client, ship_input, 100 ); 
   }
+  else{
+    //TEMP: While there are no shooting function, the ship will always shoot at [4,3]
+    strcpy( ship_input, "You have been missed at [4,3]" );
+    write( socket_client, ship_input, 100 );
+  }
+
+  }
+
 
   return 0;
 }

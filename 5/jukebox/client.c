@@ -61,15 +61,27 @@ void list_songs(int socket_id){
 
 
 void play_song(int socket_id){
-  void * mp3 = calloc(10, 1048576); // 10mb
-  if (recv(socket_id, mp3, 1048576 * 10, 0) < 0){
-  	printf("erro readin\n");
+  void * mp3 = calloc(1, 1048576); // 1mb at a time
+  int song_file;
+  song_file = open("temp.mp3", O_CREAT | O_RDWR | O_TRUNC | O_APPEND , 0644);
+  // if (recv(socket_id, mp3, 1048576 * 10, 0) < 0){
+  // 	printf("erro readin\n");
+  // }
+  int read_ret;
+  while ((read_ret = read(socket_id, mp3, 1048576))){
+  	printf("readin\n");
+  	if (read_ret > 0){
+		write(song_file, mp3, 1048576);
+	}
+	if (read_ret < 0){
+		printf("unable to play\n");
+		return;
+	}
+	if (read_ret == 0){
+		break; //totAL FILE READ
+	}
   }
   //printf("Client:Message Received From Server -  %s\n", mp3);
-  
-  int song_file;
-  song_file = open("temp.mp3", O_CREAT | O_RDWR | O_TRUNC , 0644);
-  write(song_file, mp3, sizeof(mp3));
   if (strcmp(mp3, "-1") == 0){
   	printf("unable to play the song\n");
   	return;

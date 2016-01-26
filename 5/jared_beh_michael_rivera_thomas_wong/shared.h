@@ -10,6 +10,6 @@ typedef struct {
 extern board super_board[3][3];
 extern int socket_id, socket_client;
 extern int socket_id_2, socket_client_2;
-extern char line[100];
-extern int prev[2] = {-1,-1};
+extern char line[84];
+extern char prev[2];;
 #endif

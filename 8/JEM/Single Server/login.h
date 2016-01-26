@@ -1,3 +1,7 @@
+#ifndef FOO
+
+#define FOO
+
 const char underscore = '_';
 
 #define USER_LEN 20                                                                                                                                                     
@@ -9,3 +13,5 @@ int find_error(char*, char*);
 int find_user_match(char*);
 
 int find_user();
+
+#endif

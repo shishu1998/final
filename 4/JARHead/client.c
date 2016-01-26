@@ -1,24 +1,30 @@
+
+#include <arpa/inet.h>
+#include <ncurses.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-
-#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <unistd.h>
 
 int main(int argc, char **argv) {
 
-  int socket_id;
   char buffer[256];
   int i;
   int errno;
+  int socket_id, connect_response, c;
 
-  //create the socket
+  /* initscr(); */
+  /* noecho(); */
+  /* keypad(stdscr, TRUE); */
+  /* nodelay(stdscr, TRUE); */
+
+  // create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
 
-  //bind to port/address
+  // bind to port/address
   struct sockaddr_in sock;
   sock.sin_family = AF_INET;
   sock.sin_port = htons(5000);
@@ -29,9 +35,13 @@ int main(int argc, char **argv) {
 
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  if (i == -1) {
+    printf("Error connecting to server: %s", strerror(errno));
+  }
   printf("<client> connect returned: %d\n", i);
+  
+  while (1) {
 
-  while(1) {
     errno = recv( socket_id, buffer, sizeof(buffer), 0);
     printf("Error: %s\n", strerror(errno));
     printf("Received: %s\n", buffer);
@@ -39,6 +49,14 @@ int main(int argc, char **argv) {
     fgets(buffer, 256, stdin);
     send( socket_id, buffer, sizeof(buffer), 0);
   }
+
+  /* while (1) { */
+  /*   c = getch(); */
+  /*   if (c != -1) { */
+  /*     sprintf(buffer, "%d", c); */
+  /*     printw("%s", buffer); */
+  /*   } */
+  /* } */
 
   return 0;
 }

@@ -22,14 +22,14 @@ int boardboard[5][5]= {{11,12,13,14,15},
 		       {41,42,43,44,45},
 		       {51,52,53,54,55}};
 
-/*
+
 union semun {
    int val;
    struct semid_ds *buf;
    unsigned short *array;
    struct seminfo *_buf;
 };
-*/
+
 int server_handshake(int *from_client){
 
   int to_client;

@@ -20,3 +20,4 @@ string formatting
 
 Timeline:
 1/6/16: Initial proposal submitted
+1/26/16: Final version

@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 
 #include "server.h"
+#include "login.h"
 
 int main() {
   char* yes_or_no = (char*)malloc(sizeof(char)*10);

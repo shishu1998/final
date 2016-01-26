@@ -123,9 +123,13 @@ void doprocessing (int sock) {
   printf( "sock:%d == %d:mem\n", sock, array[0] );
   if ( array[0] == sock ) {
     //printf( "debugging\n" );
-    shmdt( (void *)array );
-    sleep(1); //GO TO SLEEP and wait for read to happen first    
-    int p = write(sock, "go", sizeof("go"));
+    //    shmdt( (void *)array );
+    sleep(1); //GO TO SLEEP and wait for read to happen first
+    card top_card;
+    top_card->color = array[1];
+    top_card->value = array[2];
+    char *stringified_card; ////////////////////// <-  we were working here
+    int p = write(sock, "go", sizeof();
     
     if (p < 0) {
       perror("ERROR writing");
@@ -134,27 +138,40 @@ void doprocessing (int sock) {
     }
   
     int n;
-    char buffer[256];
-    char buffer3[256];
-    bzero(buffer,256);
+    card *read_card = (card*)malloc(sizeof(card));
+    n = read(sock, read_card, sizeof(card));
+    printf("Bytes read: %d\n", n);
+    printf("error #%d: %s\n", errno, strerror(errno));
+    printf("read_card: %d, %d\n", read_card->color, read_card->value);
+    printf("\n");
+    if (read_card->color == -1 && write_card->value == -1 ) {
+      printf("player drew a card\n");
+    }
+    else {
+      int *array;
+      array = (int *)shmat( shmid, 0, 0 );
+      // fix check compataiblity //
+      if (array[1] == read_card->color || array[2] == read_card->value) {
+	array[1] = read_card->color;
+	array[2] = read_card->value;
+      }
+      shmdt(array);
+      
+    }
+    
+    //bzero(buffer,256);
     //printf("two (r)\n");
-    n = read(sock,buffer,255);
+    //n = read(sock,scard,sizeof(card));
+    //printf( "Color:%d Value:%d\n", scard->color, scard->value );
+    //printf("Here is the message: %s\n",buffer3);
     //printf("able to get pass two\n");
     if (n < 0) {
       perror("ERROR reading from socket");
       exit(1);
     }
     sleep(1);
-    n = read(sock,buffer3,255);
-    if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-    }
   
-    printf("Here is the message: %s %s\n",buffer, buffer3 );
-    //printf("Here is the message: %s\n",buffer3);
     
-    array = (int *)shmat( shmid, 0, 0 );
     //Need to turn buffer and buffer3 into ints
     /*************************************************************
     if ( array[1] == buffer || array[2] == buffer3 ) {
@@ -166,15 +183,15 @@ void doprocessing (int sock) {
     //array[1] color
     //array[2] value
     /*char cvalue[100];
-    sprintf(cvalue, "%d", array[2]);
-    char svalue[100];
-    sprintf(svalue, "%d", array[1]);	
-    //printf("three (w)\n");
-    char *topcard = strcat( svalue, ",");
-    topcard = strcat( topcard, cvalue );
-    printf( "buffer: %s == %s topcard\n", buffer, topcard );
+      sprintf(cvalue, "%d", array[2]);
+      char svalue[100];
+      sprintf(svalue, "%d", array[1]);	
+      //printf("three (w)\n");
+      char *topcard = strcat( svalue, ",");
+      topcard = strcat( topcard, cvalue );
+      printf( "buffer: %s == %s topcard\n", buffer, topcard );
     */
-    shmdt( (void *)array );
+    //    shmdt( (void *)array );
     n = write(sock,"I got your message",18);
     
     
@@ -327,7 +344,7 @@ int main( int argc, char *argv[] ) {
 
       if (pid == 0) {
 	
-	while( 1 ) {		
+	while( 1 ) {
 	  /* This is the client process */
 	  printf("hello\n");
 	  //close(sockfd);
@@ -355,7 +372,7 @@ int main( int argc, char *argv[] ) {
       write(newsockfd, "terminate", sizeof("terminate"));
       close(newsockfd);
       if (pid==0){
-	      close(sockfd);
+	close(sockfd);
       }
     }
 		

@@ -1,7 +1,3 @@
 Things to do
 ============
-* Modify the server and client files to actually fit my purpose and not just be a copy of the last hw
-* fill the game files with code
-** Conenct 4
-** Tic-Tac-Toe
-** Connect-the-Dot
+Make it so that is playable by more than 2 players at a time.

@@ -1,4 +1,6 @@
-IT DOES NOTHING
-===============
-
-
+Bug - Fixed Date
+-----------------
+IT DOES NOTHING (1/26/2016)
+The clients are unable to speak to each other (1/26/2016)
+I can't think of a way to do this (1/26/2016) 
+Sometimes, a new client cannot join the game.

@@ -8,35 +8,53 @@
 #include "deck.h"
 
 
-int player_handshake(int *from_server,card *red_hand, card *green_hand, int id){
+int player_handshake(int *from_server, int *id){
   int to_server;
   char buffer[100];
 
   sprintf(buffer,"%d",getpid());
   mkfifo(buffer,0644);
-  printf("Ho Yin IS gay\n");
+  
   to_server = open("pipe",O_WRONLY);
   write(to_server,buffer,sizeof(buffer));
-  printf("Ho Yin IS gay\n");
+  
   printf("%s\n",buffer);
   *from_server = open(buffer,O_RDONLY);
   remove(buffer);
-  printf("Ho Yin IS definitely Gay\n");
-  read(*from_server,red_hand,sizeof(card)*7);
-  printf("Ho Yin likes ma dick\n");
-  read(*from_server,green_hand,sizeof(card));
-  printf("Ho Yin thinks he's straight\n");
-  read(*from_server,&id,sizeof(int));
-  printf("Player connection established: %s\n",buffer);
   int counter = 0;
-  while (!(red_hand[counter].content)){
-    printf("%s\n",red_hand[counter].content);
+  char contentString[100];
+  read(*from_server,id,sizeof(int));
+  /*
+  read(*from_server,contentString,sizeof(contentString));
+  hand[7].owner = id;
+  hand[7] = *makecard(contentString, "green");
+
+  while (counter < 7){
+    read(*from_server,contentString,sizeof(contentString));
+    hand[counter] = *makecard(contentString, "red");
+    hand[counter].owner = id;
+    printf("%s vs. %s\n",contentString, hand[counter].content); 
+
     counter++;
   }
+  printf("%s\n",hand[7].content);
+  */
+  printf("Player connection established: %s\n",buffer);
   return to_server;
-  
+}
 
 
+card *receiveHand(int *from_server,int id){
+  char buffer[100];
+  int counter = 0;
+  card *newHand = (card *)malloc(sizeof(card)*7);
+  while (counter < 7){
+    read(*from_server,buffer,sizeof(buffer));
+    newHand[counter] = *makecard(buffer,"red");
+    newHand[counter].owner = id;
+    counter++;
+  }
+  return newHand;
 }
 
 //Card methods//
@@ -75,7 +93,7 @@ void send_greencard(int to_server, card *green_hand){
   int index = atoi(buffer);
   if (index >= 0 && index <= 7){
     write(to_server,&green_hand[index],sizeof(green_hand[index]));
-    printf("You sent: %s\n", green_hand[index].content);
+    printf("You sent: %s\n",green_hand[index].content);
   }
   else{
     printf("You did not enter a valid index\n");
@@ -116,15 +134,18 @@ int main(){
   int to_server;
   int from_server;
   char buffer[100];
-  card green_hand[8];
   card red_hand[7];
+  card green_hand[8];
   int id;
   
-  to_server = player_handshake(&from_server, red_hand,green_hand,id);
+  to_server = player_handshake(&from_server,&id);
+  red_hand = receiveHand(&from_server, &id);
   int counter = 0;
-  while(!(red_hand[counter].content)){
-    printf("%s\n",red_hand[counter].content);
+  while(counter < 7){
+    printf("%s\n",hand[counter].content);
+    counter++;
   }
+  printf("%s\n",hand[7].content);
   /*while(1){
     send_redcard(to_server);
     send_greencard(to_server);

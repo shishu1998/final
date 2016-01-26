@@ -258,7 +258,9 @@ void sign_in(int socket_id){
   char* use_phrase = "LOGIN\nUsername: ";
   char* pass_phrase = "\nPassword: ";
 
+  printf("finaloriginally: [%s]\n",final);
   strcat(final,use_phrase);
+  printf("final before username retrieved: [%s]\n",final);
   printf("Enter your username: ");
   fgets(use,MAXLEN,stdin);
   printf("final after username retrieved: [%s]\n",final);
@@ -266,8 +268,8 @@ void sign_in(int socket_id){
   printf("final after username entered: [%s]\n",final);
 
   strcat(final,pass_phrase);
-  printf("Enter your password: ");
   printf("final before password retrieved: [%s]\n",final);
+  printf("Enter your password: ");
   fgets(pass,MAXLEN,stdin);
   printf("final after password retrieved: [%s]\n",final);
   strip_add(pass,final);

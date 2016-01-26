@@ -131,9 +131,8 @@ int main() {
         while ((n = recv(socket_client, buffer, sizeof(buffer), 0)) > 0) {
           recv(socket_client, buffer, sizeof(buffer), 0);
 
-
-          /* player = buffer[0]; */
-          /* move_player(map, player, -1, 0); */
+          char player = buffer[0];
+          move_player(map, player, -1, 0);
           
           send(socket_client, map, MAP_MEMORY_SIZE, 0);
         }

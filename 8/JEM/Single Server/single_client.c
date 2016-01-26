@@ -18,7 +18,7 @@ const char underscore = '_';
 int find_error(char *username, char *password) {
   //printf("Running find_error()...\n");
   if (username == NULL || password == NULL) {
-    printf("username and password cannot be null.\n");
+    //printf("username and password cannot be null.\n");
     return 0;
   }
   strsep(&username, " _");
@@ -58,81 +58,73 @@ int find_user_match(char *username) {
 }
 
 
-void sign_up(char input) {
+void sign_up(int socket_id){
   char user[USER_LEN]; char pswd[PSWD_LEN];
-  char *username;
-  while(input == 'y') {//y is yes, n is no
-    FILE* fd1 = fopen("username.txt", "a+");
-    printf("Please create a username:\n");
-    fgets(user, USER_LEN, stdin);
-    printf("Please create a password:\n");
-    fgets(pswd, PSWD_LEN, stdin);
-    //printf("username array: %s\n", user);
-    //printf("pswd array: %s\n", pswd);
-    username = calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
-    strcat(username, user);
-    char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
-    line = strsep(&username, "\n");
-    strcat(line, &underscore);
+  char *username; 
+  char *input = (char *)malloc(50*sizeof(char));
+  
+  printf("Please create a username:\n");
+  fgets(user, USER_LEN, stdin);
+  
+  write(socket_id, user, msg_len);
+  read(socket_id, input, msg_len);
+  
+  //printf("Please create a password:%s\n", input);
+  fgets(pswd, PSWD_LEN, stdin);
+  
+  write(socket_id, pswd, strlen(pswd));
+ 
+  read(socket_id, input, msg_len);
+  printf("input: %s\n", input);
+  if (strcmp(input, "The username you typed is already taken. Please run the program again") == 0)
+    exit(0);
+  //if (find_user_match(user) == 1) {
+    // username = calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
+    //strcat(username, user);
+    //char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
+    //line = strsep(&username, "\n");
+    //strcat(line, &underscore);
     //printf("username: %s\n", username);
-    strcat(line, pswd);
-    printf("line: %s\n", line);
-    if (find_user_match(user) == 1) {
-      fwrite(line, sizeof(char), strlen(line), fd1);
-      //to do: redirect to log in page
-    }
-    else if (find_user_match(user) == 0) {
-      fclose(fd1);
-      printf("Would you like to sign up again?Press y for yes and n for no.\n");
-      char response;
-      response = getchar();//response, 2, stdin);
-      if (response == 'n') {
-	input = 'n';
-	exit(0); //add ability to log in directly??
-      }
-    }
-  }
+    //strcat(line, pswd);
+    //printf("line: %s\n", line);
+    //to do: redirect to log in page
+  //}
+  //else {
+  // exit(0); //add ability to log in directly??
 }
 
 /*
 Returns 1 if user input is correct. Returns 0 if not.
 Log-in for returning users
  */
-int find_user() {
-  FILE* fd1 = fopen("username.txt", "r");//open username.txt                                                                                                                         
+int find_user(int socket_id) {
   char user[USER_LEN]; char pswd[PSWD_LEN];
   char *username;
+  char *msg;
   //retrieves username and password                                                                       
   printf("Please type in your username:\n");
   fgets(user, USER_LEN, stdin);
+  //write(socket_id, user, strlen(user));
+  //read(socket_id, msg, msg_len);
+  
   printf("Please type in your password:\n");
   fgets(pswd, PSWD_LEN, stdin);
+  //write(socket_id, pswd, strlen(pswd));
+  //read(socket_id, msg, msg_len);
 
   if (find_error(user, pswd) == 1) {
     username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char                                                
     strcat(username, user);
     char *line = (char *)calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));
     line = strsep(&username, "\n");
-    strcat(line, &underscore);
+    printf("line: %s\n", line);
+    printf("underscore: %c\n", underscore);
+    strncat(line, &underscore, 1);
+    printf("line: %s\n", line);
     strcat(line, pswd);
     printf("line: %s\n", line);
 
-    char *buffer = (char *)malloc(BUFFER_LEN*sizeof(char));
-    fread(buffer, sizeof(char), BUFFER_LEN, fd1);
-    //printf("strlen(buffer) = %lu\n", strlen(buffer));                                                                                                                              
-    printf("buffer: %s\n", buffer);
-    if (strstr(buffer, line) == NULL) {
-      printf("find_user() returned NULL. You typed incorrectly.\n");
-      return 0;
-    }
-    else if (find_error(user, pswd) == 0) {
-      printf("find_error returned 0\n");
-      return 0;
-    }
-    else {
-      printf("HUZZAH. You are a valid user! \n");
-      return 1;
-    }
+    write(socket_id, line, msg_len);
   }
   return 0;
 }
@@ -159,21 +151,6 @@ int main(int argc, char **argv) {
   //127.0.0.1 is the "loopback" address of any machine
   inet_aton( "127.0.0.1", &(sock.sin_addr) );
   bind( socket_id, (struct sockaddr *)&sock, sizeof(sock));
-  /*
-  printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in \
-women.\n\n");
-  printf("Please type in 1 if you have an account or 2 if you'd like to make one.\n");
-  fgets(&one_two, 3, stdin);
-  printf("one_two value:%c\n", one_two);
-  
-  if (one_two == '1') {
-    if (find_user() == 0) {//invalid
-      printf("try again!\n");
-      exit(0);
-    }
-    else { //if (find_user() == 1) {//valid
-      printf("find_user() returned 1. Your user input is valid.\n");
-  */
   //attempt a connection
   i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
   printf("<client> connect returned: %d\n", i);
@@ -185,45 +162,49 @@ women.\n\n");
   printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\n");
   printf("Please type in 1 if you have an account or 2 if you'd like to make one.\n");
   fgets(one_two, 3, stdin);
-  printf("one_two value:%s\n", one_two);
-  
+  printf("one_two value:%s\n", one_two);  
   strtok(one_two, "\n");
-  write( socket_id, one_two, 3);
-
-  //while (strcmp(buffer, "bye") != 0) {
-  while( 1 ) {
-    //read( socket_id, buffer, strlen(buffer));
-    read( socket_id, buffer, msg_len);
-    printf("<client> received: [%s]\n", buffer );
-    printf("Talk to <server> : ");
-    //fgets(input, strlen(input), stdin);
-    fgets(input, msg_len, stdin);
-    strtok(input, "\n");
-    //write( socket_id, input, strlen(input));
-    write( socket_id, input, msg_len);
-    if ( strcmp( input, exit_sig ) == 0 ) {
-      printf(">> Are you sure you want to exit?\n");
-      printf(">> type 'y' for yes\n>> type 'n' for no\n");
-      fgets( yes_or_no, 10, stdin);
-      strtok(yes_or_no, "\n");
+  write( socket_id, one_two, 3); 
+  if (strcmp(one_two, "1") == 0) {
+    printf("buffer: %s\n", buffer);
+    if (find_user(socket_id) == 0) {
+      printf("find_user() worked! Great Progress!\n");
       
-      if ( strlen(yes_or_no) > 1 ) {
-	printf( ">> Looks like you goofed!  Better just keep chatting...\n");
-      }
-      else if ( strcmp( yes_or_no, "y" ) == 0) {
-	printf(">> You're gone!\n");
-	exit(0);
-      }
-      else {
-	printf( ">> Then why did you say bye???\n" );
-	printf( "Wait for your partner to respond...\n");
+      //while (strcmp(buffer, "bye") != 0) {
+      while( 1 ) {
+	//read( socket_id, buffer, strlen(buffer));
+	read( socket_id, buffer, msg_len);
+	printf("<client> received: [%s]\n", buffer );
+	printf("Talk to <server> : ");
+	//fgets(input, strlen(input), stdin);
+	fgets(input, msg_len, stdin);
+	strtok(input, "\n");
+	//write( socket_id, input, strlen(input));
+	write( socket_id, input, msg_len);
+	if ( strcmp( input, exit_sig ) == 0 ) {
+	  printf(">> Are you sure you want to exit?\n");
+	  printf(">> type 'y' for yes\n>> type 'n' for no\n");
+	  fgets( yes_or_no, 10, stdin);
+	  strtok(yes_or_no, "\n");
+	  
+	  if ( strlen(yes_or_no) > 1 ) {
+	    printf( ">> Looks like you goofed!  Better just keep chatting...\n");
+	  }
+	  else if ( strcmp( yes_or_no, "y" ) == 0) {
+	    printf(">> You're gone!\n");
+	    exit(0);
+	  }
+	  else {
+	    printf( ">> Then why did you say bye???\n" );
+	    printf( "Wait for your partner to respond...\n");
+	  }
+	}
       }
     }
   }
-  //}
-  //}
-  if (strcmp("2",one_two) == 0) {
-    sign_up('y');
+  else if (strcmp("2",one_two) == 0) {
+    printf("strcmp(2, one_two) ==0\n");
+    sign_up(socket_id);
   }
   return 0;
 }

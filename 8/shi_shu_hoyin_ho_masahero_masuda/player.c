@@ -24,39 +24,12 @@ int player_handshake(int *from_server, int *id){
   int counter = 0;
   char contentString[100];
   read(*from_server,id,sizeof(int));
-  /*
-  read(*from_server,contentString,sizeof(contentString));
-  hand[7].owner = id;
-  hand[7] = *makecard(contentString, "green");
 
-  while (counter < 7){
-    read(*from_server,contentString,sizeof(contentString));
-    hand[counter] = *makecard(contentString, "red");
-    hand[counter].owner = id;
-    printf("%s vs. %s\n",contentString, hand[counter].content); 
-
-    counter++;
-  }
-  printf("%s\n",hand[7].content);
-  */
   printf("Player connection established: %s\n",buffer);
   return to_server;
 }
 
 
-void receiveHand(int *from_server,int id,card *newHand[7]){
-  char buffer[100];
-  int counter = 0;
-  while (counter < 7){
-    read(*from_server,buffer,sizeof(buffer));
-    (*newHand)[counter] = *makecard(buffer,"red");
-    ((*newHand)[counter]).owner = id;
-    printf("%s\n",((*newHand)[counter]).content);
-    counter++;
-  }
-  //printf("%p\n",newHand);
-  //return &newHand[0];
-}
 
 //Card methods//
 void send_redcard(int to_server, card *red_hand){
@@ -135,12 +108,15 @@ int main(){
   int to_server;
   int from_server;
   char buffer[100];
-  //card green_hand[8];
   int id;
+  card green_hand[8];
   card red_hand[7];
   to_server = player_handshake(&from_server,&id);
-  //card *red_hand = (card *)malloc(sizeof(card) * 7);
-  printf("%d\n",id);
+
+  read(from_server, buffer, sizeof(buffer));
+  green_hand[0] = *makecard(buffer,"green");
+  green_hand[0].owner = id;
+  
   int counter = 0;  
   while(counter < 7){
     read(from_server, buffer,sizeof(buffer));
@@ -149,8 +125,7 @@ int main(){
     printf("%s\n",red_hand[counter].content);
     counter++;
   }
-  // printf("%p\n",&red_hand);
-  //printf("%s\n",hand[7].content);
+  printf("%s\n",green_hand[0].content);
   /*while(1){
     send_redcard(to_server);
     send_greencard(to_server);

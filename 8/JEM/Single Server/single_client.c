@@ -35,6 +35,29 @@ int find_error(char *username, char *password) {
   }
 }
 
+int find_user_match(char *username) {
+  FILE* fd = fopen("username.txt", "r");
+  char *buffer = (char *)malloc(BUFFER_LEN*sizeof(char));
+  fread(buffer, sizeof(char), BUFFER_LEN, fd);
+  username = strsep(&username, "\n");
+  printf("username:%s\n", username);
+  printf("buffer: %s\n", buffer);
+  if (strstr(buffer, username) == NULL) {//if username isn't taken
+    printf("find_user_match() returned NULL. Your username is acceptable.\n");
+    buffer = "";
+    fclose(fd);
+    return 1;
+  }
+  else {
+    printf("Your username is taken. Please try again.\n");
+    buffer = "";
+    printf("buffer after fread/fwrite: %s\n", buffer);
+    fclose(fd);
+    return 0;
+  }
+}
+
+
 void sign_up(char input) {
   char user[USER_LEN]; char pswd[PSWD_LEN];
   char *username;
@@ -71,27 +94,6 @@ void sign_up(char input) {
   }
 }
 
-int find_user_match(char *username) {
-  FILE* fd = fopen("username.txt", "r");
-  char *buffer = (char *)malloc(BUFFER_LEN*sizeof(char));
-  fread(buffer, sizeof(char), BUFFER_LEN, fd);
-  username = strsep(&username, "\n");
-  printf("username:%s\n", username);
-  printf("buffer: %s\n", buffer);
-  if (strstr(buffer, username) == NULL) {//if username isn't taken                                                                                                                   
-    printf("find_user_match() returned NULL. Your username is acceptable.\n");
-    buffer = "";
-    fclose(fd);
-    return 1;
-  }
-  else {
-    printf("Your username is taken. Please try again.\n");
-    buffer = "";
-    printf("buffer after fread/fwrite: %s\n", buffer);
-    fclose(fd);
-    return 0;
-  }
-}
 /*
 Returns 1 if user input is correct. Returns 0 if not.
 Log-in for returning users
@@ -179,13 +181,14 @@ women.\n\n");
     printf("We're sorry, you failed to connect to the server.  Please try again.\n");
     exit(0);
   }
-  /*printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\n");
+  
+  printf("=======WELCOME TO MARY'S PROM DATE SERVER=======\nYou want to take Mary out to PROM because she is an awesome person and if you don't want to then you have bad taste in women.\n\n");
   printf("Please type in 1 if you have an account or 2 if you'd like to make one.\n");
   fgets(one_two, 3, stdin);
-  printf("one_two value:%s\n", one_two);*/
+  printf("one_two value:%s\n", one_two);
   
-  //strtok(one_two, "\n");
-  //write( socket_id, one_two, 3);
+  strtok(one_two, "\n");
+  write( socket_id, one_two, 3);
 
   //while (strcmp(buffer, "bye") != 0) {
   while( 1 ) {

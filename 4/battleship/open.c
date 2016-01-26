@@ -18,10 +18,10 @@ int main(){
   p = fork();
   if (p != 0) {
     int status = 1;
-    wait(&status);
+    //wait(&status);
   }
   else {
-    execlp("aplay", "aplay", "song.mp3", 0);
+    execlp("afplay", "afplay", "song.mp3", 0);
   }
   
     p1 = fork();

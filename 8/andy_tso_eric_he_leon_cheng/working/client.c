@@ -88,7 +88,8 @@ int main(int argc, char *argv[]) {
       printf("error: %s \n", strerror(errno));
       exit(1);
     }
-    printf( "Current card played: color %d value %d\n", read_mssg->top_card.color, read_mssg->top_card.value);
+    char *color = stringify_color( read_mssg->top_card );
+    printf( "Current card played: [COLOR] %s [VALUE] %d\n", color, read_mssg->top_card.value);
     //printf ( "debug\n" );
     /*printf("able to get pass four\n");
     if (a < 0) {

@@ -13,12 +13,11 @@ Type in the following and press enter to compile:
 To Run
 ------
 
-   //first set up the server
-   ./server
-
-   //then start new client(s)
-   //you'll need two on the same computer!
-   ./client
+     //first set up the server
+     ./server
+     //then start new client(s)
+     //you'll need two on the same computer!
+     ./client
 
 Further instructions can be found inside the game!
 

@@ -1,19 +1,21 @@
-all: client.out server.out
+all: client.out server.out map.o
 
-test: test.c
-	gcc test.c -o test.out -lncurses
-
-test2: test2.c
-	gcc test2.c -o test2.out -lncurses
+map.o: map.h map.c
+	gcc -c map.c
 
 client.out: client.c
 	gcc client.c -o client.out -lncurses
 
-server.out: server.c
-	gcc server.c -o server.out -lncurses
+server.out: server.c map.o
+	gcc server.c map.o -o server.out -lncurses
+
+clean:
+	rm *.o
+	rm *.out
 
 client:
 	./client.out
 
 server:
 	./server.out
+

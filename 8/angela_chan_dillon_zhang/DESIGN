@@ -40,3 +40,8 @@ Timeline:
 ----->Button: 2 words & 2 color with actions depending on words and colors
 ----->Number: 4 numbers with 5 stages that need to be pressed in a certain order
 ----->Timer: Press enter to refresh the time, unless there is a way to update the timer live while taking in user inputs
+01/22/16 - Start up file completed. User can select manual or bomb within main.c
+01/25/16 - Finished manual.c
+-> 'cat' the proper page and forces the user to stay within the bounds of the manual.
+01/26/16 - Started bomb.c
+-> Finished Game for a singular module.

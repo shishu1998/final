@@ -69,7 +69,8 @@ int main(int argc, char *argv[]) {
   while (1) {
     
     player_action(p);
-
+    sleep(1);
+    
     /* Now ask for a message from the user, this message
      * will be read by server
      */
@@ -77,21 +78,37 @@ int main(int argc, char *argv[]) {
     /* Server determines turn */
     char *buffer2;
     //printf("four (r)\n");
-    int a = read(sockfd, buffer2, 255 );
-    //printf ( "debug\n" );
-    //printf("able to get pass four\n");
-    if (a < 0) {
-      perror("ERROR reading");
+    //int a = read(sockfd, buffer2, 255 );
+    init *read_mssg = (init*)malloc(sizeof(init));
+    printf( "bout to read\n");
+    int x = read(sockfd, read_mssg, sizeof(init));
+    printf( "i read\n");
+    if (x < 0) {
+      perror("ERROR reading mssg ");
       printf("error: %s \n", strerror(errno));
       exit(1);
     }
-      
+    char *color = stringify_color( read_mssg->top_card );
+    printf( "Current card played: [COLOR] %s [VALUE] %d\n", color, read_mssg->top_card.value);
+    //printf ( "debug\n" );
+    /*printf("able to get pass four\n");
+    if (a < 0) {
+      perror("ERROR reading go ");
+      printf("error: %s \n", strerror(errno));
+      exit(1);
+    }
+    
     printf( "buffer2: %s\n", buffer2 );
     if ( !strcmp(buffer2, "terminate") ) {
       break;
     }
-
-    if ( !strcmp(buffer2, "go") ) {
+    */
+    printf( "mssg: %s\n", read_mssg->mssg );
+    if ( !strcmp( read_mssg->mssg, "terminate" ))
+      break;
+    //if ( !strcmp(buffer2, "go") ) {
+    //read_mssg->mssg = "go";
+    if ( !strcmp(read_mssg->mssg, "go") ) {
       printf("Please enter the message: ");
       bzero(buffer,256);
       fgets(buffer,255,stdin);
@@ -131,17 +148,32 @@ int main(int argc, char *argv[]) {
       	scard1 = svalue;
       	sprintf(cvalue, "%d", color);
       	scard2 = cvalue;
-      	p = remove_card(p, num);
+      	if ( c.color == read_mssg->top_card.color || c.value == read_mssg->top_card.value || read_mssg->top_card.color == 20) {
+      	  p = remove_card(p, num);
+      	  printf("Successfully placed card!\n");
+      	  write_card->color = color;
+	        write_card->value = value;
+	        int z = write(sockfd, write_card, sizeof(card) );
+	        if (z < 0) {
+            perror("ERROR writing");
+            printf("error: %s \n", strerror(errno));
+            exit(1);
+          }
+      	}
+      	else {
+      	 printf("Sorry. Invalid card! Draw 1.\n");
+      	 p.cards[p.num_cards] = draw_card();
+      	 p.num_cards++;
+      	 write_card->color = 21;
+	       write_card->value = 21;
+	       int z = write(sockfd, write_card, sizeof(card) );
+	       if (z < 0) {
+            perror("ERROR writing");
+            printf("error: %s \n", strerror(errno));
+            exit(1);
+          }
+      	}
       	printf("tried to stringify a card in client: %s %s\n", scard2, scard1);
-      	// SENDING CARD PLAYED BY PLAYER
-      	write_card->color = color;
-	      write_card->value = value;
-	      int z = write(sockfd, write_card, sizeof(card) );
-	      if (z < 0) {
-          perror("ERROR writing");
-          printf("error: %s \n", strerror(errno));
-          exit(1);
-        }
       }
 
       /* Send message to the server */
@@ -154,7 +186,8 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
       sleep(1);
-      n = write(sockfd, scard2, strlen(scard2));
+      printf( "scard2 %s\n", scard2 );
+      //n = write(sockfd, scard2, strlen(scard2));
     }  
     if (n < 0) {
       perror("ERROR writing to socket");
@@ -162,9 +195,9 @@ int main(int argc, char *argv[]) {
     }
    
     /* Now read server response */
-    bzero(buffer,256);
+    //bzero(buffer,256);
     //printf("six (r)\n");
-    n = read(sockfd, buffer, 255);
+    //n = read(sockfd, buffer, 255);
   
     if (n < 0) {
       perror("ERROR reading from socket");

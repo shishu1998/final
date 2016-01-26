@@ -101,7 +101,7 @@ void server_talk(int socket_client) {
     }
     else {
       buffer[r] = 0;
-      printf("Read input: %10s\n", buffer);
+      printf("Read input: %s (%lu bytes)\n", buffer, strlen(buffer));
     }
 
     // TODO: parse input
@@ -210,18 +210,20 @@ user *server_login(char *buffer) {
   user *u = scan_userinfo(buffer);
 
   // Validate login
-  FILE *userfile = fopen("mail.d/users.csv", "r+");
-  user *account = user_find(u->name, userfile);
+  user *account = user_find(u->name);
   printf("user_find\n");
-  fclose(userfile);
-  printf("fclose\n");
+
+#define free_account() do { \
+    free(account->passwd); \
+    free(account); \
+  } while (0);
 
   if (account) {
     if (strcmp(u->passwd, account->passwd) == 0) {
       // Username and password correct
       printf("Correct login\n");
       
-      user_freemem(account);
+      free_account();
       return u;
     }
 
@@ -230,7 +232,7 @@ user *server_login(char *buffer) {
       printf("Valid username, wrong password\n");
       
       user_freemem(u);
-      user_freemem(account);
+      free_account();
       errno = EACCES;
       return NULL;
     }
@@ -247,10 +249,8 @@ user *server_login(char *buffer) {
 user *server_acct_setup(char *buffer) {
   user *u = scan_userinfo(buffer);
 
-  // Create user in userfile
-  FILE *userfile = fopen("mail.d/users.csv", "r+");
-  user *clone = user_create(u->name, u->passwd, userfile);
-  fclose(userfile);
+  // Add to userfile
+  user *clone = user_create(u->name, u->passwd);
 
   if (clone) {
     // Only free the struct, don't free the strings inside

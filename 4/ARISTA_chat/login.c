@@ -91,7 +91,7 @@ int newuser() {
 }
 
 /*
-int find_user_match(char *username) {
+  int find_user_match(char *username) {
   FILE* fd = fopen("tutoraccounts.txt", "r");
   char *buffer = (char *)malloc(500*sizeof(char));
   fread(buffer, sizeof(char), 500, fd);
@@ -99,18 +99,18 @@ int find_user_match(char *username) {
   printf("username:%s\n", username);
   printf("buffer: %s\n", buffer);
   if (strstr(buffer, username) == NULL) {//if username isn't taken 
-    printf("find_user_match() returned NULL. Your username is acceptable.\n");
-    buffer = "";
-    fclose(fd);
-    return 1;
+  printf("find_user_match() returned NULL. Your username is acceptable.\n");
+  buffer = "";
+  fclose(fd);
+  return 1;
   }
   else {
-    printf("Your username is taken. Please try again.\n");
-    buffer = "";
-    fclose(fd);
-    return 0;
+  printf("Your username is taken. Please try again.\n");
+  buffer = "";
+  fclose(fd);
+  return 0;
   }
-}
+  }
 */
 
 int registereduser() {
@@ -155,8 +155,8 @@ int tutorlogin() {
 }
 
 int clean_stdin() {
-	while (getchar() != '\n');
-		return 1;
+  while (getchar() != '\n');
+  return 1;
 }
 
 
@@ -169,7 +169,7 @@ int main() {
   }
   close(tutoraccounts);
 
-//  printf("\nHello and welcome to MovieFone--wait, sorry. Wrong program\n");
+  //  printf("\nHello and welcome to MovieFone--wait, sorry. Wrong program\n");
   printf("Hello and welcome to ARISTA chat!\n");
 
   int moveon = 0;
@@ -178,7 +178,7 @@ int main() {
   while (moveon == 0) {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
     int student
-    char str[100];
+      char str[100];
     scanf("%[^1000-9999]%d",str,&student);
     if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
@@ -200,3 +200,4 @@ int main() {
     }
   }
 }
+

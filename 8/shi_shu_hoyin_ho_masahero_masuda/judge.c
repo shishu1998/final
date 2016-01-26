@@ -26,6 +26,17 @@ int judge_handshake(int* from_server){
   
 }
 
+<<<<<<< HEAD
+void receivecards(int* from_server,card *received[8]){
+  card buffer[100];
+  int counter = 0;
+  while(counter < 8){
+    read(*from_server,buffer,sizeof(buffer));
+    (*received)[counter] = *makecard(buffer,"red");
+    printf("%s\n",((*received)[counter]).content);
+    counter ++;
+  }
+=======
 card* receivecards(int* from_server,card* received){
   card buffer[100];
   int counter = 0;
@@ -36,6 +47,7 @@ card* receivecards(int* from_server,card* received){
     counter ++;
   }
   return tobejudged;
+>>>>>>> 3beb5e30086c2cb67e3f92020c12147fc6e129b2
 }
 
 int main(){
@@ -65,7 +77,11 @@ int main(){
       *strchr(buffer,"\n") = 0;
       int winner = atoi(buffer);
     }
+<<<<<<< HEAD
+    write(to_server,received[winner].content,sizeof(received[winner].content));
+=======
     write(to_server,&card[winner].content,sizeof(card[winner].content));
+>>>>>>> 3beb5e30086c2cb67e3f92020c12147fc6e129b2
     
   }
   

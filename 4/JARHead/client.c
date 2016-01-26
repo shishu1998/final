@@ -44,7 +44,6 @@ int main() {
     printf("Error connecting to server: %s", strerror(errno));
     return 0;
   }
-  printf("<client> connect returned: %d\n", i);
 
   // Make an unnamed pipe for char input transfer.
   pipe(fd);
@@ -87,6 +86,7 @@ int main() {
     // printf("Error: %s\n", strerror(errno));
     // printf("Received: %s\n", buffer);
     }
+    close(socket_id);
     endwin();
     break;
   }

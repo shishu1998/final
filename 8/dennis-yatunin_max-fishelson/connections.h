@@ -1,14 +1,15 @@
 #ifndef CONNECTIONS_H
 #define CONNECTIONS_H
 
-int client_open_sock_addr(char *addr)
+#define PORT_STR "8000"
+#define PORT_INT 8000
 
-int client_open_sock_name(char *name)
+int client_to_server_addr(char *addr);
 
-void send_and_recieve(int sock, char *data, int data_size, char *buf, int buf_size)
+int client_to_server_name(char *name);
 
-int server_open_sock()
+int server_listener();
 
-int server_connect_sock(int sock)
+int server_to_client(int listening_sock);
 
 #endif

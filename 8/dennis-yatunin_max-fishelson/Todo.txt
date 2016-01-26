@@ -1,0 +1,9 @@
+Everything in board.c is susceptible to buffer overflow and may cause severe eyesores due to poor (total lack of) readability. This should probably be changed.
+
+There is no error checking on where the ship peices are put down. Putting down a peice where it should not be put down may cause problems. Please avoid causing problems.
+
+Similarly, making guesses that are out of bounds may cause problems (e.g. putting down "Z1" as a guess when it is only a 5 by 5 board).
+
+When there are more than two players in a game, and at least two of the players have the same name, there can be unpredictable behavior.
+
+There is not a lot of commenting in the code itself. Trying to understand this code is like trying to understand quantum electrodynamics - not for the faint of heart.

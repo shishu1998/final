@@ -21,7 +21,7 @@ void create_new(){
 }
 
 void send_email(char* file_name, int socket_id, int fd){
-  printf("entered send_email");
+  printf("entered send_email\n");
   char buffer[2048];
   char final[2048];
   final[0] = 'S';
@@ -29,10 +29,25 @@ void send_email(char* file_name, int socket_id, int fd){
   final[2] = 'N';
   final[3] = 'D';
   final[4] = '\n';
-  int r = read(fd,buffer,2048);
+
+  struct stat fileinfo;
+  int f = fstat(fd, &fileinfo);
+  printf("This is f: %d\n",f);
+  int filesize = fileinfo.st_size;
+  printf("filesize: %d\n",filesize);
+
+  int off;
+  off = lseek(fd,0,SEEK_SET);
+  printf("this is off: %d\n",off);
+  if(off==-1){
+    perror("lseek failed");
+  }
+  int r = read(fd,buffer,filesize);
   if(r==-1){
     perror("Failed to read from file");
   }
+  printf("This is r: %d\n",r);
+  printf("This is buffer: [%s]\n",buffer);
   strncat(final,buffer,strlen(buffer)+1);
   sock_write(socket_id,final);
   close(fd);
@@ -46,7 +61,8 @@ void open_file(char* buffer, char* final, int socket_id, int fd){
     perror("Failed to fork");
   }else if(f==0){
      int i;
-     i = execlp("xdg-open","xdg-pen",final,NULL);
+     i = execlp("xdg-open","xdg-open",final,NULL);
+     //i = execlp("open","open",final,NULL);
      if(i==-1){
        perror("Failed to open file");
      }
@@ -79,6 +95,7 @@ void compose(int socket_id){
   printf("final: [%s]\n",final);
   
   fd = open(final,O_CREAT|O_RDWR,0644);
+  printf("This is fd: %d\n",fd);
   if(fd==-1){
     perror("Failed to create file");
   }

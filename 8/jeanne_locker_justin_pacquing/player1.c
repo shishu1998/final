@@ -15,7 +15,12 @@
 int ships[5] = {0, 0, 0, 0, 0};
 int oppships[5] = {0, 0, 0, 0, 0};
 char myboard[5][5];
-char oppboard[5][5];
+char oppboard[5][5]; 
+int boardboard[5][5]= {{11,12,13,14,15},
+		       {21,22,23,24,25},
+		       {31,32,33,34,35},
+		       {41,42,43,44,45},
+		       {51,52,53,54,55}};
 
 /*
 union semun {
@@ -148,7 +153,22 @@ fills up places[] with user's inputs (sets coordinates of ships)
 void makeFleet(){
   int pos;
   int i;
-  printf("Ahoy, captain! Welcome to Battleship Bash Bros.! We'll start by setting up your board\n");
+  int y;
+  int z;
+  printf("Ahoy, captain! Welcome to Battleship Bash Bros.!\n\n");
+  printf("BBB is a condensed, digital form of the childhood favorite boardgame, Battleship\n");
+  printf("On a 5x5 Grid, you and your opponent will be asked to pick coordinates that will hold your ship\n");
+  printf("Turn by turn, you'll be asked to guess where eachother's ships are, getting a 'Ship Hit!' or 'Ship Missed!' Message\n");
+  printf("When a user hits all of the opponent's ships, they are declared the winner and the game ends!\n");
+  printf("Before we connect with an opponent, we'll set up your board\n");
+  printf("Here are how boards are set up (Row and Column #s Starts at 1 and End at 5, and coordinates are written as one, double-digit # e.g 11 instead of 1,1)\n");
+  for (y = 0; y < 5; y++){
+    for (z = 0; z < 5; z++){
+      printf(" %d ", boardboard[y][z]);
+    }
+    printf("\n");
+  }
+  printf("\n");
   for(i = 0; i < 5;i++){
     printf("Input a ship location on the grid (Note: Grid is 5x5 and Input as coordinate as one number e.g 11 instead of 1,1): ");
     scanf("%d", &pos);
@@ -190,27 +210,27 @@ void makeFleet(){
 void printMyBoard(){
   int a;
   int b;
-  printf("Your board\n");
+  printf("Your Board\n\n");
   for (a = 0; a < 5; a ++){
     for (b = 0; b < 5; b++){
       printf(" %c ", myboard[a][b]);
     }
     printf("\n");
   }
-
+  printf("\n");
 }
 
 void printOppBoard(){
   int a;
   int b;
-  printf("Your opponent's board\n");
+  printf("Your Opponent's Board\n\n");
   for (a = 0; a < 5; a ++){
     for (b = 0; b < 5; b++){
       printf(" %c ", oppboard[a][b]);
     }
     printf("\n");
   }
-
+  printf("\n");
 }
 
 
@@ -321,16 +341,17 @@ int main(){
     while( read(from_client, result, sizeof(result) )){
       //Reads from Opponent Whether or Not Your Hit was successful                                                                                                                  
       printf("You Got Back from Opponent: %s\n", result);
-      if (!strcmp(result,"All Ships Eliminated! We Surrender! You Win!\n"))
+      if (!strcmp(result,"All Ships Eliminated! We Surrender! You Win!\n")){
+	oppboard[incoord/10 - 1][incoord%10 - 1] = 'H';
 	break;
+      }
       else if (!strcmp(result,"Ship Missed!\n")){
-	if (!(myboard[readpos/10 - 1][readpos%10 - 1] == 'H'))
+	if (!(myboard[incoord/10 - 1][incoord%10 - 1] == 'H'))
 	  oppboard[incoord/10 - 1][incoord%10 - 1] = 'M';
       }
       else if (!strcmp(result,"Ship Hit!\n")){
         oppboard[incoord/10 - 1][incoord%10 - 1] = 'H';
       }
-      printOppBoard();
       //Attempts to Down Semaphore to Access Shared Memory
       new.sem_op = -1;
       //printf("Trying to access the semaphore...\n");
@@ -389,7 +410,7 @@ int main(){
       }
       strncpy(result,"",sizeof(result));
       printMyBoard();
-
+      printOppBoard();
       //Player Gives Program a Ship Location                                                                                                      
       printf("Input a ship location on to hit your opponent's grid (Note input as two-digit e.g 11 instead of 1,1): ");
       scanf("%d", &incoord);

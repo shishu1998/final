@@ -57,8 +57,13 @@ int main(){
     *strchr(buffer,"\n") = 0;
     int winner = atoi(buffer);
     while(winner < 0 || winner > 7 || !(received[winner].content)){
-      printf("please type in a valid number: ");
-      
+      printf("please type in a valid number: \n");
+      while(counter < 8 && received[counter].content){
+	printf("%d.%s\n",counter,received[counter].content);
+      }
+      fgets(buffer,sizeof(buffer),stdin);
+      *strchr(buffer,"\n") = 0;
+      int winner = atoi(buffer);
     }
     write(to_server,&card[winner].content,sizeof(card[winner].content));
     

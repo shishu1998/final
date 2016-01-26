@@ -35,10 +35,6 @@ void process(int fd, int sockfd, char *name){
       printf("Server closed\n");
       exit(0);
     }else{
-      if(strlen(name) == 0){
-	get_name(name, sockfd);
-	send(sockfd, name, strlen(name), 0);
-      }
       buffer[num_bytes]='\0';
       printf("%s", buffer);
       fflush(stdout);
@@ -80,6 +76,11 @@ int main(int argc, char **argv) {
   FD_SET(socket_id, &master);
   
   int fdmax = socket_id;
+
+  get_name(name, socket_id);
+  send(socket_id, name, strlen(name), 0);
+  printf("Welcome to Vongola, a modified Mafia in C!\n");
+
 
   while(1){
     read_fds = master;

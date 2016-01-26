@@ -28,6 +28,7 @@ User Interface:
      can be seen using ls and accessed using cd.
 
      A "compose" command will open up a text editor in which to write the email.
+     //Edit: Once the use finishes composing an email, it is automatically sent.
 
      To send an email, type "send" followed by the filename of the draft.
 
@@ -36,6 +37,7 @@ User Interface:
      cc'ing).
 
      The client will upload the text file to the server.
+     //Edit: The client will upload a string with the contents of the text file to the server
 
      When a user types the "refresh" command, the client connects to the server,
      downloads all emails addressed to the user, and writes them to files in 
@@ -63,17 +65,18 @@ Techincal Design:
 	   	   1) Accounts
 		      a) Allow the user to create an account by inputting an
 		      	 email address and password. Save this information to
-			 the piece of shared memory.
+			 the server.
 
 	   	   2) Folders
 		      a) Set up the file system (Inbox, Sent, etc.)
 		      b) Allow the user to navigate between them.
-`		      c) Allow the user to create folders.
+`		      c) Allow the user to create folders. //Possibly
 
 		   3) Compose
 		      Set up the "compose" command, which will:
 		      a) Create a file in the Drafts folder
 		      b) Open this file in a text editor
+		      c) send the email
 
 		   4) Send (without networking yet)
 		      Allow the user to send the email (user side only)

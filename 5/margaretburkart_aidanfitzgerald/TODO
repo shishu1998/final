@@ -1,0 +1,3 @@
+-Have the server correctly authenticate the users' login information
+-Have the server send emails sent to it to the correct recipient
+-Have the client be able to use the "refresh" command to pull emails meant for it from the server

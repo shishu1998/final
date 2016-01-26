@@ -1,17 +1,19 @@
 #include "utils.h"
+#include "connections.h"
 #include <stdio.h>
 #include <errno.h>
 #include <netdb.h>
+#include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-int client_open_sock_addr(char *addr) {
+int client_to_server_addr(char *addr) {
 	struct sockaddr_in server;
-	int sock;
+	int sock_to_server;
 
-	sock = socket(AF_INET , SOCK_STREAM , 0);
-	if (sock == -1) {
+	sock_to_server = socket(AF_INET , SOCK_STREAM , 0);
+	if (sock_to_server == -1) {
 		error("socket");
 	}
 
@@ -19,20 +21,24 @@ int client_open_sock_addr(char *addr) {
 	server.sin_family = AF_INET;
 	server.sin_port = htons(PORT_INT);
 
-	if (connect(sock, (struct sockaddr *)&server , sizeof(server)) == -1) {
+	if (
+		connect(
+			sock_to_server, (struct sockaddr *)&server , sizeof(server)
+			) == -1
+		) {
 		if (errno == ECONNREFUSED) {
 			errno = 0;
-			return 0;
+			return -1;
 		}
 		error("connect");
 	}
 
-	return sock;
+	return sock_to_server;
 }
 
-int client_open_sock_name(char *name) {
+int client_to_server_name(char *name) {
 	struct addrinfo hints, *res;
-	int err, sock;
+	int err, sock_to_server;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_socktype = SOCK_STREAM;
@@ -40,41 +46,33 @@ int client_open_sock_name(char *name) {
 
 	if ((err = getaddrinfo(name, PORT_STR, &hints, &res)) != 0) {
 		printf("getaddrinfo: %s\n", gai_strerror(err));
-		return 0;
+		exit(EXIT_FAILURE);
 	}
 
-	sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-	if (sock == -1) {
+	sock_to_server = socket(
+		res->ai_family, res->ai_socktype, res->ai_protocol
+		);
+	if (sock_to_server == -1) {
 		error("socket");
 	}
 
-	if (connect(sock, res->ai_addr, res->ai_addrlen) == -1) {
+	if (connect(sock_to_server, res->ai_addr, res->ai_addrlen) == -1) {
 		if (errno == ECONNREFUSED) {
 			errno = 0;
-			return 0;
+			return -1;
 		}
 		error("connect");
 	}
 
-	return sock;
+	return sock_to_server;
 }
 
-void send_and_recieve(int sock, char *data, int data_size, char *buf, int buf_size) {
-	if(write(sock, data, data_size) < 0) {
-		error("send");
-	}
-
-	if(read(sock, buf, buf_size) < 0) {
-		error("recv");
-	}
-}
-
-int server_open_sock() {
+int server_listener() {
 	struct sockaddr_in server;
-	int sock;
+	int listening_sock;
 
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == -1) {
+	listening_sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (listening_sock == -1) {
 		error("socket");
 	}
 
@@ -82,26 +80,32 @@ int server_open_sock() {
 	server.sin_addr.s_addr = INADDR_ANY;
 	server.sin_port = htons(PORT_INT);
 
-	if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1) {
+	if (
+		bind(
+			listening_sock, (struct sockaddr *)&server, sizeof(server)
+			) == -1
+		) {
 		error("bind");
 	}
 
-	if (listen(sock , 16)) {
+	if (listen(listening_sock , 16) == -1) {
 		error("listen");
 	}
 
-	return sock;
+	return listening_sock;
 }
 
-int server_connect_sock(int sock) {
+int server_to_client(int listening_sock) {
 	struct sockaddr_in client;
 	int c = sizeof(struct sockaddr_in);
-	int client_sock;
+	int sock_to_client;
 
-	client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t *)&c);
-	if (client_sock == -1) {
+	sock_to_client = accept(
+		listening_sock, (struct sockaddr *)&client, (socklen_t *)&c
+		);
+	if (sock_to_client == -1) {
 		error("accept");
 	}
 
-	return client_sock;
+	return sock_to_client;
 }

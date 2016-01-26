@@ -1,9 +1,90 @@
+#include "utils.h"
 #include "board.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 #include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
+
+void new_board_list(board_list *bl, int num, char *first_name) {
+  bl->num_boards = num;
+  strcpy(bl->boards[0].name, first_name);
+  newBoard(bl->boards);
+  while (num > 1) {
+    copyBoard(&bl->boards[--num], bl->boards);
+  }
+}
+
+int game_continues(board_list *bl) {
+  int counter;
+  int num_still_alive = 0;
+  for (counter = 0; counter < bl->num_boards; counter++) {
+    if (!gameOver(&bl->boards[counter])) {
+      num_still_alive++;
+      if (num_still_alive > 1) {
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+void print_other_boards(int my_id, board_list *bl) {
+  int counter;
+  for (counter = 0; counter < bl->num_boards; counter++) {
+    if (counter == my_id) {
+      continue;
+    }
+    printf("%s's Board:\n", bl->boards[counter].name);
+    printOtherBoard(&bl->boards[counter]);
+  }
+}
+
+int move_multiplayer(int my_id, board_list *bl, char *buf, int buf_size) {
+  int counter;
+  int is_valid_target = 0;
+  get_input("Which player do you want to attack?\n", buf, buf_size);
+  while (!is_valid_target) {
+    for (counter = 0; counter < bl->num_boards; counter++) {
+      if (counter == my_id) {
+        continue;
+      }
+      if (strcmp(buf, bl->boards[counter].name) == 0) {
+        is_valid_target = 1;
+        break;
+      }
+    }
+    if (!is_valid_target) {
+      printf("Please type the name of one of the following players:\n");
+      for (counter = 0; counter < bl->num_boards; counter++) {
+        if (counter == my_id) {
+          continue;
+        }
+        printf("%s\n", bl->boards[counter].name);
+      }
+      get_input(NULL, buf, buf_size);
+    }
+  }
+  return counter*10000 + move(&bl->boards[counter]);
+}
+
+int move_auto(board_list *bl, int value) {
+  board *b = &bl->boards[value / 10000];
+  value %= 10000;
+  int coors[2];
+  coors[0] = value / 100;
+  value %= 100;
+  coors[1] = value;
+  if((b->moves)[coors[0]][coors[1]][0]+1){
+    (b->moves)[coors[0]][coors[1]][1]=1;
+    (b->ships)[(b->moves)[coors[0]][coors[1]][0]]--;
+  }else{
+    (b->moves)[coors[0]][coors[1]][1]=1;
+  }
+  return coors[0]*100 + coors[1];
+}
+
+// Here be dragons. Use MAXimum caution...
 
 void newBoard(board *new){
   new->rows = 0;
@@ -16,10 +97,10 @@ void newBoard(board *new){
 
   char in[256];
   printf("To play on a standard board, type 's'.  To play on a custom board, where you choose board dimensions and number of ships, type 'c'.\n");
-  scanf("%s",&in);
+  scanf("%s",in);
   while(in[0]!='s'&&in[0]!='c'){
     printf("Invalid input.  To play on a standard board, type 's'.  To play on a custom board, type 'c'.\n");
-    scanf("%s",&in);
+    scanf("%s",in);
   }
 
   if(in[0]=='c'){
@@ -101,8 +182,8 @@ void printMyBoard(board *b){
   }
   out[c]='\n';
   out[c+1]='\n';
-  out[c+2]=NULL;
-  printf(out);
+  out[c+2]='\0';
+  printf("%s", out);
 
   for(i=10; i<b->cols+1; i++){
     out[3*i+1]=' ';
@@ -126,7 +207,7 @@ void printMyBoard(board *b){
         }
       }
     }
-    printf(out);
+    printf("%s", out);
   }
 }
 
@@ -157,8 +238,8 @@ void printOtherBoard(board *b){
   }
   out[c]='\n';
   out[c+1]='\n';
-  out[c+2]=NULL;
-  printf(out);
+  out[c+2]='\0';
+  printf("%s", out);
 
   for(i=10; i<b->cols+1; i++){
     out[3*i+1]=' ';
@@ -182,7 +263,7 @@ void printOtherBoard(board *b){
         }
       }
     }
-    printf(out);
+    printf("%s", out);
   }
 }
 
@@ -192,6 +273,16 @@ void parseGuess(char *s, int *coors){
 }
 
 void setBoard(board *new){
+  char in[4] = "\0\0\0";
+  printf("Do you want to set up the board randomly or manually? Type in 'r' or 'm'.\n");
+  scanf("%s", in);
+  while(in[0] != 'r' && in[0] != 'm'){
+    printf("Invalid input: Type in 'r' or 'm'.\n");
+    scanf("%s", in);
+  }
+  if (in[0] == 'r') {
+    return randSetBoard(new);
+  }
   int i;
   for(i=0; i<new->rows; i++){
     int j;
@@ -200,16 +291,15 @@ void setBoard(board *new){
       new->moves[i][j][1]=0;
     }
   }
-  char in[4] = "\0\0\0";
   for(i=0; i<new->shipnum; i++){
     printMyBoard(new);
     printf("Place a ship of length %d.\n", new->ships[i]);
     printf("First, enter the coordinates of the upper-left most square of the ship, like 'A1' with the A capitalized.\n");
-    scanf("%s",&in);
+    scanf("%s",in);
     int coors[2];
     parseGuess(in,coors);
     printf("Now, enter 'v' to place the ship vertically and 'h' to place the ship horizontally.\n");
-    scanf("%s",&in);
+    scanf("%s",in);
     //add making sure boat stays on board and does not go over other boats
     if(in[0]=='v'){
       int j;
@@ -338,10 +428,10 @@ void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random
   }
 }
 
-void move(board *b){
+int move(board *b){
   printf("Enter the coordinates of your guess, like 'A1' with the A capitalized.\n");
   char in[4]="\0\0\0";
-  scanf("%s",&in);
+  scanf("%s",in);
   int coors[2];
   parseGuess(in,coors);
   //add making sure valid coors and guess never been guessed before
@@ -356,6 +446,7 @@ void move(board *b){
     printf("Miss!\n");
     (b->moves)[coors[0]][coors[1]][1]=1;
   }
+  return coors[0]*100 + coors[1];
 }
 
 int gameOver(board *b){

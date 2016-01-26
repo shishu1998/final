@@ -26,16 +26,15 @@ int judge_handshake(int* from_server){
   
 }
 
-card* receivecards(int* from_server,card* received){
+void receivecards(int* from_server,card *received[8]){
   card buffer[100];
   int counter = 0;
-  card *tobejudged = (card* )malloc(sizeof(card)*8);
   while(counter < 8){
     read(*from_server,buffer,sizeof(buffer));
-    tobejudged[counter] = *makecard(buffer,"red");
+    (*received)[counter] = *makecard(buffer,"red");
+    printf("%s\n",((*received)[counter]).content);
     counter ++;
   }
-  return tobejudged;
 }
 
 int main(){
@@ -65,8 +64,7 @@ int main(){
       *strchr(buffer,"\n") = 0;
       int winner = atoi(buffer);
     }
-    write(to_server,&card[winner].content,sizeof(card[winner].content));
-    
+    write(to_server,received[winner].content,sizeof(received[winner].content));    
   }
   
   close(to_server);

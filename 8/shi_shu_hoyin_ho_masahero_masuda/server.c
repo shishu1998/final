@@ -89,7 +89,41 @@ void receive_redcard(int from_player){
   char buffer[100];
   read(from_player,buffer,sizeof(buffer));
 }
+
+void receivecards(int* from_server,card *received[8]){
+  char buffer[100];
+  int counter = 0;
+  while(counter < 8){
+    read(*from_server,buffer,sizeof(buffer));
+    (*received)[counter] = *makecard(buffer,"red");
+    printf("%s\n",((*received)[counter]).content);
+    counter ++;
+  }
+}
+
 //
+/*
+   while(1){
+    printf("select a card as the winner: \n");
+    int counter = 0;
+    while(counter < 8 && received[counter].content){
+      printf("%d.%s\n",counter,received[counter].content);
+    }
+    fgets(buffer,sizeof(buffer),stdin);
+    *strchr(buffer,'\n') = 0;
+    int winner = atoi(buffer);
+    while(winner < 0 || winner > 7 || !(received[winner].content)){
+      printf("please type in a valid number: \n");
+      while(counter < 8 && received[counter].content){
+	printf("%d.%s\n",counter,received[counter].content);
+      }
+      fgets(buffer,sizeof(buffer),stdin);
+      *strchr(buffer,'\n') = 0;
+      int winner = atoi(buffer);
+    }
+    write(to_server,received[winner].content,sizeof(received[winner].content));    
+  }
+*/
 
 int main(){
 

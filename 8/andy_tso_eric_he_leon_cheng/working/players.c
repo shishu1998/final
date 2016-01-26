@@ -110,11 +110,9 @@ player remove_card(player p, int i) {
   ret.color = p.cards[i].color;
   ret.value = p.cards[i].value;
   p.cards[i] = p.cards[p.num_cards-1];
-  p.num_cards -= 1;
   card nll;
-  nll.color = -1;
-  nll.value = -1;
   p.cards[p.num_cards-1] = nll;
+  p.num_cards--;
   return p;
 }
 /*

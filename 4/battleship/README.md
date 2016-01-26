@@ -43,5 +43,5 @@ Timeline of expected completion
 	--finished by the next morning, 1/24
 -introductory merssage and music to be incoprporated by Sunday, 1/24
 	--finished by the next morning, 1/25
--basic computer socket to be made, (if this is done the oher files can come together
+-basic witing-computer client and server to be made, (if this is done the oher files can come together
 in a main file and project is finsihed,) by Sunday night, 1/25

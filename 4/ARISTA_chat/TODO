@@ -14,3 +14,8 @@ the server and client
 	- need to make sure it can handle more than one client
 - Debugged login function so that the never-ending loops actually end :D
 	- need to use validation for username/password
+
+1/25/16
+- Login: working on reading from file to check for correct password
+- Server: chat works between two clients, working on specifically connecting a tutee with a tutor
+- Eventually need to connect login and client!

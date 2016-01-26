@@ -9,6 +9,7 @@
 #include "color.c"
 
 int main() {
+  textcolor(RESET, WHITE, BLACK); //Resets the color before the program starts
   textcolor(BRIGHT, RED, BLACK);
   printf("Welcome to Attempting Defusal, 'KEEP TALKING and NOBODY EXPLODES' in C, by Angela Chan and Dillon Zhang\n");
   textcolor(RESET, WHITE, BLACK);

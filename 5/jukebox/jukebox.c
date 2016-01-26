@@ -44,7 +44,6 @@ void handle_client(int socket_client){
 }
 
 int send_song(char * user_input, int socket_client){
-    void * song = calloc(10, 1048576); //max ten megabytes
     char substr[4];
     memcpy(substr, &user_input[2], 3); //get 3 dig song num
     substr[3] = '\0';
@@ -82,46 +81,52 @@ int send_song(char * user_input, int socket_client){
     closedir(music_dir);
     char file_path[64] = "music/";
     strncat(file_path, song_title, sizeof(file_path) - 7);
-    int song_file = open(file_path, O_RDONLY);
-    printf("foudn the song_file : %s \n", file_path);
-    if (song_file < 0){
+    int song_fd = open(file_path, O_RDONLY);
+    printf("foudn the song_fd : %s \n", file_path);
+    //open song file
+    if (song_fd < 0){
     	printf("unable to find the file\n");
     	printf("errno %s\n", strerror(errno));
     	write(socket_client, "-1", 3);
     	return -1;
     }
-    if (read(song_file, song, sizeof(song)) < 0){
-    	printf("unable to read the file\n");
-    	printf("errno %s\n", strerror(errno));
-    	write(socket_client, "-1", 3);
-    	return -1;
-    }
-    struct stat st;
+    struct stat st; //get file size
     if (stat(file_path, &st) < 0){
         printf("unable to stat the file\n");
     	printf("errno %s\n", strerror(errno));
     	write(socket_client, "-1", 3);
     	return -1;
     }
+    //read file and correct bytes
     int file_size = st.st_size;
+    void * song = calloc(1, file_size); //max ten megabytes
     printf("file size: %d\n", file_size);
-    if (read(song_file, song, file_size) < 0){
+    if (read(song_fd, song, file_size) < 0){
     	printf("couldn't read into song\n");
     	printf("errno %s\n", strerror(errno));
     	write(socket_client, "-1", 3);
     	return -1;
     }
 
-    //printf("read in : [%s] \n", song);
-     printf("boutta write song to client\n");
-     if( sendfile( socket_client, song_file, 0, file_size) < 0){
+    //send song over socket
+    printf("boutta write song to client\n");
+    #ifdef __linux__
+    if( sendfile( socket_client, song_fd, 0, file_size) < 0){
      	printf("unable to send? \n");
      	printf("errno %s\n", strerror(errno));
      	write(socket_client, "-1", 3);
      	return -1;
-
      }
+     #else
+     if( sendfile(song_fd, socket_client, 0, 0, 0, 0) < 0){
+       printf("unable to send? \n");
+       printf("errno %s\n", strerror(errno));
+       write(socket_client, "-1", 3);
+       return -1;
+     }
+     #endif
     // write(socket_client, song, file_size + 1);
+    free(song);
     printf("finished writing song\n");
     return 0;
 }

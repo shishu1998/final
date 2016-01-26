@@ -135,7 +135,12 @@ void server_talk(int socket_client) {
 
     else if (strstart(buffer, "GET")) {
       // Retrieve one email
-      server_get(socket_client, session);
+      int status = server_get(socket_client, session);
+
+      if (status) {
+	sock_write(socket_client, "FAIL\nCould not retrieve email");
+	die(1);
+      }
     }
 
     else if (strstart(buffer, "SEND")) {
@@ -169,16 +174,30 @@ void server_talk(int socket_client) {
 
 user *scan_userinfo(char *buffer) {
   printf("Entered scan_userinfo fn\n");
-  
-  user *u = malloc(sizeof(user));
-  u->name = malloc(256);
-  memset(u->name, 0, 256);
-  u->passwd = malloc(256);
-  memset(u->passwd, 0, 256);
+
+  // Get tokens
+  char *token = NULL;
+
+  // Get first token
+  token = strtok(buffer, "\n");
+  printf("%s\n", token);
 
   
-  sscanf(buffer, "Username: %255s", u->name);
-  sscanf(buffer, "Password: %255s", u->passwd);
+  user *u = malloc(sizeof(user));
+
+  // Get second token: Username line
+  token = strtok(NULL, "\n");
+  
+  u->name = malloc(256);
+  memset(u->name, 0, 256);
+  sscanf(token, "Username: %255s", u->name);
+
+  // Get third token: Password line
+  token = strtok(NULL, "\n");
+  
+  u->passwd = malloc(256);
+  memset(u->passwd, 0, 256);
+  sscanf(token, "Password: %255s", u->passwd);
 
   printf("%s / %s\n", u->name, u->passwd);
 
@@ -191,11 +210,8 @@ user *server_login(char *buffer) {
   user *u = scan_userinfo(buffer);
 
   // Validate login
-  FILE *userfile = fopen("mail.d/users.csv", "r+");
-  user *account = user_find(u->name, userfile);
+  user *account = user_find(u->name);
   printf("user_find\n");
-  fclose(userfile);
-  printf("fclose\n");
 
   if (account) {
     if (strcmp(u->passwd, account->passwd) == 0) {
@@ -228,10 +244,8 @@ user *server_login(char *buffer) {
 user *server_acct_setup(char *buffer) {
   user *u = scan_userinfo(buffer);
 
-  // Create user in userfile
-  FILE *userfile = fopen("mail.d/users.csv", "r+");
-  user *clone = user_create(u->name, u->passwd, userfile);
-  fclose(userfile);
+  // Add to userfile
+  user *clone = user_create(u->name, u->passwd);
 
   if (clone) {
     // Only free the struct, don't free the strings inside
@@ -284,25 +298,25 @@ void server_send(char *buffer, user *session) {
   fprintf(mail, "From: %s\n", session->name);
   // Write mail content
   fputs(content, mail);
-printf("Uploaded email to %s\n", filename);
+  printf("Uploaded email to %s\n", filename);
 
   // Done with the file
   fclose(mail);
-
+  
   // Done with the filename buffer
   free(filename);
 }
 
-void server_get(int socket_client, user *session) {
+int server_get(int socket_client, user *session) {
   // Open the user's remote mailbox directory
   char *dirname = server_dir(session->name);
   DIR *dir = opendir(dirname);
   
   // Read the first entry
-  struct dirent *head;
- get_head: head = readdir(dir);
-  if (head->d_type != DT_REG && head->d_type != DT_LNK) {
-    goto get_head;
+  // Loop through the directory stream until the first regular file or symlink (just in case!) is found
+  struct dirent *head = 0;
+  while (!head || !(head->d_type == DT_REG || head->d_type == DT_LNK)) {
+    head = readdir(dir);
   }
   
   // Done with the directory
@@ -316,10 +330,10 @@ void server_get(int socket_client, user *session) {
 
     // Get file size
     struct stat fileinfo;
-    if (stat(filename, &fileinfo)) die(1);
+    if (stat(filename, &fileinfo)) return -1;
     int filesize = fileinfo.st_size;
 
-    printf("User %s tried to retrieve emails; found email at %s, size %lu\n", session->name, filename, filesize);
+    printf("User %s tried to retrieve emails; found email at %s, size %d\n", session->name, filename, filesize);
 
     char *buffer = malloc(filesize + 3 + 1);
 
@@ -328,7 +342,7 @@ void server_get(int socket_client, user *session) {
 
     // Read the file
     FILE *file = fopen(filename, "r");
-    if (!fgets(buffer + 3, filesize + 1, file)) die(1);
+    if (!fgets(buffer + 3, filesize + 1, file)) return -1;
     fclose(file);
 
     // Write email to socket
@@ -340,11 +354,13 @@ void server_get(int socket_client, user *session) {
 
   else {
     // Report that no file was found
-    sock_write("NONE");
+    sock_write(socket_client, "NONE");
     printf("User %s tried to retrieve emails; none were found\n", session->name);
 
     free(dirname);
   }
+
+  return 0;
 }
 
 /* /////I put these headers in so that the file would compile so that I could test LOGIN and SETUP */

@@ -258,6 +258,10 @@ void sign_in(int socket_id){
   char* use_phrase = "LOGIN\nUsername: ";
   char* pass_phrase = "\nPassword: ";
 
+  int i;
+  for(i=0; i<256; i++){
+    final[i] = '\0';
+  }
   printf("finaloriginally: [%s]\n",final);
   strcat(final,use_phrase);
   printf("final before username retrieved: [%s]\n",final);

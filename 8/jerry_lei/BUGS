@@ -1,0 +1,3 @@
+BUGS:
+- Hangman board does not show until something is entered through player2. 
+- Game does not end. 

@@ -43,6 +43,12 @@ card top_card;
   player_action() - prints options player can take, gets player input  
 */
 
+int win_scenario(player p) {
+  if (p.num_cards == 0)
+    return 100;
+  return 0;
+}
+
 card draw_card() {
   card new_card;
 

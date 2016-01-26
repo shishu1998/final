@@ -7,71 +7,113 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 
-#include "len_prefix.h"
+#include "hostname.h"
+#include "message.h"
 #include "shared.h"
 #include "client.h"
 
-int running = 1;
-
-static void sighandler(int signo) {
-  if (signo == SIGINT) {
-    running = 0;
-  } else if (signo == SIGUSR1) {
-    printf("\nThe server has shutdown.\n");
-    running = 0;
-  }
-}
+static int running = 1;
 
 int main(int argc, char * argv[]) {
   int socket_id, e;
-  char * hostname;
+  char *hostname, *username;
+  int sending = 0;
 
-  struct sigaction action = {
-    .sa_handler = sighandler,
-    .sa_flags = 0
-  };
-  sigemptyset(&action.sa_mask);
-
-  sigaction(SIGINT, &action, NULL);
-  sigaction(SIGUSR1, &action, NULL);
-
-  if (argc < 2) {
-    printf("Usage: client <hostname>\n");
+  if (argc < 3) {
+    printf("Usage: client <hostname> <username>\n");
     exit(1);
   } else {
     hostname = argv[1];
+    username = argv[2];
+    if (argc >= 4) {
+      sending = 1;
+    };
   }
 
-  socket_id = connect_to_server(hostname, PORT);
+  struct user me = new_user(username);
+
+  setup_sig_handler();
+
+  e = socket_id = connect_to_server(hostname, PORT);
+  if (e < 0) check_errors("Error connecting to server", e);
+
+  e = handshake(socket_id, me);
+  if (e < 0) {
+    printf("Username already taken\n");
+    running = 0;
+  } else {
+    printf("Handshake succesfull!\n");
+  }
 
   while (running) {
-    int bytes_read;
-    char input[256];
-    printf("> ");
-    fflush(stdout);
-
-    e = bytes_read = read(STDIN_FILENO, input, sizeof(input)-1);
-    check_errors_except("Error reading input", e, EINTR);
-    input[bytes_read++] = '\0';
-
-    if (!running) {
-      continue; // we usually C-c during input
-    } else if (is_exit(input)) {
-      running = 0;
-      continue;
+    if (sending) {
+      e = send_messages(socket_id, me);
+    } else {
+      e = receive_messages(socket_id);
     }
-
-    e = send_request(input, bytes_read, socket_id);
-    check_errors("Error sending request", e);
-
-    e = handle_response(socket_id);
-    check_errors("Error handling response", e);
+    if (e < 0) running = 0;
   }
-  close(socket_id);
+
+  cleanup(socket_id);
+}
+
+int send_messages(int socket_id, struct user me) {
+  int e;
+
+  struct message message;
+  e = read_message(&message, me);
+  if (e < 0 && errno == EINTR) return e;
+
+  if (!running) {
+    return 0; // we usually C-c or exit during input
+  }
+
+  e = send_message(socket_id, &message);
+  if (e < 0) return e;
+
+  return 0;
+}
+
+int read_message(struct message *message, struct user me) {
+  int bytes_read;
+  struct user to;
+
+  message->from = me;
+
+  printf("\nMessage Recipient: ");
+  fflush(stdout);
+  bytes_read = get_input(to.name, MAX_USERNAME);
+  if (bytes_read <= 0) return -1;
+
+  message->to = to;
+
+  printf("Message: ");
+  fflush(stdout);
+  bytes_read = get_input(message->text, MAX_MESSAGE);
+  if (bytes_read <= 0) return -1;
+
+  return 0;
+}
+
+int send_message(int socket_id, struct message *message) {
+  struct signal sig = new_message_sig(message->from, message->to, message->text);
+  return write(socket_id, &sig, sizeof(sig));
+}
+
+int get_input(char * input, int input_size) {
+  int bytes_read;
+
+  bytes_read = read(STDIN_FILENO, input, input_size-1);
+  input[bytes_read-1] = '\0'; // replace newline
+
+  if (bytes_read <= 0) {
+    printf("Exiting...\n");
+    running = 0;
+  }
+
+  return bytes_read;
 }
 
 int connect_to_server(char * hostname, int port) {
@@ -100,40 +142,59 @@ int connect_to_server(char * hostname, int port) {
   return socket_id;
 }
 
-int is_exit(char *input) {
-  return strcmp(input, "exit\n") == 0;
-}
-
-int send_request(char *req, size_t len, int socket_id) {
-  return len_prefix_write(socket_id, req, len);
-}
-
-int handle_response(int socket_id) {
+int handshake(int socket_id, struct user user) {
   int e;
-  char * buf = NULL;
+  struct signal sig = new_handshake_sig(user);
+  e = write(socket_id, &sig, sizeof(sig));
+  if (e <= 0) return -1;
 
-  e = len_prefix_read(socket_id, (void **)&buf);
-  if (e < 0) return e;
+  read(socket_id, &sig, sizeof(sig));
+  if (e <= 0) return -1;
 
-  printf("server: %s\n", buf);
-
-  free(buf);
-
-  return e;
-}
-
-/*
- * Credit http://www.binarytides.com/hostname-to-ip-address-c-sockets-linux/
- */
-int hostname_to_ip(char * hostname, struct in_addr** addr) {
-  struct hostent *he = (void *)123456789;
-
-  he = gethostbyname(hostname);
-  if (he == NULL) {
+  if (sig.type != HANDSHAKE && strcmp(user.name, sig.body.handshake.name) != 0) {
     return -1;
   }
 
-  *addr = (struct in_addr *) he->h_addr;
+  return 0;
+}
+
+int receive_messages(int socket_id) {
+  int e;
+  struct signal sig;
+
+  e = read(socket_id, &sig, sizeof(sig));
+  if (e <= 0) return -1;
+
+  switch (sig.type) {
+  case DISCONNECT:
+    running = 0;
+    break;
+  case MESSAGE:
+    printf("<%s>: %s\n", sig.body.message.from.name, sig.body.message.text);
+    break;
+  }
 
   return 0;
+}
+
+void cleanup(int socket_id) {
+  struct signal sig = new_disconnect_sig();
+  write(socket_id, &sig, sizeof(sig));
+  close(socket_id);
+}
+
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    running = 0;
+  }
+}
+
+void setup_sig_handler() {
+  struct sigaction action = {
+    .sa_handler = sighandler,
+    .sa_flags = 0
+  };
+  sigemptyset(&action.sa_mask);
+
+  sigaction(SIGINT, &action, NULL);
 }

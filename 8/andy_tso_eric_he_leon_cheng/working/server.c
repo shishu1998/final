@@ -144,11 +144,26 @@ void doprocessing (int sock) {
     printf("bout to set value\n");
     write_mssg->top_card.value = array[2];
     printf( "bout to set go\n");
+<<<<<<< HEAD:8/andy_tso_eric_he_leon_cheng/working/server.c
     strcpy(write_mssg->mssg, "go");
     printf( "mssg inside s %s\n", write_mssg->mssg );
     shmdt( (void *)array );
     printf("bout to write\n");
     int x = write(sock, write_mssg, sizeof(init));
+=======
+    if ( array[1] == 100 ) 
+      strcpy(write_mssg->mssg, "END");
+    else 
+      strcpy(write_mssg->mssg, "go");
+    printf( "mssg inside s %s\n", write_mssg->mssg );
+    printf("bout to write\n");
+    int x = write(sock, write_mssg, sizeof(init));
+    if ( array[1] == 100){
+      printf("Found winner. Disconnecting...\n");
+      exit(0);
+    }
+    shmdt( (void *)array );
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac:8/andy_tso_eric_he_leon_cheng/working/server.c
     printf("i wrote\n");
     if (x < 0) {
       perror("ERROR writing topcard ");
@@ -189,7 +204,11 @@ void doprocessing (int sock) {
       printf("Here is the card: color %d value %d\n", read_card->color, read_card->value);
     
     array = (int *)shmat( shmid, 0, 0 );
+<<<<<<< HEAD:8/andy_tso_eric_he_leon_cheng/working/server.c
     if (read_card->color <= 20) {
+=======
+    if (read_card->color <= 20 || read_card->color == 100 ){
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac:8/andy_tso_eric_he_leon_cheng/working/server.c
       array[1] = read_card->color;
       array[2] = read_card->value;
       
@@ -277,7 +296,6 @@ int main( int argc, char *argv[] ) {
   array[1] = 20; //any color
   array[2] = 20; //any value
   printf( "<server> Set int to %d\n", array[0] );
-  shmdt( (void *)array );
       
   //printf( "CREATE SEMAPHORE\n\n" );
   //semid = semget( sem_key, 1, 0644 | IPC_CREAT | IPC_EXCL);
@@ -324,7 +342,7 @@ int main( int argc, char *argv[] ) {
   printf("player_count: %d\n", player_count);
   printf("desired_total: %d\n", desired_total);
   
-  while (1) {
+  while ( array[1] != 100 ) {
     if(player_count <= desired_total){
       
       newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
@@ -392,7 +410,9 @@ int main( int argc, char *argv[] ) {
     }
     else {
       /* Close the client if desired_total num of players aleady connected */
-      write(newsockfd, "terminate", sizeof("terminate"));
+      init *write_mssg = (init*)malloc(sizeof(init));
+      strcpy( write_mssg->mssg, "terminate" ); 
+      write(newsockfd, write_mssg, sizeof(init));
       close(newsockfd);
       if (pid==0){
 	      close(sockfd);
@@ -400,5 +420,6 @@ int main( int argc, char *argv[] ) {
     }
 		
   } /* end of while */
-
+  shmdt( (void *)array );
+  return 1;
 }

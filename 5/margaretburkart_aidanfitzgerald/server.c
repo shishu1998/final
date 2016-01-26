@@ -284,11 +284,11 @@ void server_send(char *buffer, user *session) {
   fprintf(mail, "From: %s\n", session->name);
   // Write mail content
   fputs(content, mail);
-printf("Uploaded email to %s\n", filename);
+  printf("Uploaded email to %s\n", filename);
 
   // Done with the file
   fclose(mail);
-
+  
   // Done with the filename buffer
   free(filename);
 }
@@ -299,10 +299,10 @@ void server_get(int socket_client, user *session) {
   DIR *dir = opendir(dirname);
   
   // Read the first entry
-  struct dirent *head;
- get_head: head = readdir(dir);
-  if (head->d_type != DT_REG && head->d_type != DT_LNK) {
-    goto get_head;
+  // Loop through the directory stream until the first regular file or symlink (just in case!) is found
+  struct dirent *head = 0;
+  while (!head || !(head->d_type == DT_REG || head->d_type == DT_LNK)) {
+    head = readdir(dir);
   }
   
   // Done with the directory
@@ -319,7 +319,7 @@ void server_get(int socket_client, user *session) {
     if (stat(filename, &fileinfo)) die(1);
     int filesize = fileinfo.st_size;
 
-    printf("User %s tried to retrieve emails; found email at %s, size %lu\n", session->name, filename, filesize);
+    printf("User %s tried to retrieve emails; found email at %s, size %d\n", session->name, filename, filesize);
 
     char *buffer = malloc(filesize + 3 + 1);
 
@@ -340,7 +340,7 @@ void server_get(int socket_client, user *session) {
 
   else {
     // Report that no file was found
-    sock_write("NONE");
+    sock_write(socket_client, "NONE");
     printf("User %s tried to retrieve emails; none were found\n", session->name);
 
     free(dirname);

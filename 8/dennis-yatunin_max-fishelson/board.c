@@ -1,10 +1,9 @@
+#include "board.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-
-typedef struct {int rows; int cols; int moves[20][20][2]; int shipnum; int ships[10];} board;
 
 void newBoard(board *new){
   new->rows = 0;
@@ -22,7 +21,7 @@ void newBoard(board *new){
     printf("Invalid input.  To play on a standard board, type 's'.  To play on a custom board, type 'c'.\n");
     scanf("%s",&in);
   }
-  
+
   if(in[0]=='c'){
     printf("How many rows do you want the gameboard to have? Choose a number from 5 to 20.\n");
     scanf("%d",&(new->rows));
@@ -104,11 +103,11 @@ void printMyBoard(board *b){
   out[c+1]='\n';
   out[c+2]=NULL;
   printf(out);
-  
+
   for(i=10; i<b->cols+1; i++){
     out[3*i+1]=' ';
   }
-  
+
   for(i=0; i<b->rows; i++){
     out[0]=i+65;
     int j;
@@ -160,11 +159,11 @@ void printOtherBoard(board *b){
   out[c+1]='\n';
   out[c+2]=NULL;
   printf(out);
-  
+
   for(i=10; i<b->cols+1; i++){
     out[3*i+1]=' ';
   }
-  
+
   for(i=0; i<b->rows; i++){
     out[0]=i+65;
     int j;
@@ -248,10 +247,10 @@ void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random
       }
     }
   }
-  
+
   int hor[new->rows][new->cols];
   int ver[new->rows][new->cols];
-  
+
   for(i=0; i<new->rows; i++){
     int j;
     for(j=0; j<new->cols; j++){
@@ -271,13 +270,13 @@ void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random
         if(ver[j][k]>=(new->ships)[sort[i]]) c++;
       }
     }
-    
+
     if(!c){
       printf("The CPU is taking a while to find a random setup.  Consider using a larger board or fewer ships.\n");
       randSetBoard(new);
       return;
     }
-    
+
     int d = randomInt(c);
     int xcor;
     int ycor;
@@ -295,7 +294,7 @@ void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random
         }
       }
     }
-    
+
     for(j=0; j<new->rows; j++){
       int k;
       for(k=0; k<new->cols; k++){
@@ -309,7 +308,7 @@ void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random
         }
       }
     }
-    
+
     if(isHor){
       for(j=0; j<(new->ships)[sort[i]]; j++){
         new->moves[xcor][ycor+j][0]=sort[i];
@@ -335,7 +334,7 @@ void randSetBoard(board *new){ //NOTE: This is algorithm produces a truly random
         ver[j][ycor] = xcor - j;
       }
     }
-    
+
   }
 }
 

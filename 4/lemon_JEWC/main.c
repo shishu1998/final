@@ -84,6 +84,16 @@ void editstring()
     printf("\nthe string after modification is\n\n %s\n", s3);
 }
 
+void append(char old[], const char new[], int index) {
+    char buf[1000]; 
+    strncpy(buf, old, index); 
+    int len = strlen(buf);
+    strcpy(buf+len, new);
+    len += strlen(new);  
+    strcpy(buf+len, old+index); 
+    strcpy(old, buf);   
+}
+
 int main(){
   int file;
   printf("\e[7mPlease enter the name of the file you are creating or editing.\e[27m\n");

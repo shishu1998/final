@@ -11,7 +11,8 @@
 int main() {
 
   int socket_id, socket_client;
-  
+  char buffer[256];
+  int hit;
   //create the socket
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
   
@@ -29,11 +30,28 @@ int main() {
 
   socket_client = accept( socket_id, NULL, NULL );
   printf("<server> connected: %d\n", socket_client );
-  
-  if( socket_client % 2 )
+ 
+  // printf("\n");
+
+  if( socket_client % 2 ) // figure out which player is contacting the server
     write( socket_client, "Player 2", 100 );
   else
     write( socket_client, "Player 1", 100 );
+
+  read( socket_client, buffer, sizeof(buffer) ); // read what the player has sent
+  printf( "<server> Client returned: %s\n", buffer );
+
+  // check if what the player has sent is a hit/miss
+  //im assuming we can use the board.c functions for this (change truth value of hit)
+
+
+  // tell them that they have hit/missed
+  if ( hit )
+    write( socket_client, "You have hit a ship!", 100 );
+    //change board
+  else 
+    write( socket_client, "You have missed!", 100 );
   }
+
   return 0;
 }

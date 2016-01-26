@@ -6,8 +6,6 @@
 #include <signal.h>
 #include "deck.h"
 
-int connectedPlayers = 0;
-int ids[8] = {1,2,3,4,5,6,7,8};
 
 static void sighandler(int signo){
   if(signo == SIGINT){
@@ -17,20 +15,23 @@ static void sighandler(int signo){
   }
 }
 
-int handshake(int *from_player, card *redDeck, card *greenDeck){
+int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
   int freeID=0;
-  while(*ids){
+  while(!(*ids)){
     freeID++;
   }
+  printf("Ho Yin Ho\n");
   int to_player;
   char buffer[100];
   int counter = 0;
   card redCards[7];
   card greenCard = deal_greencard(greenDeck);
+
+  printf("Ho Yin went black\n");
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
+  printf("Now Ho Yin can't go back\n");
   remove("pipe");
-  connectedPlayers += 1; 
   
   int f = fork();
   if(f == 0){
@@ -41,14 +42,15 @@ int handshake(int *from_player, card *redDeck, card *greenDeck){
     remove(buffer);
     while (counter < 7){
       redCards[counter] = deal_redcard(redDeck);
-      redCards[counter].owner=ids[freeID];
+      write(to_player,redCards[counter].content,sizeof(redCards[counter].content));
+      printf("%s\n",redCards[counter].content);
       counter++;
     }
-    greenCard.owner=ids[freeID];
     write(to_player,&ids[freeID],sizeof(int));
     ids[freeID] = 0;
-    write(to_player,&redCards,sizeof(card)*7);
-    write(to_player,&greenCard,sizeof(card));
+    write(to_player,greenCard.content,sizeof(greenCard.content));
+    printf("I like Sandy, Kappa\n");
+    
     return to_player;
   }
   else{
@@ -73,6 +75,7 @@ card deal_greencard(card* green_deck){
     pos++;
   }
   card green_card = green_deck[pos];
+  green_deck[pos].content = NULL;
   return green_card;
 }
 
@@ -82,6 +85,7 @@ card deal_redcard(card* red_deck){
     pos++;
   }
   card red_card = red_deck[pos];
+  red_deck[pos].content = NULL;
   return red_card;
 }
 //Receiving methods//
@@ -94,7 +98,7 @@ void receive_redcard(int from_player){
 int main(){
 
   signal(SIGINT,sighandler);
-  
+  int ids[8] = {1,2,3,4,5,6,7,8};
   int to_player;
   int from_player;
   char buffer[100];
@@ -106,7 +110,7 @@ int main(){
 
   while(1){
     printf("waiting for players to connect\n");
-    to_player = handshake(&from_player,red,green);
+    to_player = handshake(&from_player,red,green,ids);
     
     if(to_player != 0){
       

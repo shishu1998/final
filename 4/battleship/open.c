@@ -30,7 +30,11 @@ int main(){
       wait(&status1);
     }
     else{
+<<<<<<< HEAD
 
+=======
+      sleep(2.5);
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
       printf("OOOOOO\n");
       printf("OO   OO\n");
       printf("OO  OO\n");

@@ -1,0 +1,3 @@
+# C-Hangman
+
+Individual READMEs in each file. Multiplayer is through pipe server/client. Singleplayer is against random word.

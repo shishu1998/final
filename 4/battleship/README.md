@@ -1,8 +1,17 @@
 Kevin Mejia
+<<<<<<< HEAD
 Lian Wong 
 Max Kong
 
 How to compile:
+=======
+
+Lian Wong 
+
+Max Kong
+
+##How to compile:
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
 	
 	type------ $ make
 	
@@ -12,7 +21,12 @@ How to compile:
  	
  	to make the main run
 
+<<<<<<< HEAD
 How to use:
+=======
+##How to use:
+	 
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
 	 Upon entering your name, a randomly generated board will be
 	made for you. If you decde to print it , simply type
 	'print board' at anytime to access your board. It will be
@@ -22,6 +36,7 @@ How to use:
 	an enemy ship that IS shot. 
 	As the user, you need to input the commands '1A, 3B, 4C' , etc,
 	to fire a shot and to guess where one of the enemy ships is
+<<<<<<< HEAD
 Current files that are in use:
 a.txt
 board.c
@@ -37,4 +52,33 @@ song.mp3
 
 important to note: while not all of them are being compiled with 
 makefile, all of the functions are cople pasted from these files.
+=======
+
+##Current files that are in use:
+
+	a.txt
+
+	board.c
+
+	commands.txt
+
+	open.c
+
+	grid.txt
+
+	backround_music.c
+
+	client.c
+
+	server.c
+
+	signal.c
+
+	welcome.c
+
+	song.mp3
+
+important to note: while not all of them are being compiled with 
+makefile, all of the functions are likely to be copy pasted from these files.
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
 

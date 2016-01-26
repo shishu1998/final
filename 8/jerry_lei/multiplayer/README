@@ -1,0 +1,12 @@
+Not too stable. Video link showing it working: https://www.youtube.com/watch?v=hZMhHbjDs3M
+
+Steps (Player 1): 
+1. make
+2. ./p1
+3. Enter word
+4. Enter clue
+
+Steps (Player 2):
+1. ./p2 on another terminal
+2. Guess characters, entire word.
+

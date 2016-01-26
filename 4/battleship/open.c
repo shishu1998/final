@@ -21,15 +21,16 @@ int main(){
     wait(&status);
   }
   else {
-    execlp("aplay", "aplay", "song.wav", 0);
+    execlp("aplay", "aplay", "song.mp3", 0);
   }
-   
+  
     p1 = fork();
     if (p1 != 0) {
       int status1 = 1;
       wait(&status1);
     }
     else{
+
       printf("OOOOOO\n");
       printf("OO   OO\n");
       printf("OO  OO\n");

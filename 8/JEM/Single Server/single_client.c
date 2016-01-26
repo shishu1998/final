@@ -18,13 +18,13 @@ const char underscore = '_';
 int find_error(char *username, char *password) {
   printf("Running find_error()...\n");
   if (username == NULL || password == NULL) {
-    printf("username and password cannot be null\n");
+    printf("username and password cannot be null.\n");
     return 0;
   }
   strsep(&username, " _");
   strsep(&password, " _");
-  printf("username: %s\n", username);
-  printf("password: %s\n", password);
+  //printf("username: %s\n", username);
+  //printf("password: %s\n", password);
   if (username == NULL && password == NULL)  {
     printf("Huzzah! You have entered a username and password that has no newline!\n");
     return 1;
@@ -36,7 +36,7 @@ int find_error(char *username, char *password) {
 }
 
 void sign_up(char input) {
-  char user[USER_LEN]; char pswd[PSWD_LEN];                                                                                                                                        
+  char user[USER_LEN]; char pswd[PSWD_LEN];
   char *username;
   while(input == 'y') {//y is yes, n is no
     FILE* fd1 = fopen("username.txt", "a+");
@@ -44,18 +44,16 @@ void sign_up(char input) {
     fgets(user, USER_LEN, stdin);
     printf("Please create a password:\n");
     fgets(pswd, PSWD_LEN, stdin);
-    printf("username array: %s\n", user);
-    printf("pswd array: %s\n", pswd);
-    username = calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));//1 is for the underscore and the other is for the null char                  
+    //printf("username array: %s\n", user);
+    //printf("pswd array: %s\n", pswd);
+    username = calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
     strcat(username, user);
     char *line = (char *)calloc(strlen(user) + strlen(pswd) + strlen(&underscore) + 1, sizeof(char));
     line = strsep(&username, "\n");
     strcat(line, &underscore);
-    //printf("username: %s\n", username);                                                                                                                       
-    //strcat(password, pswd);
+    //printf("username: %s\n", username);
     strcat(line, pswd);
     printf("line: %s\n", line);
-    
     if (find_user_match(user) == 1) {
       fwrite(line, sizeof(char), strlen(line), fd1);
       //to do: redirect to log in page
@@ -94,7 +92,10 @@ int find_user_match(char *username) {
     return 0;
   }
 }
-
+/*
+Returns 1 if user input is correct. Returns 0 if not.
+Log-in for returning users
+ */
 int find_user() {
   FILE* fd1 = fopen("username.txt", "r");//open username.txt                                                                                                                         
   char user[USER_LEN]; char pswd[PSWD_LEN];
@@ -104,8 +105,7 @@ int find_user() {
   fgets(user, USER_LEN, stdin);
   printf("Please type in your password:\n");
   fgets(pswd, PSWD_LEN, stdin);
-  //printf("user: %s\n", user);                                                                                                                                                     
-  //printf("pswd: %s\n", pswd);                                                                                                                                                     
+
   if (find_error(user, pswd) == 1) {
     username = calloc(strlen(user) + strlen(pswd) + 1 + 1, sizeof(char));//1 is for the underscore and the other is for the null char                                                
     strcat(username, user);
@@ -136,7 +136,6 @@ int find_user() {
 }
 
 int main(int argc, char **argv) {
-
   int socket_id;
   //char input[256];
   //char buffer[256];
@@ -150,7 +149,6 @@ int main(int argc, char **argv) {
   //char user[USER_LEN]; char pswd[PSWD_LEN];
   //char *username;
   char one_two;
-
     //create the socket
     socket_id = socket( AF_INET, SOCK_STREAM, 0 );
     
@@ -170,11 +168,12 @@ women.\n\n");
     printf("one_two value:%c\n", one_two);
     
     if (one_two == '1') {
-      if (find_user() ==1) {//invalid
+      if (find_user() == 0) {//invalid
 	printf("try again!\n");
 	exit(0);
       }
-      if (find_user() == 0) {//valid
+      else if (find_user() == 1) {//valid
+	printf("find_user() returned 1. Your user input is valid.\n");
 	//attempt a connection
 	i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
 	printf("<client> connect returned: %d\n", i);

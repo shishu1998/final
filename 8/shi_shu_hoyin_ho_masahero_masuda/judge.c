@@ -26,6 +26,7 @@ int judge_handshake(int* from_server){
   
 }
 
+<<<<<<< HEAD
 void receivecards(int* from_server,card *received[8]){
   char buffer[100];
   int counter = 0;
@@ -35,6 +36,18 @@ void receivecards(int* from_server,card *received[8]){
     printf("%s\n",((*received)[counter]).content);
     counter ++;
   }
+=======
+card* receivecards(int* from_server,card* received){
+  card buffer[100];
+  int counter = 0;
+  card *tobejudged = (card* )malloc(sizeof(card)*8);
+  while(counter < 8){
+    read(*from_server,buffer,sizeof(buffer));
+    tobejudged[counter] = *makecard(buffer,"red");
+    counter ++;
+  }
+  return tobejudged;
+>>>>>>> parent of 7c95b08... Merge branch 'master' of https://github.com/mks65/final
 }
 
 int main(){
@@ -64,7 +77,12 @@ int main(){
       *strchr(buffer,'\n') = 0;
       int winner = atoi(buffer);
     }
+<<<<<<< HEAD
     write(to_server,received[winner].content,sizeof(received[winner].content));    
+=======
+    write(to_server,&card[winner].content,sizeof(card[winner].content));
+    
+>>>>>>> parent of 7c95b08... Merge branch 'master' of https://github.com/mks65/final
   }
   
   close(to_server);

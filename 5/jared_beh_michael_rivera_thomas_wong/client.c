@@ -33,21 +33,11 @@ int main(){
   bind(socket_id,(struct sockaddr*)&sock,sizeof(sock));
   i=connect(socket_id,(struct sockaddr*)&sock,sizeof(sock));
   printf("Connected to socket:%d",i);
-<<<<<<< HEAD
   printf("""%s %s %sWelcome to Ultimate Tic-Tac-Toe, the better way to play\nHave you ever felt bored with Tic-Tac-Toe? Do you think the game is too simple?\nHave you realized that the second player can never win?\n\nWell fear not, we made the game more complicated!\nUltimate Tic-Tac-Toe has the same premise as the original game, to get three in a row.\nHowever, you'll be playing on a 3x3 of 3x3's. To win, one must get three in a row of the\nlarger 3x3 boards, which can only be claimed by getting three squares in a row on that board.\nThere is one more catch though. The game starts with one player making a mark in any\nsquare on any of the nine boards. Then their opponent must make a mark in the board which\ncorresponds to the square of the first mark. If a mark is made in the upper lefthand\ncorner of a board, then the subsequent mark must be made on the upper lefthand board.\n\nHAVE FUN!!!\n(Press any key to continue)\n""",hide,clear,go);
 fgets( buffer2, sizeof(buffer2), stdin );
   
  while(1){
     //Reads in who starts the game
-=======
-  printf("Explanation of GAME HERE
-
-
-
-
-");
-  while(1){
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
     read(socket_id,buffer,sizeof(buffer));
     if(buffer[0] == '3' || buffer[0] == '4'){
       break;
@@ -56,7 +46,6 @@ fgets( buffer2, sizeof(buffer2), stdin );
     int c = 0;
     int q = 0;
     char outpu[612];
-<<<<<<< HEAD
     //outpu is the board display of 35x17
     //to account for \n 36*17= 612
     //rows are larger due to the following format
@@ -69,9 +58,6 @@ fgets( buffer2, sizeof(buffer2), stdin );
     //123456789012
     while(q < 17){
       //checks if odd or even row
-=======
-    while(q < 17){
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
       if((q % 2) == 1){
 	if(((c + 1) % 4) == 0){
 	  if(((c + 1) % 12) == 0){
@@ -99,7 +85,6 @@ fgets( buffer2, sizeof(buffer2), stdin );
       c++;
       if(c == 35){
 	q++;
-<<<<<<< HEAD
 	outpu[c] = '\n';
 	c++;
       }
@@ -122,15 +107,11 @@ fgets( buffer2, sizeof(buffer2), stdin );
 	  BdC=buffer2[2];
 	  break;
 	}
-=======
-	c = 0;
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
       }
     }else{
       BdR=buffer[1];
       BdC=buffer[2];
     }
-<<<<<<< HEAD
     //Ask for square
     char *Rinpu;
     char *Cinpu;
@@ -171,16 +152,6 @@ fgets( buffer2, sizeof(buffer2), stdin );
  }
   
   //printf("%s %s %s%s",hide,clear,go,buffer);
-=======
-  }
-
-  /*
-  printf("%s",clear);
-  printf("%s",hide);
-  printf("%s",show);
-  printf("%s",go);
-  */
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
   //hide,clear,go,stuff,\n,show
   return 0;
 }

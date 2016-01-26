@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 in Login:
 - Do NOT enter a string when asked to enter numbers, scanf cannot handle it
 and there is no error handling
 - Password does not check for backspace, so if you try backspacing, it will
 just read it as another character in your password
 
-=======
-- Password does not check for backspace, so if you try backspacing, it will
-just read it as another character in your password! :)
->>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac

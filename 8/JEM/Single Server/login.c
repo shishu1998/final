@@ -25,7 +25,7 @@
 Goes through stdin username and password and looks for any white space and underscores. 
  */
 int find_error(char *username, char *password) {
-  printf("Running find_error()...\n");
+  //printf("Running find_error()...\n");
   if (username == NULL || password == NULL) {
     printf("username and password cannot be null\n");
     return 0;
@@ -105,7 +105,7 @@ int find_user() {
   }
   return 0;
 }
-/*
+
 int main() {
   char user[USER_LEN]; char pswd[PSWD_LEN];
   //char underscore[1] = "_";
@@ -117,7 +117,7 @@ int main() {
   
   if (yes_no == '1') {
     find_user(); 
-    
+    /*
     FILE* fd1 = fopen("username.txt", "r");
     printf("Please type in your username:\n");
     fgets(user, USER_LEN, stdin);
@@ -127,7 +127,7 @@ int main() {
     //printf("sizeof(buffer) = %lu\n", sizeof(buffer));
     fread(buffer, sizeof(char), 100, fd1);
     printf("buffer: %s\n", buffer);
-    
+    */
   }
   else if (yes_no == '2'){
     FILE* fd1 = fopen("username.txt", "a+");
@@ -147,10 +147,10 @@ int main() {
     //strcat(password, pswd);
     strcat(line, pswd);
     printf("line: %s\n", line);
-    if (find_user_match(user) == 0) {
+    if (find_user_match(user) == 1) {
       fwrite(line, sizeof(char), strlen(line), fd1);
     }
-    else if (find_user_match(user) == 1)
+    else if (find_user_match(user) == 0)
       printf("Please try again\n");
     fclose(fd1);
   }
@@ -160,4 +160,3 @@ int main() {
   return 0;
 }
 
-*/

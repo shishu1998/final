@@ -8,94 +8,86 @@
 #include <netinet/in.h>
 #include <errno.h>
 
-void process(int fd, fd_set *master, int fdmax, int socket_id, char*** ulist){
-  char sen[256];
-  char rec[256];
+void process(int fd, fd_set *master, int fdmax, int socket_id, char** ulist){
+  char buffer[256];
   char line[256];
   int num_bytes;
   int new_player = 0;
-  //printf("Status:%s\n",(*ulist)[fd]);
-  num_bytes=recv(fd,rec,sizeof(rec),0);
-  if(num_bytes <=0){
+  num_bytes = recv(fd, buffer, sizeof(buffer), 0);
+  buffer[num_bytes] = '\0';
+
+  if(num_bytes <= 0){
     if(num_bytes == -1){
-    printf("recv: %s\n", strerror(errno));
+      printf("recv: %s\n", strerror(errno));
     }else if(num_bytes == 0){
       printf("Socket %d has closed", fd);
     }
     close(fd);
     FD_CLR(fd, master);
+    strcpy(ulist[fd-3], "\0");
   }
-    rec[num_bytes]='\0';
-  if(strlen((*ulist)[fd])==0){
+
+  if(strlen(ulist[fd-3]) == 0){
     char *name = (char*)malloc(sizeof(char));
-    strcpy(name,rec);
-    (*ulist)[fd]=name;
-    new_player=1;
+    strcpy(name, buffer);
+    strcpy(ulist[fd-3], name);
+    new_player = 1;
   }
+
   int i;
-  for (i=0; i<=fdmax; i++){
-    if (FD_ISSET(i,master)&&i!=socket_id){
-      // printf("Name Changed: %s\n",(*ulist)[fd]);
-      //printf("works\n");
+  for (i = 3; i <= fdmax; i++){
+    if (FD_ISSET(i,master) && i != socket_id && i != fd){
       if(!new_player){
-	//printf("works2\n");
-	strcpy(line,(*ulist)[fd]);
-	strcat(line,": ");
-	strcat(line,rec);
-	//printf("Has A Name: %d\n",strlen((*ulist)[fd]));
-	if(send(i,line,strlen(line),0)==-1)
+	strcpy(line, ulist[fd-3]);
+	strcat(line, ": ");
+	strcat(line, buffer);
+	if(send(i, line, strlen(line), 0) == -1){
 	  printf("SEND: %s\n",strerror(errno));
-      }
-      else{
-	/*char *name = (char *)malloc(sizeof(char));
-	strcpy(name,rec);
-	(*ulist)[fd]=name;*/
-	strcpy(line,(*ulist)[fd]);
-	strcat(line," has entered the town.\n");
-	//printf("%s",line);
-	if(send(i,line,strlen(line),0)==-1)
-	  printf("SEND: %s\n",strerror(errno));
+	}
+      }else{
+	strcpy(line, ulist[fd-3]);
+	strcat(line, " has entered the town.\n");
+	if(send(i,line,strlen(line),0) == -1){
+	  printf("SEND: %s\n", strerror(errno));
+	}
       }
     }
   }
 }
 
-int main() {
-  int socket_id;
-  int i;
-  fd_set master, read_fds;
-  char **ulist = (char**)malloc(10*sizeof(char*));
-  for(i = 0; i < 10; i++)
-    ulist[i]="";
-  //create the socket
-  socket_id = socket(AF_INET, SOCK_STREAM, 0);
-  if(socket_id == -1){
+void setup_socket(int *socket_id){
+  //Create the socket
+  *socket_id = socket(AF_INET, SOCK_STREAM, 0);
+  if(*socket_id == -1){
     printf("socket: %s\n", strerror(errno));
     exit(0);
   }
 
   int on = 1;
-
-  //bind to port/address
+  
+  //Bind to port/address
   struct sockaddr_in listener;
-  listener.sin_family = AF_INET;  //socket type IPv4
-  listener.sin_port = htons(56348); //port #
-  listener.sin_addr.s_addr = INADDR_ANY; //bind to any incoming address
-  if(setsockopt(socket_id, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(socket_id)) == -1){
-    printf("setsockopt %s\n", strerror(errno));
+  listener.sin_family = AF_INET; //Socket type IPv4
+  listener.sin_port = htons(56348); //Port #
+  listener.sin_addr.s_addr = INADDR_ANY; //Bind to any incoming address
+
+  if(setsockopt(*socket_id, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(*socket_id)) == -1){
+    printf("setsockopt: %s\n", strerror(errno));
     exit(0);
   }
-  if(bind(socket_id, (struct sockaddr *)&listener, sizeof(listener)) == -1){
+
+  if(bind(*socket_id, (struct sockaddr *)&listener, sizeof(listener)) == -1){
     printf("bind: %s\n", strerror(errno));
     exit(0);
   }
-  
-  if(listen(socket_id, 15) == -1){
+
+  if(listen(*socket_id, 15) == -1){
     printf("listen: %s\n", strerror(errno));
     exit(0);
   }
+}
 
-/*void accept_client(int *socket_id, fd_set *master, int *fdmax){
+void accept_client(int *socket_id, fd_set *master, int *fdmax){
   struct sockaddr_in client_addr;
   socklen_t addrlen = sizeof(client_addr);
   int client_socket = accept(*socket_id, (struct sockaddr*)&client_addr, &addrlen);
@@ -107,14 +99,17 @@ int main() {
       *fdmax = client_socket;
     }
   }
-}*/
+}
 
-/*int main() {
-  int socket_id;
-  int i;
+int main() {
+  int socket_id, i;
   fd_set master, read_fds;
-
-  setup_socket(&socket_id);*/
+  
+  char **ulist = (char**)calloc(15, sizeof(char *));
+  for(i = 0; i < 15; i++){
+    ulist[i] = (char *)calloc(256, sizeof(char));
+  }
+  setup_socket(&socket_id);
   FD_ZERO(&master);
   FD_ZERO(&read_fds);
   FD_SET(socket_id, &master);
@@ -128,19 +123,10 @@ int main() {
     }
     for(i = 3; i <= fdmax; i++){
       if(FD_ISSET(i, &read_fds)){
-	//printf("%d\n",i);
-	if(i == socket_id){//i==3
-	  struct sockaddr_in client_addr;
-	  socklen_t addrlen = sizeof(client_addr);
-	  int client_socket = accept(socket_id, (struct sockaddr*)&client_addr, &addrlen);
-	  FD_SET(client_socket, &master);
-	  char * greeting = "Welcome to Vongola, a modified Mafia in C!\n";
-	  send(client_socket, greeting, strlen(greeting),0);
-	  if(client_socket > fdmax){
-	    fdmax = client_socket;
-	  }
+	if(i == socket_id){
+	  accept_client(&socket_id, &master, &fdmax);
 	}else{
-	  process(i, &master, fdmax, socket_id, &ulist);
+	  process(i, &master, fdmax, socket_id, ulist);
 	}
       }
     }

@@ -111,7 +111,7 @@ int newuser() {
   return 0;
   }
   }
-*/
+
 
 int registereduser() {
   FILE* fd = fopen("tutoraccounts.txt","r");
@@ -121,7 +121,7 @@ int registereduser() {
   scanf("%[^1000-9999]%d",str,&username);
   return 1;
 }
-
+*/
 int tutorlogin() {
   int tutoraccounts = open("tutoraccounts.txt", O_CREAT | O_RDWR | O_APPEND, 0644);
   if (tutoraccounts < 0) {
@@ -136,7 +136,7 @@ int tutorlogin() {
     int action;
     scanf("[^1-2]%d",str,&action);
     if (action == 1) {
-      username = registereduser();
+  //    username = registereduser();
       accessing = 1;
     } else if (action == 2) {
       username = newuser();
@@ -173,13 +173,11 @@ int main() {
   printf("Hello and welcome to ARISTA chat!\n");
 
   int moveon = 0;
-  char student;
-  int rows;
   while (moveon == 0) {
     printf("\nType 1 if you are a tutor or 2 if you are a tutee.\n");
     int student
-      char str[100];
-    scanf("%[^1000-9999]%d",str,&student);
+//    char str[100];
+    scanf("%[^1000-9999]%d",&student);
     if (student == 1) {
       printf("\nWelcome tutor! Please login.\n");
       int loggedin = 0;

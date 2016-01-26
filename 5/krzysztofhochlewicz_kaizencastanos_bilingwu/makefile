@@ -1,14 +1,13 @@
-all:
-	gcc -o client client.c
-	gcc -o server server.c
+1all:
+	gcc -o player1 player1.c key_listener.c
+	gcc -o player2 player2.c key_listener.c
 
-server:
-	./server
+player1:
+	./player1
 
-client: 
-	./client
+player2: 
+	./player2
 
 clean:
-	rm *.o
-	rm *~
-	rm typeracer
+	rm player1
+	rm player2

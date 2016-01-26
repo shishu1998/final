@@ -88,7 +88,8 @@ int main(int argc, char *argv[]) {
       printf("error: %s \n", strerror(errno));
       exit(1);
     }
-    printf( "Current card played: color %d value %d\n", read_mssg->top_card.color, read_mssg->top_card.value);
+    char *color = stringify_color( read_mssg->top_card );
+    printf( "Current card played: [COLOR] %s [VALUE] %d\n", color, read_mssg->top_card.value);
     //printf ( "debug\n" );
     /*printf("able to get pass four\n");
     if (a < 0) {
@@ -147,7 +148,7 @@ int main(int argc, char *argv[]) {
       	scard1 = svalue;
       	sprintf(cvalue, "%d", color);
       	scard2 = cvalue;
-      	if ( c.color == read_mssg->top_card.color || c.value == read_mssg->top_card.value) {
+      	if ( c.color == read_mssg->top_card.color || c.value == read_mssg->top_card.value || read_mssg->top_card.color == 20) {
       	  p = remove_card(p, num);
       	  printf("Successfully placed card!\n");
       	  write_card->color = color;
@@ -163,8 +164,8 @@ int main(int argc, char *argv[]) {
       	 printf("Sorry. Invalid card! Draw 1.\n");
       	 p.cards[p.num_cards] = draw_card();
       	 p.num_cards++;
-      	 write_card->color = 20;
-	       write_card->value = 20;
+      	 write_card->color = 21;
+	       write_card->value = 21;
 	       int z = write(sockfd, write_card, sizeof(card) );
 	       if (z < 0) {
             perror("ERROR writing");

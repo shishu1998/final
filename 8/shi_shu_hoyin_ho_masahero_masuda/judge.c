@@ -13,7 +13,7 @@ int judge_handshake(int* from_server){
   sprintf(buffer,"%d",getpid());
   mkfifo(buffer,0644);
 
-  to_server = open("pipe",O_WRONLY);
+  to_server = open("pip",O_WRONLY);
   write(to_server,buffer,sizeof(buffer));
 
   *from_server = open(buffer,O_RDONLY);

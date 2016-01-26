@@ -15,41 +15,23 @@ static void sighandler(int signo){
   }
 }
 
-int judgehandshake(int *from_judge){
-  int to_judge;
-  char buffer[100];
 
-  mkfifo("pip",0644);
-  *from_judge = open("pip",O_RDONLY);
-  remove("pip");
-
-  read(*from_judge,buffer,sizeof(buffer));
-  printf("Judge handshake done\n");
-
-  to_judge = open(buffer,O_WRONLY);
-  remove(buffer);
-  
-  return to_judge;
-}
-
-int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
+int handshake(int *from_player, card *redDeck, int *ids){
   int freeID=0;
   while(!(*ids)){
     freeID++;
   }
-  printf("Ho Yin Ho\n");
   int to_player;
   char buffer[100];
   int counter = 0;
   card redCards[7];
-  card greenCard = deal_greencard(greenDeck);
-
+  
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
   remove("pipe");
   
-  int f = fork();
-  if(f == 0){
+  int pid = fork();
+  if(pid == 0){
     read(*from_player,buffer,sizeof(buffer));
     printf("Handshake done\n");
     
@@ -57,14 +39,11 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
     remove(buffer);
     write(to_player,&ids[freeID],sizeof(int));
     
-    strcpy(buffer,greenCard.content);
-    write(to_player,buffer,sizeof(buffer));
-    
+      
     while (counter < 7){
       redCards[counter] = deal_redcard(redDeck);
       strcpy(buffer,redCards[counter].content);
       write(to_player,buffer,sizeof(buffer));
-      printf("%s\n",buffer);
       counter++;
     }
     
@@ -79,7 +58,6 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
 void player_connection(int to_player,int from_player){
   
   char buffer[100];
-  printf("before while loop\n");
   while(read(from_player,buffer,sizeof(buffer))){
     printf("server received %s\n",buffer);
     write(to_player,buffer,sizeof(buffer));
@@ -117,25 +95,20 @@ int main(){
 
   signal(SIGINT,sighandler);
   
-  int to_judge;
-  int from_judge;
-  
+
   int ids[8] = {1,2,3,4,5,6,7,8};
   int to_player;
   int from_player;
   char buffer[100];
-
   card* red = makedeck("red");
   card* green = makedeck("green");
   int playerturn;
   int playernum = 0;
 
-  printf("waiting for judge to connect\n");
-  to_judge = judgehandshake(&from_judge);
-  
+
   while(1){
     printf("waiting for players to connect\n");
-    to_player = handshake(&from_player,red,green,ids);
+    to_player = handshake(&from_player,red,ids,buffer);
     
     if(to_player != 0){
       
@@ -144,6 +117,6 @@ int main(){
       close(to_player);
     }
   }
-  
+ 
   return 0;
 }

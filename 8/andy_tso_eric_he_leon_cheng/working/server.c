@@ -137,22 +137,24 @@ void doprocessing (int sock) {
     char buffer[256];
     char buffer3[256];
     bzero(buffer,256);
+    card *read_card = (card*)malloc(sizeof(card));
     //printf("two (r)\n");
-    n = read(sock,buffer,255);
+    //n = read(sock,buffer,255);
+    n = read(sock, read_card, sizeof(card));
     //printf("able to get pass two\n");
     if (n < 0) {
       perror("ERROR reading from socket");
       exit(1);
     }
-    sleep(1);
-    n = read(sock,buffer3,255);
-    if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-    }
+    //sleep(1);
+    //n = read(sock,buffer3,255);
+    //if (n < 0) {
+    //  perror("ERROR reading from socket");
+    //  exit(1);
+    //}
   
-    printf("Here is the message: %s %s\n",buffer, buffer3 );
-    //printf("Here is the message: %s\n",buffer3);
+    //printf("Here is the message: %s %s\n",buffer3, buffer );
+    printf("Here is the card: color %d value %d\n", read_card->color, read_card->value);
     
     array = (int *)shmat( shmid, 0, 0 );
     //Need to turn buffer and buffer3 into ints

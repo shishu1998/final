@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -58,12 +59,12 @@ int relay_msg(int client_from, int client_to) {
 	char msg[100];
 	sleep(1);
 	read(client_from, msg, sizeof(msg));
-	printf("<server> received [%s]\n", msg);
+	printf("<server> received [%d->]: %s", client_from, msg);
 	if (strcmp(msg, "exit\n") == 0) {
 		return -1;
 	}
 	write(client_to, msg, sizeof(msg));
-	printf("<server> sent [%s]\n", msg);
+	printf("<server> sent [->%d]: %s", client_to, msg);
 	return 1;
 }
 
@@ -81,6 +82,16 @@ int find_tutor(int tutee_ind) {
 		}
 	}
 	return tutor_ind;
+}
+
+/* find tutor without subject consideration */
+int find_tutor_simp(int tutee_ind) {
+	int i;
+	for (i = 0; i < num_tutors; i++) {
+		if (tutors[i][1] == 0)
+			return i;
+	}
+	return -1;
 }
 
 void close_chat(int tutor_ind, int tutee_ind) {
@@ -115,7 +126,6 @@ int main() {
 
   int socket_id, socket_client;
   
-    
   socket_id = create_server();
 
   while(1) {
@@ -125,16 +135,30 @@ int main() {
 	sleep(2);
   	printf("<server> connected: %d\n", socket_client );
 	
-	int type; // = TUTOR_ID;  // get type from client
+	/* add client to corresponding array */
+	int type;  // get type from client
 	read(socket_client, &type, sizeof(type));
-	printf("type - %d\n", type);
 	if (type == TUTOR_ID) {
 		if (num_tutors < MAX_CLIENTS) {
-			printf("Adding tutor - %d\n", socket_client);
 			tutors[num_tutors][0] = socket_client;
 		//	tutors[num_tutors][1] = 1;
 			num_tutors++;
-			printf("# tutors %d\n", num_tutors);
+			printf("<server> added tutor: %d [%d tutors; %d tutees]\n", socket_client, num_tutors, num_tutees);
+		}
+		else {
+			char msg[100];
+			sprintf(msg, "XSorry, too many clients. Come back later.\n");
+			write(socket_client, msg, sizeof(msg));
+			close(socket_client);
+		}
+	}
+	else if (type == TUTEE_ID) {
+		if (num_tutees < MAX_CLIENTS) {
+			tutees[num_tutees][0] = socket_client;
+			tutees[num_tutees][1] = 1;
+			// insert tutee subject requested
+			num_tutees++;
+			printf("<server> added tutee: %d [%d tutors; %d tutees]\n", socket_client, num_tutors, num_tutees);
 		}
 		else {
 			char msg[100];
@@ -144,56 +168,39 @@ int main() {
 		}
 	}
 	else {
-		if (num_tutees < MAX_CLIENTS) {
-			printf("Adding tutee - %d\n", socket_client);
-			tutees[num_tutees][0] = socket_client;
-			tutees[num_tutees][1] = 1;
-			// insert tutee subject requested
-			num_tutees++;
-		}
-		else {
-			char msg[100];
-			sprintf(msg, "XSorry, too many clients. Come back later.\n");
-			write(socket_client, msg, sizeof(msg));
-			close(socket_client);
-		}
+		printf("ERROR - type argument\n");
 	}
-	
-	int pid = fork();
-    if (pid == 0){
-		if (type == TUTEE_ID) {  // find_tutor(num_tutees-1) 
-			int tutee_ind = num_tutees-1;
-			int tutor_ind = find_tutor(tutee_ind);
-			if (tutor_ind != -1) {
+
+	/* start chat from tutee side */
+	if (type == TUTEE_ID) {	
+		int tutee_ind = num_tutees-1;
+		int tutor_ind = find_tutor_simp(tutee_ind);
+		if (tutor_ind != -1) {
+			int status;
+			printf("<server> paired tutor #%d and tutee #%d\n", tutor_ind, tutee_ind);
+			tutors[tutor_ind][1] = 1;  // set tutor to unavailable
+			int pid = fork();  // subserver 
+    		if (pid == 0) {
 				char msg[] = "You have been connected to a tutor.";
 				write(tutees[tutee_ind][0], msg, sizeof(msg));
-				tutors[tutor_ind][1] = 1;
-
-				while(1) {
-					relay_msg(tutees[tutee_ind][0], tutors[tutor_ind][0]);
+				int run = 1;	
+				while(run) {
+					int e = relay_msg(tutees[tutee_ind][0], tutors[tutor_ind][0]);
+					if (e == -1) {
+						run = 0;
+					}
 					relay_msg(tutors[tutor_ind][0], tutees[tutee_ind][0]);
-					// relay tutee -> tutor
-					// if relay is -1, close chat
-					// relay tutor -> tutee
 				}
 			}
+			/**
+		   	else {
+				waitpid(pid, &status, 0);  // wait for chat to finish
+				printf("<server> closing chat between tutor #%d and tutee #%d\n", tutor_ind, tutee_ind);
+				close_chat(tutor_ind, tutee_ind);
+			}
+			*/
 		}
-
-		/*
-		while(1) {  
-      		//system("gnome-terminal"); -> this is how to open a new window but u cant control it
-      		printf("Enter text to write:\n");
-     		char s[100];
-      		fgets(s, sizeof(s), stdin);
-      		write(socket_client, s, sizeof(s));
-      		printf("<server> waiting\n");
-      		sleep(2);
-      		read(socket_client, s, sizeof(s));
-      		printf("<server> received: %s\n", s);
-		}
-		**/
-
-    } else {
+	} else {
 		// shift array down, adjust
         // close(socket_client);
     }

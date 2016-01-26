@@ -10,11 +10,21 @@
 
 #include <time.h>
 
-void process(int fd, fd_set *master, int fdmax, int socket_id, char** ulist, int day){
-  char buffer[256];
-  char line[256];
+void send_to_all(char *line, int fd, fd_set *master, int fdmax, int socket_id){
+  int i;
+  for (i = 3; i <= fdmax; i++){
+    if (FD_ISSET(i,master) && i != socket_id && i != fd){
+      if(send(i, line, strlen(line), 0) == -1){
+	printf("SEND: %s\n",strerror(errno));
+      }
+    }
+  }
+}
+
+void process(int fd, fd_set *master, int fdmax, int socket_id, char** ulist){
+  char buffer[256] = "\0";
+  char line[256] = "\0";
   int num_bytes;
-  int new_player = 0;
   num_bytes = recv(fd, buffer, sizeof(buffer), 0);
   buffer[num_bytes] = '\0';
 
@@ -22,38 +32,23 @@ void process(int fd, fd_set *master, int fdmax, int socket_id, char** ulist, int
     if(num_bytes == -1){
       printf("recv: %s\n", strerror(errno));
     }else if(num_bytes == 0){
-      printf("Socket %d has closed", fd);
+      strcpy(line, ulist[fd-4]);
+      strcat(line, " has left the town.\n");
     }
     close(fd);
     FD_CLR(fd, master);
-    strcpy(ulist[fd-3], "\0");
+    strcpy(ulist[fd-4], "\0");
+  }else if(strlen(ulist[fd-4]) == 0){
+    strcpy(ulist[fd-4], buffer);
+    strcpy(line, ulist[fd-4]);
+    strcat(line, " has entered the town.\n");
+  }else{
+    strcpy(line, ulist[fd-4]);
+    strcat(line, ": ");
+    strcat(line, buffer);
   }
-
-  if(strlen(ulist[fd-3]) == 0){
-    char *name = (char*)malloc(sizeof(char));
-    strcpy(name, buffer);
-    strcpy(ulist[fd-3], name);
-    new_player = 1;
-  }
-
-  int i;
-  for (i = 3; i <= fdmax; i++){
-    if (FD_ISSET(i,master) && i != socket_id && i != fd){
-      if(!new_player){
-	strcpy(line, ulist[fd-3]);
-	strcat(line, ": ");
-	strcat(line, buffer);
-	if(send(i, line, strlen(line), 0) == -1){
-	  printf("SEND: %s\n",strerror(errno));
-	}
-      }else{
-	strcpy(line, ulist[fd-3]);
-	strcat(line, " has entered the town.\n");
-	if(send(i,line,strlen(line),0) == -1){
-	  printf("SEND: %s\n", strerror(errno));
-	}
-      }
-    }
+  if(strlen(line) > 0){
+    send_to_all(line, fd, master, fdmax, socket_id);
   }
 }
 
@@ -97,8 +92,17 @@ void accept_client(int *socket_id, fd_set *master, int *fdmax){
     printf("accept: %s\n", strerror(errno));
   }else{
     FD_SET(client_socket, master);
-    if(client_socket > *fdmax){
-      *fdmax = client_socket;
+    if(client_socket > 18){
+      char buffer[64] = "Sorry, too many players. Please wait.\n";
+      if(send(client_socket, buffer, strlen(buffer), 0) == -1){
+	printf("SEND: %s\n",strerror(errno));
+      }
+      close(client_socket);
+      FD_CLR(client_socket, master);
+    }else{
+      if(client_socket > *fdmax){
+	*fdmax = client_socket;
+      }
     }
   }
 }
@@ -113,7 +117,7 @@ int main() {
     
   char **ulist = (char**)calloc(15, sizeof(char *));
   for(i = 0; i < 15; i++){
-    ulist[i] = (char *)calloc(256, sizeof(char));
+    ulist[i] = (char *)calloc(16, sizeof(char));
   }
   setup_socket(&socket_id);
   FD_ZERO(&master);
@@ -153,6 +157,15 @@ int main() {
       printf("select: %s\n", strerror(errno));
       exit(0);
     }
+    if(hold!=day){
+      printf("Here4\n");
+      char d[20];
+      if(day%2==1)
+	sprintf(d,"Start of Day %d\n",day/2+1);
+      else
+	sprintf(d,"Start of Night %d\n",day/2);
+      send_to_all(d,0,&master,fdmax,socket_id);
+    }
     for(i = 3; i <= fdmax; i++){
       printf("Here2 %d,%d\n",hold,day);
       if(FD_ISSET(i, &read_fds)){
@@ -160,17 +173,17 @@ int main() {
 	  //printf("Here3\n");
 	    accept_client(&socket_id, &master, &fdmax);
 	}else{
-	  process(i, &master, fdmax, socket_id, ulist, day);
+	  process(i, &master, fdmax, socket_id, ulist);
 	}
-	if(hold!=day){
+	/*if(hold!=day){
 	  printf("Here4\n");
 	  char d[20];
 	  if(day%2==1)
 	    sprintf(d,"Start of Day %d",day/2+1);
 	  else
 	    sprintf(d,"Start of Night %d",day/2);
-	  send(i,d,strlen(d),0);
-	}
+	    send(i,d,strlen(d),0);
+	    }*/
       }
     }
     hold=day;

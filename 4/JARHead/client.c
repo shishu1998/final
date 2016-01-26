@@ -12,9 +12,6 @@
 #define READ 0
 #define WRITE 1
 
-static void clean_up_memory(int signo) {
-}
-
 int main() {
  
   int fd[2];
@@ -29,17 +26,17 @@ int main() {
   socket_id = socket( AF_INET, SOCK_STREAM, 0 );
 
   // Bind to port/address.
-  struct sockaddr_in sock;
-  sock.sin_family = AF_INET;
-  sock.sin_port = htons(5000);
+  struct sockaddr_in socket_info;
+  socket_info.sin_family = AF_INET;
+  socket_info.sin_port = htons(5000);
   
   // Set the IP address to connect to.
   // 127.0.0.1 is the "loopback" address of any machine.
-  inet_aton( "127.0.0.1", &(sock.sin_addr) );
-  bind(socket_id, (struct sockaddr *) &sock, sizeof(sock));
+  inet_aton( "127.0.0.1", &(socket_info.sin_addr) );
+  bind(socket_id, (struct sockaddr *) &socket_info, sizeof(socket_info));
 
   // Attempt to connect to the server.
-  i = connect(socket_id, (struct sockaddr *)&sock, sizeof(sock));
+  i = connect(socket_id, (struct sockaddr *) &socket_info, sizeof(socket_info));
   if (i == -1) {
     printf("Error connecting to server: %s", strerror(errno));
     return 0;
@@ -50,7 +47,7 @@ int main() {
   
   // The child process will constantly pipe the user input to the parent
   // process.
-  switch(fork()) {
+  switch (fork()) {
   case -1:
     printf("Something broke!\n");
     return 0;
@@ -73,18 +70,18 @@ int main() {
     // redrawing the screen at the same time. This forking is necessary because
     // otherwise, the loop will hang while we wait for user input.
     initscr();
+    noecho();
     close(fd[WRITE]);
 
-    while (1) {
-      errno = recv(socket_id, server_buffer, sizeof(server_buffer), 0);
-      printw("%s", server_buffer);
-      
+    while (1) {      
       read(fd[READ], read_buffer, sizeof(read_buffer));
       send(socket_id, read_buffer, sizeof(read_buffer), 0);
+
+      errno = recv(socket_id, server_buffer, sizeof(server_buffer), 0);
+      printw("%s", server_buffer);
       refresh();
-    // printw("%w", buffer);
-    // printf("Error: %s\n", strerror(errno));
-    // printf("Received: %s\n", buffer);
+      usleep(5000);
+      clear();
     }
     close(socket_id);
     endwin();

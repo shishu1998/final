@@ -126,6 +126,7 @@ int num_of_turns() {
   return num + 1;
 }
 
+//processes the turn taken
 char * process_turn(char * user_input) {
   int f = open("game.txt", O_RDONLY, 0666);
   char board [6][7];
@@ -139,7 +140,8 @@ char * process_turn(char * user_input) {
     piece[0] = '#';
   }
   int val = atoi(user_input);
-  if (val > 6) {
+  if (val > 7) {
+    //failure to do it properly will end up prompting the user again
     return "Try again\n";
   } else if (val == 0) return "";
   int r = 0;

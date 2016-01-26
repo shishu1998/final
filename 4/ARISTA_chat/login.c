@@ -148,6 +148,7 @@ int registereduser() {
     printf("That account doesn't exist yet. Please register for a new account.\n");
     username = newuser();
     return username;
+  }
 }
 
 int tutorlogin() {

@@ -48,7 +48,6 @@ int main() {
     if (listener) {
       printf("<server> listening on %d\n", PORT);
       client_socket = accept(listening_socket, NULL, NULL); // blocks here on connection
-      printf("BOUTA HANDSHAKE OH NAH\n");
       e = handshake(client_socket, &client);
       printf("<server> connected: %s\n", client.name);
       fflush(stdout);
@@ -60,7 +59,7 @@ int main() {
       }
     } else {
       e = handle_request(client_socket, client);
-      if (e <= 0) {
+      if (e < 0) {
         running = 0;
       }
     }
@@ -100,6 +99,7 @@ int setup_server(int port) {
 }
 
 int fetch_a_message(int socket_id, char *pipe_path, struct signal* sig) {
+  int e;
 
   int pipe_id = open(pipe_path, O_RDONLY | O_NONBLOCK);
   if (pipe_id < 0) return -1;
@@ -113,12 +113,16 @@ int fetch_a_message(int socket_id, char *pipe_path, struct signal* sig) {
   select(m+1, &fd, NULL, NULL, NULL);
 
   if ( FD_ISSET(socket_id, &fd) ) {
-    return read(socket_id, sig, sizeof(*sig));
+    e = read(socket_id, sig, sizeof(*sig));
+  } else if ( FD_ISSET(pipe_id, &fd) ){
+    e = read(pipe_id, sig, sizeof(*sig));
   } else {
-    return read(pipe_id, sig, sizeof(*sig));
-  }
+    e = 0;
+  };
 
   close(pipe_id);
+
+  return e;
 }
 
 int handle_request(int socket_id, struct user client) {
@@ -137,21 +141,14 @@ int handle_request(int socket_id, struct user client) {
       e = write(socket_id, &sig, sizeof(sig));
       if (e < 0) return -1;
     } else if (is_from(sig.body.message, client)) {
-      struct signal resp;
       int to_pipe = open(sig.body.message.to.name, O_WRONLY | O_NONBLOCK);
-      if (to_pipe < 0) {
-        resp = new_message_sig(sig.body.message.to, sig.body.message.from, "NOT RECEIVED!");
-        write(socket_id, &resp, sizeof(resp));
-        return -1;
-      }
+      if (to_pipe < 0) return 0;
 
       e = write(to_pipe, &sig, sizeof(sig));
       if (e < 0) return -1;
       close(to_pipe);
 
-      resp = new_message_sig(sig.body.message.to, sig.body.message.from, "RECEIVED!");
-      e = write(socket_id, &resp, sizeof(resp));
-      if (e < 0) return -1;
+      printf("<%s> said %s to <%s>\n", sig.body.message.from.name, sig.body.message.text, sig.body.message.to.name);
     }
     break;
   }

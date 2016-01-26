@@ -50,14 +50,33 @@ int main() {
   struct sembuf sb;
   sb.sem_num = 0;
   sb.sem_flg = SEM_UNDO;
-  sb.sem_op = -1;
+  sb.sem_op = -1; 
   if ((semop( sem_id, &sb, 1)) == -1) printf("%s\n",strerror(errno));
-
+  
   to_server = client_handshake( &from_server );
+
+  int shared_mem_key;
+  if ((shared_mem_key = ftok("Makefile", 0)) == -1) printf("%s\n",strerror(errno));
+  int shared_mem_id;
+  if((shared_mem_id = shmget(shared_mem_key, sizeof(int), 0644)) == -1) printf("%s\n",strerror(errno));
+
+  int * data = shmat(shared_mem_id, (void *) 0, 0);
+  if (data == (int *)(-1)) printf("%s\n",strerror(errno));
+
+  int div = * data;
+  *data = (*data + 1) % 2;
+ 
+  
   initiate_text();
   printf("Hold on!\n");
+  
   while (1) {
-    printf("Type something.\n");
+    sleep(1);
+    while ((num_of_turns() % 2) != div) {
+      sleep(1);
+    }
+    print_board();
+    printf("It is your turn.\n");
     fgets( buffer, sizeof(buffer), stdin );
     *strchr( buffer, '\n') = 0;
     client_understand(buffer);

@@ -65,7 +65,7 @@ int server_handshake( int *from_client ) {
 }
 
 char * process( char *s ) {
-  return  server_understand(s);
+  return  process_turn(s);
 }
 
 void client_connection( int to_client, int from_client ) {
@@ -73,6 +73,7 @@ void client_connection( int to_client, int from_client ) {
   char buffer[256];
 
   while( read( from_client, buffer, sizeof(buffer) ) ) {
+    if (check_win() == 1) reset_game();
     printf( "<server> received [%s] from client %d\n", buffer, getpid() - 1);
     strncpy( buffer, process(buffer), sizeof(buffer));
     write( to_client, buffer, sizeof(buffer) );
@@ -84,21 +85,23 @@ int main() {
 
   int to_client;
   int from_client;
-
+ 
   signal(SIGINT,sighandler);
 
+  reset_game();
   //set up shared memory and semaphore
   int shared_mem_key;
   if ((shared_mem_key = ftok("Makefile", 0)) == -1) printf("%s\n",strerror(errno));
   int shared_mem_id;
-  int sem_key;
-  if ((sem_key = ftok("Makefile",1)) == -1) printf("%s\n",strerror(errno));;
-  int sem_id;
-  if((shared_mem_id = shmget(shared_mem_key, sizeof(int), 0644 | IPC_CREAT)) == -1) strerror(errno);
+   if((shared_mem_id = shmget(shared_mem_key, sizeof(int), 0644 | IPC_CREAT)) == -1) strerror(errno);
   int * data = shmat(shared_mem_id, (void *) 0, 0);
   if (data == (int *)(-1)) printf("%s\n", strerror(errno)); //check for error
   *data = 0;
   if ((shmdt(data)) == -1) printf("%s\n",strerror(errno)); //also check for error
+
+  int sem_key;
+  if ((sem_key = ftok("Makefile",1)) == -1) printf("%s\n",strerror(errno));;
+  int sem_id;
   sem_id = semget(sem_key, 1, 0644 | IPC_CREAT);
   if (sem_id < 0) printf("%s\n",strerror(errno));
   union semun su;

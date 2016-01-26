@@ -1,6 +1,10 @@
+void reset_game();
 void client_understand(char * user_input);
-char * server_understand(char * user_input);
 void initiate_text();
 void print_help();
 void clear_screen();
 void exit_client();
+void print_board();
+int num_of_turns();
+char * process_turn(char * user_input);
+int check_win();

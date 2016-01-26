@@ -70,13 +70,8 @@ int send_messages(int socket_id, struct user me) {
     return 0; // we usually C-c or exit during input
   }
 
-  printf("About to send %s your message...", message.to.name);
-  fflush(stdout);
-
   e = send_message(socket_id, &message);
   if (e < 0) return e;
-
-  printf(" sent!\n");
 
   return 0;
 }
@@ -87,14 +82,15 @@ int read_message(struct message *message, struct user me) {
 
   message->from = me;
 
-  printf("Message Recipient: ");
+  printf("\nMessage Recipient: ");
   fflush(stdout);
   bytes_read = get_input(to.name, MAX_USERNAME);
   if (bytes_read <= 0) return -1;
 
   message->to = to;
 
-  printf("Message: \n");
+  printf("Message: ");
+  fflush(stdout);
   bytes_read = get_input(message->text, MAX_MESSAGE);
   if (bytes_read <= 0) return -1;
 
@@ -167,7 +163,7 @@ int receive_messages(int socket_id) {
   struct signal sig;
 
   e = read(socket_id, &sig, sizeof(sig));
-  if (e < 0) return -1;
+  if (e <= 0) return -1;
 
   switch (sig.type) {
   case DISCONNECT:

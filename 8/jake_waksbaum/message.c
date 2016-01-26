@@ -8,6 +8,10 @@ struct user new_user(char *name) {
   return u;
 }
 
+int is_to(struct message message, struct user user) {
+  return strcmp(message.to.name, user.name) == 0;
+}
+
 struct signal new_handshake_sig(struct user user) {
   union payload body = {
     .handshake = user

@@ -48,7 +48,7 @@ int main(int argc, char * argv[]) {
     if (e < 0) running = 0;
   }
 
-  close(socket_id);
+  cleanup(socket_id);
 }
 
 int run(int socket_id, struct user me) {
@@ -174,6 +174,12 @@ int handle_response(int socket_id) {
   }
 
   return 0;
+}
+
+void cleanup(int socket_id) {
+  struct signal sig = new_disconnect_sig();
+  write(socket_id, &sig, sizeof(sig));
+  close(socket_id);
 }
 
 static void sighandler(int signo) {

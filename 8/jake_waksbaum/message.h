@@ -4,6 +4,7 @@
 #define MAX_MESSAGE 512
 #define MAX_USERNAME 64
 
+#define ERROR -1
 #define HANDSHAKE 1
 #define MESSAGE 2
 #define DISCONNECT 3
@@ -33,5 +34,6 @@ struct user   new_user(char *name);
 struct signal new_handshake_sig(struct user user);
 struct signal new_message_sig(struct user from, struct user to, char *text);
 struct signal new_disconnect_sig();
+int is_to(struct message message, struct user user);
 
 #endif

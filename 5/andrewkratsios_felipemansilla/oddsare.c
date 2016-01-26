@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
-#include <time.h> /* time for randomizer*/ 
+#include <time.h> /* time for randomizer*/
 
 void serror(const char *msg)
 {
@@ -22,10 +22,19 @@ void cerror(const char *msg)
 
 int server(int argc, char *argv[]) {
 
-    argv[2] = "5001";
-    printf("port: %s\n", argv[2]);
+    //choose port
+    char holder[8];
+    int portno;
+    printf("\nChoose a port to play on (5000-6000 recomended): ");
+    fgets(holder,sizeof(holder),stdin);
+    portno = atoi(holder);
+    printf("\n");
+    //choose port
 
-    int sockfd, newsockfd, portno, n;
+    argv[2] = "5001";
+    //printf("port: %s\n", argv[2]);
+
+    int sockfd, newsockfd, n;
     socklen_t clilen;
     char buffer[256];
     char question[1024];
@@ -39,10 +48,6 @@ int server(int argc, char *argv[]) {
 
     /** initialization of variables **/
     serverFlagCorrect = 0;
-
-    /** generate random integer from 1 to 100 **/
-    srand (time(NULL));
-    integerRandom = (rand() % 100) + 1;
 
     printf("Enter your odds are: ");
     fgets(question, sizeof(question), stdin);
@@ -61,12 +66,6 @@ int server(int argc, char *argv[]) {
         strcat(new_str,oddsInt);
     }
 
-    /*if (argc < 2) {
-        fprintf(stderr,"ERROR, no port provided\n");
-        exit(1);
-    }
-    */
-
     // Creates the socket socket() --> endpoints of sockets
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) 
@@ -75,7 +74,6 @@ int server(int argc, char *argv[]) {
 
     // assign unique new address
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = 5001;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
@@ -162,15 +160,24 @@ int server(int argc, char *argv[]) {
     return 0; 
 }
 
-int client(int argc, char *argv[]){    
+int client(int argc, char *argv[]){
+
+    //choose port
+    char holder[8];
+    int portno;
+    printf("\nChoose a port to play on (5000-6000 recomended): ");
+    fgets(holder,sizeof(holder),stdin);
+    portno = atoi(holder);
+    printf("\n");
+    //choose port    
 
     argv[1] = "localhost";
     argv[2] = "5001";
-    printf("hostname: %s\n", argv[1]);
-    printf("port: %s\n", argv[2]);
+    //printf("hostname: %s\n", argv[1]);
+    //printf("port: %s\n", argv[2]);
 
 
-    int sockfd, portno, n;
+    int sockfd, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
     char buffer[1024];
@@ -182,13 +189,6 @@ int client(int argc, char *argv[]){
     char charGuess[1024], answerServer[1];
     char* delimiter = "\\n";
 
-
-    /*if (argc < 3) {
-       fprintf(stderr,"usage %s hostname port\n", argv[0]);
-       exit(0);
-    }
-    */
-    portno = atoi(argv[2]);
 
     // Creates the socket socket() --> endpoints of sockets
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -238,19 +238,15 @@ int client(int argc, char *argv[]){
         printf("Guess: ");
         bzero(buffer,sizeof(buffer));
         fgets(buffer,sizeof(buffer)-1,stdin);
-        //printf("Buffer to be processed : <%s>\n", buffer);
         // ask the user for the guessed number
 
         /** process the integer to string and add a delimiter **/
         integerGuess = atoi(buffer);
-        //printf("integerGuess : <%d> \n", integerGuess);
         sprintf( charGuess, "%d", integerGuess);    
         strcat( charGuess, delimiter);
-        //printf("String Guess : <%s> \n", charGuess);
 
         memset(buffer,0,sizeof(buffer));
         memcpy(buffer, charGuess, sizeof(charGuess));
-        //printf("Buffer to send : <%s>\n",buffer);
         /** process the integer to string and add a delimiter **/
 
         // send the string that was processed
@@ -266,10 +262,7 @@ int client(int argc, char *argv[]){
              cerror("ERROR reading from socket");
         // reads the data being received
 
-        //printf("Buffer received : <%s>\n",buffer);
-
         memcpy(&answerServer, buffer, sizeof(answerServer));
-        //printf ("Value of answerServer : <%c> \n", *answerServer);
 
         /** Client response **/
         if (strncmp ( & answerServer[0],"L",sizeof(answerServer)) == 0)
@@ -282,12 +275,6 @@ int client(int argc, char *argv[]){
         }
         else
             cerror("ERROR Wrong message received");
-
-    //}
-
-    //printf ("Tries: %d \n", numberOfTries);
-
-    //printf("%s\n",buffer);
 
     close(sockfd);
     return 0;
@@ -305,8 +292,6 @@ int main(int argc, char *argv[]) {
         printf("2. Join an odds-are game\n");
         printf("Type your selections here: ");
         fgets(option, sizeof(option), stdin);
-        //printf("%s\n",option );
-        //printf("%d\n",(strcmp(option,"1\n") != 0));
 
         if (strcmp(option,"1\n") == 0) {
             printf("\nYou chose create an odds-are!\n");

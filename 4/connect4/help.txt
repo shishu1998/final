@@ -6,28 +6,29 @@
 0 0 0 0 0 0 0 
 0 0 0 0 0 0 0
 -------------
-0 1 2 3 4 5 6
+1 2 3 4 5 6 7
 
 -------------
 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 
-0 0 0 0 0 0 0 If you typed 3,
+0 0 0 0 0 0 0 If you typed 4,
 0 0 0 0 0 0 0 this happens!
 0 0 0 0 0 0 0
 0 0 0 X 0 0 0
 -------------
-0 1 2 3 4 5 6
+1 2 3 4 5 6 7
 
 -------------
 0 0 0 0 0 0 0
 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 If the other person then typed 4,
+0 0 0 0 0 0 0 If the other person then typed 5,
 0 0 0 0 0 0 0 this happens!
 0 0 0 0 0 0 0
 0 0 0 X # 0 0 I think you get the point!
 -------------
-0 1 2 3 4 5 6
+1 2 3 4 5 6 7
 
 MISC commands:
 clear: clears the screen
 print: prints out current game
+exit: exits the program

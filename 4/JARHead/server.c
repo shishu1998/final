@@ -39,11 +39,10 @@ int main() {
     printf("<server> connected: %d\n", socket_client );
 
     if ( (pid = fork()) == 0 ) {
-      send( socket_client, "hello", 6, 0 );
       while(1) {
         recv(socket_client, buffer, sizeof(buffer), 0 );
         strtok(buffer, "\n");
-        process(buffer);
+        // process(buffer);
         send(socket_client, buffer, sizeof(buffer), 0 );
       }
     }

@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <string.h>
+#include <strings.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -13,11 +14,14 @@
 #define CURSOR_DOWN "\033[1B"
 #define CURSOR_RIGHT "\033[1C"
 #define CURSOR_LEFT "\033[1D"
+#define CURSOR_SAVE "\033[s"
+#define CURSOR_RESTORE "\033[u"
 #define ALT_BUFFER "\033[?1049h\033[H"
 #define PRESERVED_SCREEN "\033[?1049l"
-
-typedef struct line {int term_line; 
-  int file_offset; 
+#define CLEAR_LINE "\033[2K"
+typedef struct line { 
+  int file_offset;
+  int begin_edit; 
   char* text; 
   char* status;
   struct line* next;
@@ -25,16 +29,16 @@ typedef struct line {int term_line;
 typedef struct termios termios;
 typedef struct winsize winsize;
 
-int init(line*, winsize*);
-int cleanup(line*);
+int init(line*);
+int cleanup(line*,line*);
 int fill_buffers(int, int, line*);
-int print_buffers(line*, winsize*);
+int print_buffers(line*);
 int open_screen_buffer(termios*);
 int open_preserved_screen(termios*);
-int detect_keypress(int*, int*,line*,line**,int);
+int detect_keypress(int*, int*,line**,line**,line**,int);
 int get_cursor(int*,int*,line*,line**);
-line* get_previous(int, int);
-line* get_next(int, int);
+line* get_previous(int, int, line*);
+line* get_next(int, int, line*);
 
 static winsize global_win;
 
@@ -42,29 +46,32 @@ int main(){
   int cursor_row, cursor_col, read_line;
   struct termios term;
   struct winsize window;
-  ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &global_win);
 
   line* first_line = (line*)malloc(sizeof(line));
-  line* changed_lines;
+  line* changed_lines = (line*)malloc(sizeof(line));
   line* current_line;
 
-  init(first_line, &window);
+  init(first_line);
 
   int map = open("./map",O_RDWR);
   fill_buffers(map,0,first_line);
   open_screen_buffer(&term);  
-  print_buffers(first_line,&window);
+  print_buffers(first_line);
 
-  while (detect_keypress(&cursor_row,&cursor_col,first_line,&current_line,map));
+  while (detect_keypress(&cursor_row,&cursor_col,&first_line,&current_line,&changed_lines,map));
 
   open_preserved_screen(&term);
 
-  cleanup(first_line);
+  cleanup(first_line,changed_lines);
+
+  fileops(changed_lines);
+
   close(map);
 }
 
-int get_cursor(int* row, int* col, line* first_line, line** current_line){
+int get_cursor(int* row, int* col, 
+	line* first_line, line** current_line){
   printf("\033[6n");
   int temp;
   temp = getchar();//\033
@@ -93,81 +100,161 @@ int get_cursor(int* row, int* col, line* first_line, line** current_line){
   *current_line = first_line;
 }
 
-int detect_keypress(int* cursor_row, int* cursor_col, line* first_line, line** current_line, int map){
+int detect_keypress(int* cursor_row, int* cursor_col, 
+	line** first_line_ptr, line** current_line, line** changed_lines, int map){
   int key;
+  line* first_line = *first_line_ptr;
   key = getchar();
-  if (key == '\033'){
+  if (key == 17){//ctrl+q
+    return 0;
+  }
+  else if (key == '\033'){
     if (getchar() == '['){
       key = getchar();
       if (key == 65){
-	if (*cursor_row == 1){
-	  line* new_first = get_previous(map,first_line->file_offset);
-	  new_first->next = first_line;
+	if (*cursor_row == 1 && first_line->file_offset > 1){//up
+	  line* new_first = get_previous(map,first_line->file_offset, *changed_lines);
+	  new_first->next = *first_line_ptr;
+	  line* last;
+	  while (first_line->next != NULL){
+	  	last = first_line;
+	  	first_line = first_line->next;
+	  }
+	  last->next = NULL;
+	  char* temp = strdup(&first_line->text[first_line->begin_edit+1]);
+	  temp[strlen(temp)-1] = 0;
+	  line* changed_line = *changed_lines;
+	  if (strcmp(first_line->status,temp)){
+	  	while (changed_line->next != NULL){
+	  		changed_line = changed_line->next;
+	  	}
+	  	changed_line->next = first_line;
+	  }
+	  else{
+	  	free(first_line->text);
+	  	free(first_line->status);
+	  	free(first_line);
+	  }
+	  free(temp);
+
+	  *first_line_ptr = new_first;
+	  first_line = *first_line_ptr;
+	  printf(CURSOR_SAVE);
+	  print_buffers(first_line);
+	  printf(CURSOR_RESTORE);
 	}
 	printf(CURSOR_UP);
 	get_cursor(cursor_row, cursor_col,first_line,current_line);
       }
       else if (key == 66){
 	if (*cursor_row == global_win.ws_row-1){
-	  (*current_line)->next = get_next(map,(*current_line)->file_offset);
+	  (*current_line)->next = get_next(map,(*current_line)->file_offset,*changed_lines);
+	  (*first_line_ptr) = first_line->next;
+
+	  //adds changes
+	  char* temp = strdup(&first_line->text[first_line->begin_edit+1]);
+	  printf("%s\n",first_line->text);
+	  temp[strlen(temp)-1] = 0;
+	  line* changed_line = *changed_lines;
+	  if (strcmp(first_line->status,temp)){
+	  	while (changed_line->next != NULL){
+	  		changed_line = changed_line->next;
+	  	}
+	  	changed_line->next = first_line;
+	  	first_line->next=NULL;
+	  }
+	  else{
+	  	free(first_line->text);
+	  	free(first_line->status);
+	  	free(first_line);
+	  }
+
+	  first_line = (*first_line_ptr);
 	  
-	  print_buffers(first_line->next,&global_win);
-	  &first_line = first->next;
+	  print_buffers(first_line);
+	 
+	   printf(CURSOR_UP);
 	}
-	printf(CURSOR_DOWN);
+	else{
+		printf(CURSOR_DOWN);
+	}
 	get_cursor(cursor_row, cursor_col,first_line,current_line);
-      }
+	  }
       else if (key == 67){
 	printf(CURSOR_RIGHT);
+	get_cursor(cursor_row, cursor_col,first_line,current_line);
       }
       else if (key == 68){
 	printf(CURSOR_LEFT);
+  	get_cursor(cursor_row, cursor_col,first_line,current_line);
       }
     }
   }
-  else if (key == 127){//backspace
-    printf("%s\033[s",CURSOR_LEFT);
-    get_cursor(cursor_row, cursor_col,first_line,current_line);
-    (*current_line)->status = (*current_line)->text;
-    char* temp = malloc(sizeof((*current_line)->text));
-    strcpy(temp,(*current_line)->text);
-    strcpy(&temp[*cursor_col-1],&((*current_line)->text[*cursor_col]));
-    printf("\033[2K\r%s",temp);
-    printf("\033[u");//reset position
-    (*current_line)->text = temp;
-    return 1;
+  else if (*cursor_col-1 <= (*current_line)->begin_edit ||
+  	*cursor_col-1 > strlen((*current_line)->text)-1){
+  	//editing something that shouldn't be edited
+  	return 1;
   }
-  else if (key == 17){//ctrl+q
-    return 0;
+  else if (key == 127){//backspace
+  	printf(CURSOR_LEFT);
+   	printf(CURSOR_SAVE);
+    line* cur = *current_line;
+    strcpy(&cur->text[*cursor_col-2],&cur->text[*cursor_col-1]);
+    printf(CLEAR_LINE);
+    printf("\r%*s\r%s",global_win.ws_col,cur->status,cur->text);
+    printf(CURSOR_RESTORE);
+    *cursor_col = *cursor_col - 1;
   }
   else{
-    printf("%c",key);
+  	printf(CURSOR_RIGHT);
+  	printf(CURSOR_SAVE);
+    char temp[global_win.ws_col];
+    temp[0] = (char)key;
+    temp[1] = 0;
+    line* cur = *current_line;
+    strcat(temp,&cur->text[*cursor_col-1]);
+    strcpy(&cur->text[*cursor_col-1],temp);
+    printf(CLEAR_LINE);
+    printf("\r%*s\r%s",global_win.ws_col,cur->status,cur->text);
+    printf(CURSOR_RESTORE);
+  	*cursor_col = *cursor_col + 1;
   }
 }
 
 int fill_buffers(int file, int start_read, line* first_line){
   FILE* fstream = fdopen(dup(file),"r");
   size_t buff_size = sizeof(first_line->text); 
-  first_line->file_offset = 0;
-  int read = (int)getline(&first_line->text, &buff_size, fstream);
+  first_line->file_offset = 1;
+  getline(&first_line->text, &buff_size, fstream);
+  first_line->begin_edit = strlen(first_line->text)-1;
+  while (first_line->text[first_line->begin_edit] != '/'){
+  	first_line->begin_edit = first_line->begin_edit - 1;
+  }
+  strcpy(first_line->status,&first_line->text[first_line->begin_edit+1]);
+  *strchr(first_line->status,'\n') = 0;
   while(first_line->next != NULL){
     first_line = first_line->next;
     first_line->file_offset = (int)ftell(fstream);
-    read = (int)getline(&first_line->text, &buff_size, fstream);
+    getline(&first_line->text, &buff_size, fstream);
     if (first_line->file_offset == -1){
       printf("%s\n",strerror(errno));
     }
+    first_line->begin_edit = strlen(first_line->text)-1;
+    while (first_line->text[first_line->begin_edit] != '/'){
+    	first_line->begin_edit = first_line->begin_edit - 1;
+    }
+    strcpy(first_line->status,&first_line->text[first_line->begin_edit+1]);
+    *strchr(first_line->status,'\n') = 0;
   }
   fclose(fstream);
 }
 
-int print_buffers(line* first_line, winsize* window){
-  int i=1;
+int print_buffers(line* first_line){
   while (first_line != NULL){
-    printf("%*s\r%d%s",window->ws_col,first_line->status,first_line->file_offset,first_line->text);
+    printf("%*s\r%s",global_win.ws_col,first_line->status,first_line->text);
     first_line = first_line->next;
-    i++;
   }
+  printf("%*s\r%s",global_win.ws_col,"ORIGINAL","NEWNAME(CTRL+Q to EXIT)");
 }
 
 int open_screen_buffer(termios* term){
@@ -183,53 +270,140 @@ int open_preserved_screen(termios* term){
   tcsetattr(STDIN_FILENO,TCSANOW,term);
 }
 
-int init(line* line_node, winsize* window){
+int init(line* line_node){
   int i;
-  for (i=1; i<window->ws_row - 1; i++){
-    line_node->text = (char*)malloc(window->ws_col);
-    line_node->next = (line*)malloc(sizeof(line));
+  for (i=1; i<global_win.ws_row ; i++){
+    line_node->text = (char*)malloc(global_win.ws_col);
+    line_node->status = (char*)malloc(global_win.ws_col);
+    if(i<global_win.ws_row - 1)
+    	line_node->next = (line*)malloc(sizeof(line));
     line_node = line_node->next;
   }
   return 0;
 }
 
-line* get_previous(int map, int next_line){
+line* get_previous(int map, int next_line, line* changes){//get previous line
+  FILE* fstream = fdopen(dup(map),"r");
   line* first = (line*)malloc(sizeof(line));
-  //get previous line
-  int off = lseek(map,next_line,SEEK_SET);
-  char ch[256];
-  read(map,ch,1);
-  while (strcmp(ch,"\n") && off > 0){
-    off = lseek(map,-2,SEEK_CUR);
-    read(map,ch,1);
-  }
-  first->file_offset = off;
-  FILE* fstream = fdopen(map,"r");
   size_t buff_size = sizeof(first->text); 
+  first->text = (char*)malloc(sizeof(global_win.ws_col));
+  first->status = (char*)malloc(sizeof(global_win.ws_col));
+  fseek(fstream,next_line,SEEK_SET);
+  char temp;
+  int off;
+  while (temp != '\n' && off > 0){
+    fseek(fstream,-2,SEEK_CUR);
+    off = ftell(fstream);
+    temp = (char)fgetc(fstream);
+  }
+  first->file_offset = ftell(fstream);
+
+  line* last = changes;
+  changes = changes->next;
+  while (changes!= NULL){
+  	if (changes->file_offset == first->file_offset){
+  		last->next = changes->next;
+  		free(first->text);
+  		free(first->status);
+  		free(first);
+  		fclose(fstream);
+  		return changes;
+  	}
+  	last = changes;
+  	changes = changes->next;
+  }
+
   getline(&first->text, &buff_size, fstream);
+  first->begin_edit = strlen(first->text)-1;
+  while (first->text[first->begin_edit] != '/'){
+  	first->begin_edit = first->begin_edit - 1;
+  }
+  strcpy(first->status,&first->text[first->begin_edit+1]);
+  *strchr(first->status,'\n') = 0;
   fclose(fstream);
   return first;
 }
 
-line* get_next(int map, int previous_line){//get next line
-  line* next = (line*)malloc(sizeof(line));
+line* get_next(int map, int previous_line, line* changes){//get next line
   FILE* fstream = fdopen(dup(map),"r");
+  line* next = (line*)malloc(sizeof(line));
   size_t buff_size = sizeof(next->text);
   next->text = (char*)malloc(sizeof(global_win.ws_col));
+  next->status = (char*)malloc(sizeof(global_win.ws_col));
   fseek(fstream,previous_line,SEEK_SET);
   getline(&next->text, &buff_size, fstream);
   next->file_offset = ftell(fstream);
+
+  line* last = changes;
+  changes = changes->next;
+  while (changes!= NULL){
+  	if (changes->file_offset == next->file_offset){
+  		last->next = changes->next;
+  		free(next->text);
+  		free(next->status);
+  		free(next);
+  		fclose(fstream);
+  		return changes;
+  	}
+  	last = changes;
+  	changes = changes->next;
+  }
+
   getline(&next->text, &buff_size, fstream);
+  next->next = NULL;
+  next->begin_edit = strlen(next->text)-1;
+  while (next->text[next->begin_edit] != '/'){
+  	next->begin_edit = next->begin_edit - 1;
+  }
+  strcpy(next->status,&next->text[next->begin_edit+1]);
+  *strchr(next->status,'\n') = 0;
   fclose(fstream);
   return next;
 }
 
-int cleanup(line* line_node){
+int cleanup(line* line_node,line* changed){
+  while (changed->next != NULL){
+  	changed = changed->next;
+  }
+  char* temp;
   while (line_node->next){
-    free(line_node);
-    free(line_node->text);
-    free(line_node->status);
-    line_node = line_node->next;
+    temp = strdup(&line_node->text[line_node->begin_edit+1]);
+    temp[strlen(temp)-1] = 0;
+    if (strcmp(line_node->status,temp)){
+    	line_node->next = NULL;
+    	changed->next = line_node;
+    	changed = changed->next;
+    }
+    else{
+    	free(line_node);
+    	free(line_node->text);
+    	free(line_node->status);
+
+    	line_node = line_node->next;
+    }
+    free(temp);
   }
   return 0;
+}
+
+int fileops(line* changes){
+	char* temp;
+	char path[512];
+	changes = changes->next;
+	while (changes != NULL){
+		temp = strdup(&changes->text[changes->begin_edit+1]);
+		temp[strlen(temp)-1] = 0;
+		if (strcmp(changes->status,temp)){
+			strcpy(path,changes->text);
+			changes->text[strlen(changes->text)-1]=0;
+			strcpy(&path[changes->begin_edit+1],changes->status);
+			printf("Renaming %s to %s\n",path,changes->text);
+			rename(path,changes->text);
+		}
+		free(changes->text);
+		free(changes->status);
+		free(changes);
+		free(temp);
+		changes = changes->next;
+	}
 }

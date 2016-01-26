@@ -1,0 +1,26 @@
+DW APPROVED
+
+Name: Sammi Wu Leung
+
+Proposal: 2 players at a time are able to play Connect 4. Others can wait in line.
+
+Design:
+	It will be games played in the terminal played within the same network.
+	Users will be automatically set up with the other player in the server.
+
+Things I'm Using:
+       Allocation of memory
+       Working with files
+       Processes (server and games)
+       Signals
+       Pipes (for server)
+       Shared Memory
+
+Timeline:
+	01/07/16 - Write out proposal.
+	01/08/16 - Await approval of proposal.
+	01/09 - 20/16 - Write up server - client.
+	01/20 - 26/16 - Panic and finish the project in a hackathon style (working for long hours at a time). 
+
+Note: Since I am the sole member, I did not bother pushing on some days.
+

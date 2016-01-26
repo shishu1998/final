@@ -1,0 +1,23 @@
+Jerry Lei
+
+Project description: The project is a two player text-based hangman.
+
+User interface: There will be a piped connection between two players. One of the players will be the person who puts up the word to guess along with a clue. The second player will guess characters or a word to match the word the first player puts up.
+
+
+Topics used:
+ -networking
+ -processes
+ -signals
+ -text input
+
+Potential:
+ -more than 2 players, taking turns on guessing word
+ -server/client using sockets
+  
+Timeline:
+ -Design
+ -Production of hangman 
+ -Put into network
+ -Testing
+ 

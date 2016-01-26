@@ -1,14 +1,12 @@
-all: client.o server.o 
-	gcc -o typeracer client.o server.o
+all:
+	gcc -o client client.c
+	gcc -o server server.c
 
-client.o: client.c client.h
-	gcc -c client.c
+server:
+	./server
 
-server.o: server.c server.h
-	gcc -c server.c
-
-run:
-	./typeracer
+client: 
+	./client
 
 clean:
 	rm *.o

@@ -4,3 +4,5 @@ mary_mcgreal
 beyonce_knowles
 starbucks_coffee
 think_coffee
+bob_username and password cannot be null.
+

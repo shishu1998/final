@@ -22,14 +22,14 @@ Technical Design:
 		User input
 	Breakdown:
 		M: 
-User input for blackjack
+			User input for blackjack
 			Server side of network
 		K: 
 			User + dealer integration
-Visualization of cards
+			Visualization of cards
 			Client side of network
 		S: 
-Dealer AI
+			Dealer AI
 			Bit of both server and client
 	Data Structures:
 		Card struct

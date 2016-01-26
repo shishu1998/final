@@ -26,16 +26,15 @@ int judge_handshake(int* from_server){
   
 }
 
-card* receivecards(int* from_server,card* received){
-  card buffer[100];
+void receivecards(int* from_server,card *received[8]){
+  char buffer[100];
   int counter = 0;
-  card *tobejudged = (card* )malloc(sizeof(card)*8);
   while(counter < 8){
     read(*from_server,buffer,sizeof(buffer));
-    tobejudge[counter] = *makecard(buffer,"red");
+    (*received)[counter] = *makecard(buffer,"red");
+    printf("%s\n",((*received)[counter]).content);
     counter ++;
   }
-  return tobejudged;
 }
 
 int main(){
@@ -54,7 +53,7 @@ int main(){
       printf("%d.%s\n",counter,received[counter].content);
     }
     fgets(buffer,sizeof(buffer),stdin);
-    *strchr(buffer,"\n") = 0;
+    *strchr(buffer,'\n') = 0;
     int winner = atoi(buffer);
     while(winner < 0 || winner > 7 || !(received[winner].content)){
       printf("please type in a valid number: \n");
@@ -62,11 +61,10 @@ int main(){
 	printf("%d.%s\n",counter,received[counter].content);
       }
       fgets(buffer,sizeof(buffer),stdin);
-      *strchr(buffer,"\n") = 0;
+      *strchr(buffer,'\n') = 0;
       int winner = atoi(buffer);
     }
-    write(to_server,&card[winner].content,sizeof(card[winner].content));
-    
+    write(to_server,received[winner].content,sizeof(received[winner].content));    
   }
   
   close(to_server);

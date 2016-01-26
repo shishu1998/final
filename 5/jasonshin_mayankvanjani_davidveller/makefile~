@@ -1,0 +1,7 @@
+all: player server
+
+player:
+	gcc -o player player.c
+
+server:
+	gcc -o master master.c

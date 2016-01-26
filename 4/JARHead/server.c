@@ -41,6 +41,7 @@ int main() {
     if ( (pid = fork()) == 0 ) {
       while(1) {
         recv(socket_client, buffer, sizeof(buffer), 0 );
+        printf("%s", buffer);
         strtok(buffer, "\n");
         // process(buffer);
         send(socket_client, buffer, sizeof(buffer), 0 );

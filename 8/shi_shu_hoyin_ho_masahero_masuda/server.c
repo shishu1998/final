@@ -15,6 +15,23 @@ static void sighandler(int signo){
   }
 }
 
+int judgehandshake(int *from_judge){
+  int to_judge;
+  char buffer[100];
+
+  mkfifo("pip",0644);
+  *from_judge = open("pip",O_RDONLY);
+  remove("pip");
+
+  read(*from_judge,buffer,sizeof(buffer));
+  printf("Judge handshake done\n");
+
+  to_judge = open(buffer,O_WRONLY);
+  remove(buffer);
+  
+  return to_judge;
+}
+
 int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
   int freeID=0;
   while(!(*ids)){
@@ -98,6 +115,10 @@ void receive_redcard(int from_player){
 int main(){
 
   signal(SIGINT,sighandler);
+  
+  int to_judge;
+  int from_judge;
+  
   int ids[8] = {1,2,3,4,5,6,7,8};
   int to_player;
   int from_player;
@@ -108,6 +129,9 @@ int main(){
   int playerturn;
   int playernum = 0;
 
+  printf("waiting for judge to connect\n");
+  to_judge = judgehandshake(&from_judge);
+  
   while(1){
     printf("waiting for players to connect\n");
     to_player = handshake(&from_player,red,green,ids);

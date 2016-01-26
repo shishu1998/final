@@ -9,8 +9,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "len_prefix.h"
 #include "hostname.h"
+#include "message.h"
 #include "shared.h"
 #include "client.h"
 
@@ -18,63 +18,101 @@ static int running = 1;
 
 int main(int argc, char * argv[]) {
   int socket_id, e;
-  char * hostname;
+  char *hostname, *username;
 
-  hostname = check_args(argc, argv);
+  if (argc < 3) {
+    printf("Usage: client <hostname> <username>\n");
+    exit(1);
+  } else {
+    hostname = argv[1];
+    username = argv[2];
+  }
+
+  struct user me = new_user(username);
 
   setup_sig_handler();
 
-  socket_id = connect_to_server(hostname, PORT);
+  e = socket_id = connect_to_server(hostname, PORT);
+  if (e < 0) check_errors("Error connecting to server", e);
+
+  e = handshake(socket_id, me);
+  if (e < 0) {
+    printf("Username already taken\n");
+    running = 0;
+  } else {
+    printf("Handshake succesfull!\n");
+  }
 
   while (running) {
-    e = run(socket_id);
-    if (e <= 0) running = 0;
+    e = run(socket_id, me);
+    if (e < 0) running = 0;
   }
 
   close(socket_id);
 }
 
-char * check_args(int argc, char * argv[]) {
-  if (argc < 2) {
-    printf("Usage: client <hostname>\n");
-    exit(1);
-  } else {
-    return argv[1];
-  }
-}
+int run(int socket_id, struct user me) {
+  int e;
 
-int run(int socket_id) {
-  int bytes_read, e;
-  char input[256];
-
-  e = get_input(input, sizeof(input), &bytes_read);
+  struct message message;
+  e = read_message(&message, me);
   if (e < 0 && errno == EINTR) return e;
 
   if (!running) {
     return 0; // we usually C-c or exit during input
   }
 
-  e = send_request(input, bytes_read, socket_id);
-  if (e < 0) return e;
-
-  e = handle_response(socket_id);
-
-  return e;
-}
-
-int get_input(char * input, int input_size, int *bytes_read) {
-  int e;
-  printf("> ");
+  printf("About to send %s your message...", message.to.name);
   fflush(stdout);
 
-  e = *bytes_read = read(STDIN_FILENO, input, input_size-1);
-  input[*bytes_read++] = '\0';
+  e = send_message(socket_id, &message);
+  if (e < 0) return e;
 
-  if (*bytes_read == 1) {
+  printf(" sent!\n");
+
+  e = handle_response(socket_id);
+  if (e < 0) return e;
+
+  return 0;
+}
+
+int read_message(struct message *message, struct user me) {
+  int bytes_read;
+  struct user to;
+
+  message->from = me;
+
+  printf("Message Recipient: ");
+  fflush(stdout);
+  bytes_read = get_input(to.name, MAX_USERNAME);
+  if (bytes_read <= 0) return -1;
+
+  message->to = to;
+
+  printf("Message: \n");
+  bytes_read = get_input(message->text, MAX_MESSAGE);
+  if (bytes_read <= 0) return -1;
+
+  return 0;
+}
+
+int send_message(int socket_id, struct message *message) {
+  struct signal sig = new_message_sig(message->from, message->to, message->text);
+  return write(socket_id, &sig, sizeof(sig));
+}
+
+int get_input(char * input, int input_size) {
+  int bytes_read;
+
+  bytes_read = read(STDIN_FILENO, input, input_size-1);
+  input[bytes_read-1] = '\0'; // replace newline
+
+  if (bytes_read <= 0) {
+    printf("Exiting...\n");
     running = 0;
   }
 
-  return e;
+  return bytes_read;
 }
 
 int connect_to_server(char * hostname, int port) {
@@ -103,24 +141,40 @@ int connect_to_server(char * hostname, int port) {
   return socket_id;
 }
 
-int send_request(char *req, size_t len, int socket_id) {
-  return len_prefix_write(socket_id, req, len);
+int handshake(int socket_id, struct user user) {
+  int e;
+  struct signal sig = new_handshake_sig(user);
+  e = write(socket_id, &sig, sizeof(sig));
+  if (e <= 0) return -1;
+
+  read(socket_id, &sig, sizeof(sig));
+  if (e <= 0) return -1;
+
+  if (sig.type != HANDSHAKE && strcmp(user.name, sig.body.handshake.name) != 0) {
+    return -1;
+  }
+
+  return 0;
 }
 
 int handle_response(int socket_id) {
   int e;
-  char * buf = NULL;
+  struct signal sig;
 
-  e = len_prefix_read(socket_id, (void **)&buf);
-  if (e < 0) return e;
+  e = read(socket_id, &sig, sizeof(sig));
+  if (e < 0) return -1;
 
-  printf("server: %s\n", buf);
+  switch (sig.type) {
+  case DISCONNECT:
+    running = 0;
+    break;
+  case MESSAGE:
+    printf("<%s>: %s\n", sig.body.message.from.name, sig.body.message.text);
+    break;
+  }
 
-  free(buf);
-
-  return e;
+  return 0;
 }
-
 
 static void sighandler(int signo) {
   if (signo == SIGINT) {

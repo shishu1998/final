@@ -11,7 +11,7 @@
 #include "server.h"
 
 int send_note(int socket_client) {
-  char input = (char *)calloc( 256, sizeof(char) );
+  char* input = (char *)calloc( 256, sizeof(char) );
   printf( "Send to <other_client> : " );
   fgets(input, sizeof(input), stdin);
   input = strsep( &input, "\n" );

@@ -1,15 +1,10 @@
-typedef struct {
-
-  char mini_board[3][3];  // Each board is 3x3 board!
-  char winner;            // 0, X, O who won this board?
-  char full;              // 0, 1 is this board full?
-
-} board;
-
-board super_board[3][3];
+#ifndef GAME_H
+#define GAME_H
 
 void board_init();            // initialize empty board
-int turn( char R, char C, char r, char c);    // react to legal or illegal player input
-char check_super_win();  // check to see if the super_board is won
+int turn( char player, int R, int C, int r, int c);    // react to legal or illegal player input
+char check_win();  // check to see if the super_board is won
 void update_winner( board );  // update winner variable
 void update_full( board );    // update full variable
+
+#endif

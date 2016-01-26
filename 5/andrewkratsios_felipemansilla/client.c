@@ -13,8 +13,14 @@ void error(const char *msg)
     exit(0);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
+    
+    argv[1] = "localhost";
+    argv[2] = "5001";
+    printf("%s\n", argv[1]);
+    printf("%s\n", argv[2]);
+
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -28,10 +34,11 @@ int main(int argc, char *argv[])
     char* delimiter = "\\n";
 
 
-    if (argc < 3) {
+    /*if (argc < 3) {
        fprintf(stderr,"usage %s hostname port\n", argv[0]);
        exit(0);
     }
+    */
     portno = atoi(argv[2]);
 
     // Creates the socket socket() --> endpoints of sockets

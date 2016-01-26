@@ -1,6 +1,6 @@
 #include "lib.h"
 #define MAXLEN 256
-#define PATH_MAX 2048
+//#define PATH_MAX 2048
 
 void create_new(){
   int f;

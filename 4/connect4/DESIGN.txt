@@ -6,7 +6,8 @@ Proposal: 2 players at a time are able to play Connect 4. Others can wait in lin
 
 Design:
 	It will be games played in the terminal played within the same network.
-	Users will be automatically set up with the other player in the server.
+	Users will be automatically set up with the other player in the server.	       The game never ends unless the server is killed and clients can join
+	whenever.
 
 Things I'm Using:
        Allocation of memory

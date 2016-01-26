@@ -1,4 +1,4 @@
-RESULT = main
+RESULT = main.out
 HEADERS = board.h utils.h connections.h game.h
 OBJECTS = main.o board.o utils.o connections.o game.o
 

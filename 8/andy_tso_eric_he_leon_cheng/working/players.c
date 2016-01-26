@@ -19,6 +19,12 @@ typedef struct
   int num_cards;//number of cards in player's hand
 } player;
 
+typedef struct
+{
+  card top_card;
+  char mssg[100];
+} init;
+
 
 int desired_total;
 int player_count;
@@ -71,8 +77,10 @@ char *stringify_color(card c) { // NOT SURE IF STRING SYNTAX CORRECT HERE
     color = "blue";
   else if (c.color == 2) 
     color = "green";
-  else 
+  else if (c.color == 3)
     color = "yellow";
+  else 
+    color = "any color";
   return color;
 }
 

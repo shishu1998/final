@@ -94,8 +94,7 @@ int newuser() {
   return username;
 }
 
-/*
-  int find_user_match(char *username) {
+int find_user_match(char *username) {
   FILE* fd = fopen("tutoraccounts.txt", "r");
   char *buffer = (char *)malloc(500*sizeof(char));
   fread(buffer, sizeof(char), 500, fd);
@@ -103,55 +102,54 @@ int newuser() {
   printf("username:%s\n", username);
   printf("buffer: %s\n", buffer);
   if (strstr(buffer, username) == NULL) {//if username isn't taken 
-  printf("find_user_match() returned NULL. Your username is acceptable.\n");
-  buffer = "";
-  fclose(fd);
-  return 1;
+    printf("find_user_match() returned NULL. Your username is acceptable.\n");
+    buffer = "";
+    fclose(fd);
+    return 1;
   }
   else {
-  printf("Your username is taken. Please try again.\n");
-  buffer = "";
-  fclose(fd);
-  return 0;
+    printf("Your username is taken. Please try again.\n");
+    buffer = "";
+    fclose(fd);
+    return 0;
   }
-  }
-*/
+}
 
 int registereduser() {
   FILE* fd = fopen("tutoraccounts.txt","r");
   printf("Type in your 4-digit ID for the username.\n");
-    int username;
-    char buffer[100];
-    fgets(buffer, 100, stdin);
-    if (sscanf(buffer, "%d", &username)) {
-       char *in = passwd;
-        struct termios  tty_orig;
-        char c;
-        tcgetattr( STDIN_FILENO, &tty_orig );
-        struct termios  tty_work = tty_orig;
-        puts("Please input password:");
-        tty_work.c_lflag &= ~( ECHO | ICANON );
-        tty_work.c_cc[ VMIN ]  = 1;
-        tty_work.c_cc[ VTIME ] = 0;
-        tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
+  int username;
+  char buffer[100];
+  fgets(buffer, 100, stdin);
+  if (sscanf(buffer, "%d", &username)) {
+    char *in = passwd;
+    struct termios  tty_orig;
+    char c;
+    tcgetattr( STDIN_FILENO, &tty_orig );
+    struct termios  tty_work = tty_orig;
+    puts("Please input password:");
+    tty_work.c_lflag &= ~( ECHO | ICANON );
+    tty_work.c_cc[ VMIN ]  = 1;
+    tty_work.c_cc[ VTIME ] = 0;
+    tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_work );
 
-        while (1) {
-          if (read(STDIN_FILENO, &c, sizeof c) > 0) {
-            if ('\n' == c) {
-              break;
-            }
-            *in++ = c;
-            write(STDOUT_FILENO, "*", 1);
-          }
-        }
-
-        tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
-
-        *in = '\0';
-        fputc('\n', stdout);
-	return username
+    while (1) {
+      if (read(STDIN_FILENO, &c, sizeof c) > 0) {
+	if ('\n' == c) {
+	  break;
 	}
+	*in++ = c;
+	write(STDOUT_FILENO, "*", 1);
+      }
+    }
 
+    tcsetattr( STDIN_FILENO, TCSAFLUSH, &tty_orig );
+
+    *in = '\0';
+    fputc('\n', stdout);
+    find_user_match(username);
+    return username;
+  }
 }
 
 int tutorlogin() {

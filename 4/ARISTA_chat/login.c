@@ -17,7 +17,7 @@ int newuser() {
     int username;
     char buffer[100];
     fgets(buffer, 100, stdin);
-  if (sscanf(buffer, "%d", &username)) {
+    if (sscanf(buffer, "%d", &username)) {
       if (username >= 1000 && username <= 9999) {
 	char *in = passwd;
 	struct termios  tty_orig;
@@ -72,24 +72,20 @@ int newuser() {
 	if(strcmp(passwd,check) != 0) {
 	  printf("Error: Passwords don't match. Please try again.\n");
 	} else {
-	  moveon == 1;
+	  char newuser[1000];
+	  snprintf(newuser,sizeof(newuser), "%i: %s\n",username,passwd);
+	  int fd = open("tutoraccounts.txt",O_RDWR | O_APPEND,0644);
+	  write(fd, newuser, strlen(newuser));
+	  close(fd);
+	  moveon = 1;
 	}
+      } else {
+	printf("Error: Invalid username. Please input your 4-digit ID.\n");
       }
- char newuser[1000];
-  snprintf(newuser,sizeof(newuser), "%i: %s\n",username,passwd);
-  int fd = open("tutoraccounts.txt",O_RDWR | O_APPEND,0644);
-  write(fd, newuser, strlen(newuser));
-  close(fd);
-
-  return username;
-
-    } else {
-      printf("Error: Invalid username. Please input your 4-digit ID.\n");
-	return 0;
     }
   }
+  return username;
 }
-
 int find_user_match(char *username) {
   FILE* fd = fopen("tutoraccounts.txt", "r");
   char *buffer = (char *)malloc(500*sizeof(char));

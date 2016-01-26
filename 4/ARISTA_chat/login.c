@@ -12,9 +12,9 @@
 int newuser() {
   int moveon = 0;
   char passwd[16];
+  int username = 0;
   while (moveon == 0) {
     printf("Type in your 4-digit ID for the username.\n");
-    int username;
     char buffer[100];
     fgets(buffer, 100, stdin);
     if (sscanf(buffer, "%d", &username)) {
@@ -86,6 +86,7 @@ int newuser() {
   }
   return username;
 }
+
 int does_user_exist(char *username) {
   FILE *fp;
   int line_num = 1;
@@ -96,7 +97,7 @@ int does_user_exist(char *username) {
     return(-1);
   }
   while(fgets(temp, 512, fp) != NULL) {
-    if((strstr(temp, str)) != NULL) {
+    if((strstr(temp, username)) != NULL) {
       printf("A match found on line: %d\n", line_num);
       printf("\n%s\n", temp);
       find_result++;
@@ -147,6 +148,7 @@ int registereduser() {
     printf("That account doesn't exist yet. Please register for a new account.\n");
     username = newuser();
     return username;
+  }
 }
 
 int tutorlogin() {

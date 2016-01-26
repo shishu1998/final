@@ -15,6 +15,23 @@ static void sighandler(int signo){
   }
 }
 
+int judgehandshake(int *from_judge){
+  int to_judge;
+  char buffer[100];
+
+  mkfifo("pip",0644);
+  *from_judge = open("pip",O_RDONLY);
+  remove("pip");
+
+  read(*from_judge,buffer,sizeof(buffer));
+  printf("Judge handshake done\n");
+
+  to_judge = open(buffer,O_WRONLY);
+  remove(buffer);
+  
+  return to_judge;
+}
+
 int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
   int freeID=0;
   while(!(*ids)){
@@ -25,12 +42,10 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
   char buffer[100];
   int counter = 0;
   card redCards[7];
-  card greenCard = deal_greencard(greenDeck);
+  //  card greenCard = deal_greencard(greenDeck);
 
-  printf("Ho Yin went black\n");
   mkfifo("pipe",0644);
   *from_player = open("pipe",O_RDONLY);
-  printf("Now Ho Yin can't go back\n");
   remove("pipe");
   
   int f = fork();
@@ -40,20 +55,19 @@ int handshake(int *from_player, card *redDeck, card *greenDeck,int *ids){
     
     to_player = open(buffer,O_WRONLY);
     remove(buffer);
+    write(to_player,&ids[freeID],sizeof(int));
+    /*
+    strcpy(buffer,greenCard.content);
+    write(to_player,buffer,sizeof(buffer));
+    */
     while (counter < 7){
       redCards[counter] = deal_redcard(redDeck);
-      redCards[counter].owner=ids[freeID];
-      printf("%s\n",redCards[counter].content);
+      strcpy(buffer,redCards[counter].content);
+      write(to_player,buffer,sizeof(buffer));
+      printf("%s\n",buffer);
       counter++;
     }
-    greenCard.owner=ids[freeID];
-    printf("Masa is slacking\n");
-    write(to_player,&ids[freeID],sizeof(int));
     ids[freeID] = 0;
-    write(to_player,&redCards,sizeof(card)*7);
-    printf("Masa likes Sandy\n");
-    write(to_player,&greenCard,sizeof(card));
-    printf("I like Sandy, Kappa\n");
     return to_player;
   }
   else{
@@ -101,6 +115,10 @@ void receive_redcard(int from_player){
 int main(){
 
   signal(SIGINT,sighandler);
+  
+  int to_judge;
+  int from_judge;
+  
   int ids[8] = {1,2,3,4,5,6,7,8};
   int to_player;
   int from_player;
@@ -111,6 +129,9 @@ int main(){
   int playerturn;
   int playernum = 0;
 
+  printf("waiting for judge to connect\n");
+  to_judge = judgehandshake(&from_judge);
+  
   while(1){
     printf("waiting for players to connect\n");
     to_player = handshake(&from_player,red,green,ids);

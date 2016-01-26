@@ -12,13 +12,11 @@ void board_init() {
 
   for ( R = 0; R < 3; R++) {
     for ( C = 0; C < 3; C++) {
-
       for ( r = 0; r < 3; r++) {
 	for ( c = 0; c < 3; c++) {
 	  super_board[R][C].mini_board[r][c] = 0;
 	}
       }
-
       super_board[R][C].winner = 0;
       super_board[R][C].full = 0;
     }
@@ -35,10 +33,7 @@ int turn( char player, int R, int C, int r, int c) {
    *                  super_board[R][C].mini_board[r][c] != 0
    */
   
-  if ( super_board.full ) {
-    return 3;
-  }
-  else if ( R>2 && C>2 && r>2 && c>2 &&
+  if ( R>2 && C>2 && r>2 && c>2 &&
        R<0 && C<0 && r<0 && c<0 ) {
     //if the input is not in the domain
     return 2;
@@ -51,16 +46,18 @@ int turn( char player, int R, int C, int r, int c) {
     super_board[R][C].mini_board[r][c] = player;
   }
 
-  int i, j;
-  for ( i=0; i<3; i++ ) {
-    for ( j=0; j<3; j++ ) {
-      update_full( super_board[i][j].mini_board );
-      update_winner( super_board[i][j].mini_board );
-    }
+  update_full( super_board[R][C] );
+  update_winner( super_board[R][C] );
+  if ( super_board[r][c].full != 0 ) {
+    prev[0] = -1;
+    prev[1] = -1;
   }
-  check_win();
-
-  
+  else {
+    prev[0] = r;
+    prev[1] = c;
+  }
+  if(ckeck_win()=='X')return 3;
+  if(check_win()=='O')return 4;
   return 0;
 }
 
@@ -148,16 +145,14 @@ void update_full( board b ) {
       }
     }
   }
-
+  
 }
 
-/* for testing
+//for testing
 
- *
 int main() {
 
 
 
   return 0;
 }
-*/

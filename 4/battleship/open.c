@@ -18,18 +18,23 @@ int main(){
   p = fork();
   if (p != 0) {
     int status = 1;
-    wait(&status);
+    //wait(&status);
   }
   else {
-    execlp("aplay", "aplay", "song.wav", 0);
+    execlp("afplay", "afplay", "song.mp3", 0);
   }
-   
+  
     p1 = fork();
     if (p1 != 0) {
       int status1 = 1;
       wait(&status1);
     }
     else{
+<<<<<<< HEAD
+
+=======
+      sleep(2.5);
+>>>>>>> f77fcc45a5b5d702d0a2e4f4875a235af0fcc1ac
       printf("OOOOOO\n");
       printf("OO   OO\n");
       printf("OO  OO\n");

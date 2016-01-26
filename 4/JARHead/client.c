@@ -80,7 +80,7 @@ int main() {
       errno = recv(socket_id, server_buffer, sizeof(server_buffer), 0);
       printw("%s", server_buffer);
       refresh();
-      usleep(10000);
+      usleep(5000);
       clear();
     }
     close(socket_id);
